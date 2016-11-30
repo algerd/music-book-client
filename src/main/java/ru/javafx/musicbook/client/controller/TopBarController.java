@@ -8,6 +8,7 @@ import javafx.stage.Modality;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import ru.javafx.musicbook.client.controller.artists.ArtistsController;
 import ru.javafx.musicbook.client.jfxintegrity.BaseFxmlController;
 import ru.javafx.musicbook.client.jfxintegrity.FXMLController;
 import ru.javafx.musicbook.client.service.RequestViewService;
@@ -29,6 +30,12 @@ public class TopBarController extends BaseFxmlController {
     @Override
     public void initialize(URL url, ResourceBundle rb) {
         super.setView(topBar);
+    }
+    
+    @FXML
+    private void showArtists() {
+        logger.info("showArtists");
+        requestViewService.show(ArtistsController.class);
     }
     
     

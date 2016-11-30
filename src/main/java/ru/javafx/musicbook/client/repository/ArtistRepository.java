@@ -8,6 +8,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.hateoas.MediaTypes;
 import org.springframework.hateoas.PagedResources;
 import org.springframework.hateoas.Resource;
@@ -17,12 +18,16 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.stereotype.Repository;
 import ru.javafx.musicbook.client.SessionManager;
 import ru.javafx.musicbook.client.entity.Artist;
+import ru.javafx.musicbook.client.service.RequestService;
 
 @Repository
 public class ArtistRepository {
     
     private static final String REL_PATH = "artists";
     private final Logger logger = LoggerFactory.getLogger(getClass());
+    
+    @Autowired
+    private RequestService requestService;
     
     @Autowired
     private SessionManager sessionManager;
@@ -39,6 +44,16 @@ public class ArtistRepository {
                 .follow(REL_PATH)
                 .withHeaders(headers)
                 .toObject(new TypeReferences.PagedResourcesType<Resource<Artist>>() {});                    
+    }
+    
+    public PagedResources<Resource<Artist>> getArtists(PageRequest pageRequest) throws URISyntaxException { 
+        HttpHeaders headers = new HttpHeaders();
+        headers.add(HttpHeaders.COOKIE, sessionManager.getSessionIdCookie());
+        
+        return new Traverson(new URI(basePath + requestService.parsePageRequest(pageRequest)), MediaTypes.HAL_JSON)
+                .follow(REL_PATH)
+                .withHeaders(headers)
+                .toObject(new TypeReferences.PagedResourcesType<Resource<Artist>>() {});
     }
 
 }

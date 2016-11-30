@@ -3,10 +3,13 @@ package ru.javafx.musicbook.client.service;
 
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.Iterator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -26,6 +29,30 @@ public class RequestService {
     
     @Value("${spring.data.rest.basePath}")
     private String basePath;
+    /*
+    PageRequest page1 = new PageRequest(0, 20, Direction.ASC, "lastName", "salary");
+    PageRequest page2 = new PageRequest(0, 20, new Sort(
+        new Order(Direction.ASC, "lastName"), 
+        new Order(Direction.DESC, "salary")
+    );
+     
+    Transform PageRequest object to string :
+        ?page=1&size=20&sort=id,asc&sort=name,desc
+    */
+    public String parsePageRequest(PageRequest pageRequest) {
+        String strPageRequest = "?" 
+            + "page=" + pageRequest.getPageNumber()
+            + "&size=" + pageRequest.getPageSize();
+        
+        Iterator<Sort.Order> sortIterator = pageRequest.getSort().iterator();
+        while (sortIterator.hasNext()) {
+            Sort.Order order = sortIterator.next();
+            strPageRequest += "&"
+                + "sort=" + order.getProperty()
+                + "," + ((order.getDirection().equals(Sort.Direction.DESC)) ? "desc" : "asc");
+        }              
+        return strPageRequest;
+    }
 
     public void post(String rel, IdAware entity, Class<? extends IdAware> responseType) {
         try { 

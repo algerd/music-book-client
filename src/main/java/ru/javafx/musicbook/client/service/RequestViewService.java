@@ -9,7 +9,9 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Service;
+import ru.javafx.musicbook.client.controller.DialogController;
 import ru.javafx.musicbook.client.controller.MainController;
+import ru.javafx.musicbook.client.entity.IdAware;
 import ru.javafx.musicbook.client.jfxintegrity.BaseFxmlController;
 
 @Service
@@ -24,16 +26,53 @@ public class RequestViewService {
     private ApplicationContext applicationContext;
    
     public void show(Class<? extends BaseFxmlController> controllerClass) {
-        mainController.show(applicationContext.getBean(controllerClass));
+        logger.info("before show");
+        mainController.show(applicationContext.getBean(controllerClass));        
     }
     
-    public void show(Class<? extends BaseFxmlController> controllerClass, Modality modality) {       
+    // вызов диалогового окна
+    public void showDialog(Class<? extends BaseFxmlController> controllerClass, Modality modality) {       
         Stage stage = new Stage();           
         stage.initModality(modality);
         stage.initOwner(applicationContext.getBean("primaryStage", Stage.class));
         Scene scene = new Scene(applicationContext.getBean(controllerClass).getView()); 
         stage.setScene(scene);
         stage.showAndWait();
+    }
+    
+    public void showDialog(Class<? extends BaseFxmlController> controllerClass) {
+        showDialog(controllerClass, Modality.WINDOW_MODAL);
+    }
+    
+    // вызов диалогового окна c передачей сущности в контроллер диалога
+    public void showDialog(Class<? extends BaseFxmlController> controllerClass, IdAware entity, Modality modality, double width, double heigth) {       
+        Stage stage = new Stage();           
+        stage.initModality(modality);
+        stage.initOwner(applicationContext.getBean("primaryStage", Stage.class));    
+        BaseFxmlController controller = applicationContext.getBean(controllerClass);
+        Scene scene = new Scene(controller.getView()); 
+        stage.setScene(scene);
+        if (width > 0) {
+            stage.setMinHeight(width);
+        }
+        if (heigth > 0) {
+            stage.setMinWidth(heigth);
+        }
+        
+        if (controller instanceof DialogController) {
+            DialogController dialogController = (DialogController) controller;
+            dialogController.setEntity(entity);
+            dialogController.setStage(stage);
+        }          
+        stage.showAndWait();
+    }
+    
+    public void showDialog(Class<? extends BaseFxmlController> controllerClass, IdAware entity, double width, double heigth) {
+        showDialog(controllerClass, entity, Modality.WINDOW_MODAL, width, heigth);
+    }
+    
+    public void showDialog(Class<? extends BaseFxmlController> controllerClass, IdAware entity) {
+        showDialog(controllerClass, entity, Modality.WINDOW_MODAL, -1, -1);
     }
     
 }

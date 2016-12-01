@@ -14,6 +14,7 @@ public class ControllerFactory implements Callback<Class<?>, Object> {
 
     @Override
     public Object call(Class<?> type) {
+        //System.out.println("Bean" + type.getCanonicalName());
         return applicationContext.getBean(type);
     }
 

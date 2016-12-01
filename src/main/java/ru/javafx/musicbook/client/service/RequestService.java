@@ -8,14 +8,14 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Sort;
+//import org.springframework.data.domain.PageRequest;
+//import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
-import ru.javafx.musicbook.client.IdAware;
+import ru.javafx.musicbook.client.entity.IdAware;
 import ru.javafx.musicbook.client.SessionManager;
 
 @Service
@@ -39,6 +39,7 @@ public class RequestService {
     Transform PageRequest object to string :
         ?page=1&size=20&sort=id,asc&sort=name,desc
     */
+    /*
     public String parsePageRequest(PageRequest pageRequest) {
         String strPageRequest = "?" 
             + "page=" + pageRequest.getPageNumber()
@@ -53,7 +54,7 @@ public class RequestService {
         }              
         return strPageRequest;
     }
-
+    */
     public void post(String rel, IdAware entity, Class<? extends IdAware> responseType) {
         try { 
             URI uri = new URI(basePath + rel);

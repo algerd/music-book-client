@@ -1,5 +1,5 @@
 
-package ru.javafx.musicbook.client;
+package ru.javafx.musicbook.client.entity;
 
 public interface IdAware {
     int getId();

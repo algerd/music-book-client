@@ -23,6 +23,7 @@ import javafx.scene.paint.Color;
 import javafx.util.Callback;
 import javafx.util.StringConverter;
 
+@SuppressWarnings("unchecked")
 public class Helper {
 
     /**

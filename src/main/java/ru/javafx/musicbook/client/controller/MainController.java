@@ -34,12 +34,17 @@ public class MainController extends BaseFxmlController {
     }
     
     public void show(Loadable controller) {
+        logger.info("after show");
         Tab tab = new Tab();
         tab.setClosable(true); 
         tab.textProperty().bind(controller.titleProperty());
+        logger.info("before main.show");
         tab.setContent(controller.getView()); 
+        
+        logger.info("after main.show");
         tabPane.getTabs().add(tab); 
         tabPane.getSelectionModel().selectLast();
+        
     }
             
 }

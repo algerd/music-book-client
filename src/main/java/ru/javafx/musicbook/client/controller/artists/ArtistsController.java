@@ -1,7 +1,6 @@
 
 package ru.javafx.musicbook.client.controller.artists;
 
-import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.List;
@@ -10,24 +9,24 @@ import java.util.stream.Collectors;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
+import javafx.scene.Parent;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
+import javafx.scene.input.MouseButton;
+import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.AnchorPane;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.context.annotation.Scope;
-import org.springframework.hateoas.MediaTypes;
 import org.springframework.hateoas.PagedResources;
 import org.springframework.hateoas.Resource;
-import org.springframework.hateoas.client.Traverson;
-import org.springframework.hateoas.mvc.TypeReferences;
-import org.springframework.http.HttpHeaders;
-import ru.javafx.musicbook.client.SessionManager;
+import ru.javafx.musicbook.client.controller.BaseAwareController;
 import ru.javafx.musicbook.client.entity.Artist;
-import ru.javafx.musicbook.client.jfxintegrity.BaseFxmlController;
 import ru.javafx.musicbook.client.jfxintegrity.FXMLController;
 import ru.javafx.musicbook.client.repository.ArtistRepository;
+import static ru.javafx.musicbook.client.service.ContextMenuItemType.ADD_ARTIST;
 import ru.javafx.musicbook.client.service.RequestService;
 import ru.javafx.musicbook.client.utils.Helper;
 
@@ -35,11 +34,17 @@ import ru.javafx.musicbook.client.utils.Helper;
     value = "/fxml/artists/Artists.fxml",    
     title = "Artists")
 @Scope("prototype")
-public class ArtistsController extends BaseFxmlController {
+public class ArtistsController extends BaseAwareController {
     
     private final Logger logger = LoggerFactory.getLogger(getClass());
     private Artist selectedItem;
     private List<Artist> artists;
+    
+    static int count = 0;
+    public ArtistsController() {
+        count++;
+        System.out.println("Create ArtistsController");
+    }
     
     @Autowired
     private ArtistRepository artistRepository;
@@ -47,6 +52,8 @@ public class ArtistsController extends BaseFxmlController {
     @Autowired
     private RequestService requestService;
        
+    //@FXML
+    //private Parent view;
     //table
     @FXML
     private TableView<Artist> artistsTable;
@@ -58,7 +65,8 @@ public class ArtistsController extends BaseFxmlController {
     private TableColumn<Artist, Integer> ratingColumn; 
     
     @Override
-    public void initialize(URL url, ResourceBundle rb) {    
+    public void initialize(URL url, ResourceBundle rb) {   
+        logger.info("Count: {}", count);
         initArtistsTable();
         setTableValue();
     } 
@@ -94,6 +102,25 @@ public class ArtistsController extends BaseFxmlController {
         catch (URISyntaxException ex) {
             logger.error(ex.getMessage());
         }
+    }
+    
+    /**
+     * При ПКМ по странице артиста показать контекстное меню.
+     */
+    @FXML
+    private void showContextMenu(MouseEvent mouseEvent) {
+        clearSelectionTable();
+        contextMenuService.clear();
+		if (mouseEvent.getButton() == MouseButton.SECONDARY) { 
+            logger.info("MouseButton.SECONDARY pressed");
+            contextMenuService.add(ADD_ARTIST, new Artist());
+            contextMenuService.show(view, mouseEvent);
+        }      
+    }
+    
+    private void clearSelectionTable() {
+        artistsTable.getSelectionModel().clearSelection();
+        selectedItem = null;
     }
 
 }

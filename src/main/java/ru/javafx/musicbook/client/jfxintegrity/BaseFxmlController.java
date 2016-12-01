@@ -53,6 +53,7 @@ public abstract class BaseFxmlController implements Loadable, Initializable {
         if (view == null && getFxmlAnnotation().loadable()) {
             view = loadView();
         }
+        logger.info("View: {}", view);
         return view;
     }
     

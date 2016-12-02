@@ -34,6 +34,10 @@ public class ArtistRepository {
     @Value("${spring.data.rest.basePath}")
     private String basePath;  
     
+    public void add(Artist artist) {
+        requestService.post(REL_PATH, artist, Artist.class);
+    }
+    
     public PagedResources<Resource<Artist>> getArtists() throws URISyntaxException {    
 
         HttpHeaders headers = new HttpHeaders();

@@ -11,12 +11,14 @@ import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import ru.javafx.musicbook.client.Params;
 import ru.javafx.musicbook.client.controller.BaseDialogController;
 import ru.javafx.musicbook.client.entity.Artist;
 import ru.javafx.musicbook.client.entity.IdAware;
 import ru.javafx.musicbook.client.fxintegrity.FXMLController;
+import ru.javafx.musicbook.client.repository.ArtistRepository;
 import ru.javafx.musicbook.client.utils.Helper;
 
 @FXMLController(
@@ -28,7 +30,10 @@ public class ArtistDialogController extends BaseDialogController {
     private final Logger logger = LoggerFactory.getLogger(getClass());
     private Artist artist; 
     private final IntegerProperty rating = new SimpleIntegerProperty();
-          
+    
+    @Autowired
+    private ArtistRepository artistRepository;
+    
     @FXML
     private TextField nameTextField;
     @FXML
@@ -53,7 +58,7 @@ public class ArtistDialogController extends BaseDialogController {
             if (edit) {
 
             } else {           
-                
+                artistRepository.add(artist);
             }             
             dialogStage.close();
             edit = false;

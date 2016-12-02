@@ -8,9 +8,8 @@ import javafx.scene.control.TabPane;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import ru.javafx.musicbook.client.jfxintegrity.BaseFxmlController;
-import ru.javafx.musicbook.client.jfxintegrity.FXMLController;
-import ru.javafx.musicbook.client.jfxintegrity.Loadable;
+import ru.javafx.musicbook.client.fxintegrity.BaseFxmlController;
+import ru.javafx.musicbook.client.fxintegrity.FXMLController;
 import ru.javafx.musicbook.client.utils.TabPaneDetacher;
 
 @FXMLController(
@@ -33,18 +32,13 @@ public class MainController extends BaseFxmlController {
         TabPaneDetacher.create().makeTabsDetachable(tabPane);
     }
     
-    public void show(Loadable controller) {
-        logger.info("after show");
+    public void show(BaseFxmlController controller) {
         Tab tab = new Tab();
         tab.setClosable(true); 
         tab.textProperty().bind(controller.titleProperty());
-        logger.info("before main.show");
         tab.setContent(controller.getView()); 
-        
-        logger.info("after main.show");
         tabPane.getTabs().add(tab); 
-        tabPane.getSelectionModel().selectLast();
-        
+        tabPane.getSelectionModel().selectLast();       
     }
             
 }

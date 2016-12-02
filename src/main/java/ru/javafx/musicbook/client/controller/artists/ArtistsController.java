@@ -9,22 +9,19 @@ import java.util.stream.Collectors;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
-import javafx.scene.Parent;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
-import javafx.scene.layout.AnchorPane;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Lazy;
 import org.springframework.context.annotation.Scope;
 import org.springframework.hateoas.PagedResources;
 import org.springframework.hateoas.Resource;
 import ru.javafx.musicbook.client.controller.BaseAwareController;
 import ru.javafx.musicbook.client.entity.Artist;
-import ru.javafx.musicbook.client.jfxintegrity.FXMLController;
+import ru.javafx.musicbook.client.fxintegrity.FXMLController;
 import ru.javafx.musicbook.client.repository.ArtistRepository;
 import static ru.javafx.musicbook.client.service.ContextMenuItemType.ADD_ARTIST;
 import ru.javafx.musicbook.client.service.RequestService;
@@ -40,11 +37,7 @@ public class ArtistsController extends BaseAwareController {
     private Artist selectedItem;
     private List<Artist> artists;
     
-    static int count = 0;
-    public ArtistsController() {
-        count++;
-        System.out.println("Create ArtistsController");
-    }
+    public ArtistsController() {}
     
     @Autowired
     private ArtistRepository artistRepository;
@@ -52,8 +45,6 @@ public class ArtistsController extends BaseAwareController {
     @Autowired
     private RequestService requestService;
        
-    //@FXML
-    //private Parent view;
     //table
     @FXML
     private TableView<Artist> artistsTable;
@@ -66,7 +57,6 @@ public class ArtistsController extends BaseAwareController {
     
     @Override
     public void initialize(URL url, ResourceBundle rb) {   
-        logger.info("Count: {}", count);
         initArtistsTable();
         setTableValue();
     } 

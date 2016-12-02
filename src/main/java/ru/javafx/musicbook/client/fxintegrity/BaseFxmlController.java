@@ -1,5 +1,5 @@
 
-package ru.javafx.musicbook.client.fxmlloader;
+package ru.javafx.musicbook.client.fxintegrity;
 
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;

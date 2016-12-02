@@ -1,5 +1,5 @@
 
-package ru.javafx.musicbook.client.fxmlloader;
+package ru.javafx.musicbook.client.fxintegrity;
 
 import java.io.IOException;
 import java.net.URL;
@@ -14,7 +14,7 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Component;
 
 @Component
-public class FxmlLoader {
+public class FXMLControllerLoader {
     
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
     private static final String FXML_PATH_ROOT = "/fxml/";
@@ -23,56 +23,57 @@ public class FxmlLoader {
     @Autowired
     private ApplicationContext applicationContext;
     
-    private BaseFxmlController load(Class<? extends BaseFxmlController> controllerClass) {       
-        FXMLController annotation = getFxmlAnnotation(controllerClass);
-
+    public BaseFxmlController load(Class<? extends BaseFxmlController> controllerClass) {       
         FXMLLoader fxmlLoader = load(
-            controllerClass.getResource(getStringFxmlPath(annotation)),
-            getResourceBundle(getBundleName(annotation))    
+            controllerClass.getResource(getStringFxmlPath(controllerClass)),
+            getResourceBundle(getBundleName(controllerClass))    
         );        
         
         Parent parent = fxmlLoader.getRoot();
-		addCss(parent, annotation);
+		addCss(parent, controllerClass);
         
         BaseFxmlController controller = fxmlLoader.getController();      
         controller.setView(parent);
-        controller.setTitle(annotation.title());
+        controller.setTitle(getFxmlAnnotation(controllerClass).title());
         
         return controller;      
     }
 
     private FXMLLoader load(URL resource, ResourceBundle bundle) throws IllegalStateException {
-		FXMLLoader loader = new FXMLLoader(resource, bundle);
+        FXMLLoader loader = new FXMLLoader(resource, bundle);
         loader.setControllerFactory(applicationContext::getBean);
 		try {
 			loader.load();
 		} catch (IOException ex) {
-			throw new IllegalStateException("Cannot load " + getConventionalName(), ex);
+            logger.error("Cannot load fxml controller");
+			//throw new IllegalStateException("Cannot load fxml controller", ex);
 		}
 		return loader;
 	}
     
-    private String getStringFxmlPath(FXMLController annotation) {
+    private String getStringFxmlPath(Class<? extends BaseFxmlController> controllerClass) {
+        FXMLController annotation = getFxmlAnnotation(controllerClass);
         return annotation == null || annotation.value().equals("") ?
-            FXML_PATH_ROOT + getConventionalName(".fxml") : annotation.value();
+            FXML_PATH_ROOT + getConventionalName(controllerClass, ".fxml") : annotation.value();
     }
     
     private FXMLController getFxmlAnnotation(Class<? extends BaseFxmlController> controllerClass) {
         return controllerClass.getAnnotation(FXMLController.class);
 	}
     
-    private String getConventionalName(String ending) {
-		return getConventionalName() + ending;
+    private String getConventionalName(Class<? extends BaseFxmlController> controllerClass, String ending) {
+		return getConventionalName(controllerClass) + ending;
 	}
 
-	private String getConventionalName() {
-        String clazz = getClass().getSimpleName().toLowerCase();
+	private String getConventionalName(Class<? extends BaseFxmlController> controllerClass) {
+        String clazz = controllerClass.getSimpleName().toLowerCase();
         return !clazz.endsWith("controller") ? clazz : clazz.substring(0, clazz.lastIndexOf("controller"));
 	}
     
-    private String getBundleName(FXMLController annotation) {
+    private String getBundleName(Class<? extends BaseFxmlController> controllerClass) {
+        FXMLController annotation = getFxmlAnnotation(controllerClass);
         return (annotation == null || annotation.bundle().equals("")) ?
-            getClass().getPackage().getName() + "." + getConventionalName() :    
+            controllerClass.getPackage().getName() + "." + getConventionalName(controllerClass) :    
             annotation.bundle();    
 	}
     
@@ -84,14 +85,15 @@ public class FxmlLoader {
 		}
 	}
     
-    private void addCss(Parent parent, FXMLController annotation) {
+    private void addCss(Parent parent, Class<? extends BaseFxmlController> controllerClass) {
+        FXMLController annotation = getFxmlAnnotation(controllerClass);
 		if (annotation != null && annotation.css().length > 0) {
 			for (String cssFile : annotation.css()) {
-				parent.getStylesheets().add(getClass().getResource(cssFile).toExternalForm());
+				parent.getStylesheets().add(controllerClass.getResource(cssFile).toExternalForm());
 			}
 		}
         else {
-            URL uri = getClass().getResource(CSS_PATH_ROOT + getConventionalName(".css"));
+            URL uri = controllerClass.getResource(CSS_PATH_ROOT + getConventionalName(controllerClass, ".css"));
             if (uri != null) {
                 parent.getStylesheets().add(uri.toExternalForm());
             }

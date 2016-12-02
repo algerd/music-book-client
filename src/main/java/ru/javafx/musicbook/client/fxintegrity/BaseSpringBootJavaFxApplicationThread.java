@@ -1,4 +1,4 @@
-package ru.javafx.musicbook.client.jfxintegrity;
+package ru.javafx.musicbook.client.fxintegrity;
 
 import javafx.application.Application;
 import javafx.application.Platform;
@@ -48,7 +48,7 @@ public abstract class BaseSpringBootJavaFxApplicationThread extends Application 
     private void showStage() {
         springContext.getAutowireCapableBeanFactory().autowireBean(this);
         
-        BaseFxmlController controller = springContext.getBean(mainController);
+        BaseFxmlController controller = springContext.getBean(FXMLControllerLoader.class).load(mainController);
         Scene scene = new Scene(controller.getView());
         primaryStage = springContext.getBean("primaryStage", Stage.class);
         primaryStage.titleProperty().bind(controller.titleProperty());

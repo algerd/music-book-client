@@ -12,12 +12,16 @@ import org.springframework.stereotype.Service;
 import ru.javafx.musicbook.client.controller.DialogController;
 import ru.javafx.musicbook.client.controller.MainController;
 import ru.javafx.musicbook.client.entity.IdAware;
-import ru.javafx.musicbook.client.jfxintegrity.BaseFxmlController;
+import ru.javafx.musicbook.client.fxintegrity.BaseFxmlController;
+import ru.javafx.musicbook.client.fxintegrity.FXMLControllerLoader;
 
 @Service
 public class RequestViewService {
     
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
+    
+    @Autowired
+    private FXMLControllerLoader fxmlLoader;
     
     @Autowired
     private MainController mainController;
@@ -27,7 +31,7 @@ public class RequestViewService {
    
     public void show(Class<? extends BaseFxmlController> controllerClass) {
         logger.info("before show");
-        mainController.show(applicationContext.getBean(controllerClass));        
+        mainController.show(fxmlLoader.load(controllerClass));        
     }
     
     // вызов диалогового окна
@@ -35,7 +39,7 @@ public class RequestViewService {
         Stage stage = new Stage();           
         stage.initModality(modality);
         stage.initOwner(applicationContext.getBean("primaryStage", Stage.class));
-        Scene scene = new Scene(applicationContext.getBean(controllerClass).getView()); 
+        Scene scene = new Scene(fxmlLoader.load(controllerClass).getView()); 
         stage.setScene(scene);
         stage.showAndWait();
     }
@@ -49,7 +53,7 @@ public class RequestViewService {
         Stage stage = new Stage();           
         stage.initModality(modality);
         stage.initOwner(applicationContext.getBean("primaryStage", Stage.class));    
-        BaseFxmlController controller = applicationContext.getBean(controllerClass);
+        BaseFxmlController controller = fxmlLoader.load(controllerClass);
         Scene scene = new Scene(controller.getView()); 
         stage.setScene(scene);
         if (width > 0) {

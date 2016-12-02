@@ -16,7 +16,7 @@ import ru.javafx.musicbook.client.Params;
 import ru.javafx.musicbook.client.controller.BaseDialogController;
 import ru.javafx.musicbook.client.entity.Artist;
 import ru.javafx.musicbook.client.entity.IdAware;
-import ru.javafx.musicbook.client.jfxintegrity.FXMLController;
+import ru.javafx.musicbook.client.fxintegrity.FXMLController;
 import ru.javafx.musicbook.client.utils.Helper;
 
 @FXMLController(

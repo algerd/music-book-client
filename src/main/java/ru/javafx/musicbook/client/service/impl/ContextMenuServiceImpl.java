@@ -96,7 +96,6 @@ public class ContextMenuServiceImpl implements ContextMenuService {
         
     @Override
     public void show(Parent parent, MouseEvent mouseEvent) {
-        logger.info("Context menu showed {}", parent);
         contextMenu.show(parent, mouseEvent.getScreenX(), mouseEvent.getScreenY());
     }
       

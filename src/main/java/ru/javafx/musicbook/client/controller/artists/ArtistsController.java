@@ -86,7 +86,7 @@ public class ArtistsController extends BaseAwareController {
             PagedResources<Resource<Artist>> resources = artistRepository.getArtists();
             
             PagedResources.PageMetadata metadata = resources.getMetadata();
-            logger.info("Got {} of {} artists: ", resources.getContent().size(), metadata.getTotalElements());
+            //logger.info("Got {} of {} artists: ", resources.getContent().size(), metadata.getTotalElements());
             artists = resources.getContent().stream().map(Resource::getContent).collect(Collectors.toList());                     
         } 
         catch (URISyntaxException ex) {
@@ -102,7 +102,6 @@ public class ArtistsController extends BaseAwareController {
         clearSelectionTable();
         contextMenuService.clear();
 		if (mouseEvent.getButton() == MouseButton.SECONDARY) { 
-            logger.info("MouseButton.SECONDARY pressed");
             contextMenuService.add(ADD_ARTIST, new Artist());
             contextMenuService.show(view, mouseEvent);
         }      

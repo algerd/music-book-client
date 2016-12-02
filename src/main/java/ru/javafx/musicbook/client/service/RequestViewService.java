@@ -30,7 +30,6 @@ public class RequestViewService {
     private ApplicationContext applicationContext;
    
     public void show(Class<? extends BaseFxmlController> controllerClass) {
-        logger.info("before show");
         mainController.show(fxmlLoader.load(controllerClass));        
     }
     
@@ -61,12 +60,11 @@ public class RequestViewService {
         }
         if (heigth > 0) {
             stage.setMinWidth(heigth);
-        }
-        
+        }       
         if (controller instanceof DialogController) {
             DialogController dialogController = (DialogController) controller;
-            dialogController.setEntity(entity);
             dialogController.setStage(stage);
+            dialogController.setEntity(entity);           
         }          
         stage.showAndWait();
     }

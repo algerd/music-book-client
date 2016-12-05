@@ -3,22 +3,32 @@ package ru.javafx.musicbook.client.service;
 
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.ParameterizedTypeReference;
+import org.springframework.hateoas.Link;
 import org.springframework.hateoas.MediaTypes;
+import static org.springframework.hateoas.MediaTypes.HAL_JSON;
 import org.springframework.hateoas.Resource;
 import org.springframework.hateoas.Resources;
 import org.springframework.hateoas.client.Traverson;
 import org.springframework.hateoas.mvc.TypeReferences;
+import org.springframework.hateoas.mvc.TypeReferences.ResourceType;
+import org.springframework.hateoas.mvc.TypeReferences.ResourcesType;
 //import org.springframework.data.domain.PageRequest;
 //import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
+import org.springframework.http.MediaType;
+import org.springframework.http.RequestEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 import ru.javafx.musicbook.client.SessionManager;
@@ -103,17 +113,39 @@ public class RequestService {
             RestTemplate restTemplate = new RestTemplate();
             //System.out.println(restTemplate.postForObject(uri, request, responseType));
             URI entityUri = restTemplate.exchange(uri, HttpMethod.POST, request, String.class).getHeaders().getLocation();
-            
-            System.out.println(restTemplate.exchange(uri, HttpMethod.GET, new HttpEntity<>(headers), new ParameterizedTypeReference<Resource<Artist>>() {}).getBody());
-            
+
             /*
-            Resource<Artist> resource = new Traverson(entityUri, MediaTypes.HAL_JSON).
-                    follow("")
+            List<MediaType> mediaTypes = new ArrayList<>();
+            mediaTypes.add(MediaTypes.HAL_JSON);
+            headers.setAccept(mediaTypes);
+            System.out.println(restTemplate.exchange(entityUri, HttpMethod.GET, new HttpEntity<>(headers), new ParameterizedTypeReference<Resource<Artist>>() {}).getBody());
+            */
+            /*
+            RequestEntity<Void> req = RequestEntity.get(entityUri).header(HttpHeaders.COOKIE, sessionManager.getSessionIdCookie()).accept(HAL_JSON).build();
+            Resource<Artist> stores = (new RestTemplate()).exchange(req, new ResourceType<Artist>() {}).getBody();
+            System.out.println(stores);
+            */
+           /*
+            Map<String, Object> parameters = new HashMap<>();
+            Resource<Artist> resource = new Traverson(uri, MediaTypes.HAL_JSON).
+                    follow("artists")
                     .withHeaders(headers)
                     .toObject(new ParameterizedTypeReference<Resource<Artist>>() {});
             
             System.out.println(resource);
+           */
+            /*
+            Traverson traverson = new Traverson(new URI(basePath), MediaTypes.HAL_JSON);
+            Traverson.TraversalBuilder builder = traverson. //
+				follow("artists").
+                withHeaders(headers);
+            logger.info("Discovered link: {}", builder.asTemplatedLink());
             */
+            
+            RequestEntity<Void> req = RequestEntity.get(entityUri).header(HttpHeaders.COOKIE, sessionManager.getSessionIdCookie()).accept(HAL_JSON).build();
+            Resource<Artist> store = (new RestTemplate()).exchange(req, new ParameterizedTypeReference<Resource<Artist>>() {}).getBody();
+            System.out.println(store);
+            
             //System.out.println(restTemplate.exchange(uri, HttpMethod.POST, request, String.class).getHeaders().getLocation());          
             
         }  

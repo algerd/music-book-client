@@ -114,40 +114,12 @@ public class RequestService {
             //System.out.println(restTemplate.postForObject(uri, request, responseType));
             URI entityUri = restTemplate.exchange(uri, HttpMethod.POST, request, String.class).getHeaders().getLocation();
 
-            /*
-            List<MediaType> mediaTypes = new ArrayList<>();
-            mediaTypes.add(MediaTypes.HAL_JSON);
-            headers.setAccept(mediaTypes);
-            System.out.println(restTemplate.exchange(entityUri, HttpMethod.GET, new HttpEntity<>(headers), new ParameterizedTypeReference<Resource<Artist>>() {}).getBody());
-            */
-            /*
-            RequestEntity<Void> req = RequestEntity.get(entityUri).header(HttpHeaders.COOKIE, sessionManager.getSessionIdCookie()).accept(HAL_JSON).build();
-            Resource<Artist> stores = (new RestTemplate()).exchange(req, new ResourceType<Artist>() {}).getBody();
-            System.out.println(stores);
-            */
-           /*
-            Map<String, Object> parameters = new HashMap<>();
-            Resource<Artist> resource = new Traverson(uri, MediaTypes.HAL_JSON).
-                    follow("artists")
+            Resource<Artist> resource = new Traverson(entityUri, MediaTypes.HAL_JSON).
+                    follow("self")
                     .withHeaders(headers)
                     .toObject(new ParameterizedTypeReference<Resource<Artist>>() {});
             
-            System.out.println(resource);
-           */
-            /*
-            Traverson traverson = new Traverson(new URI(basePath), MediaTypes.HAL_JSON);
-            Traverson.TraversalBuilder builder = traverson. //
-				follow("artists").
-                withHeaders(headers);
-            logger.info("Discovered link: {}", builder.asTemplatedLink());
-            */
-            
-            RequestEntity<Void> req = RequestEntity.get(entityUri).header(HttpHeaders.COOKIE, sessionManager.getSessionIdCookie()).accept(HAL_JSON).build();
-            Resource<Artist> store = (new RestTemplate()).exchange(req, new ParameterizedTypeReference<Resource<Artist>>() {}).getBody();
-            System.out.println(store);
-            
-            //System.out.println(restTemplate.exchange(uri, HttpMethod.POST, request, String.class).getHeaders().getLocation());          
-            
+            logger.info("Resource: {}", resource);          
         }  
         catch (URISyntaxException ex) {
             logger.error(ex.getMessage());

@@ -13,13 +13,14 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
+import org.springframework.hateoas.Resource;
 import ru.javafx.musicbook.client.Params;
 import ru.javafx.musicbook.client.controller.BaseDialogController;
 import ru.javafx.musicbook.client.entity.Artist;
-import ru.javafx.musicbook.client.entity.IdAware;
 import ru.javafx.musicbook.client.fxintegrity.FXMLController;
 import ru.javafx.musicbook.client.repository.ArtistRepository;
 import ru.javafx.musicbook.client.utils.Helper;
+import ru.javafx.musicbook.client.entity.Entity;
 
 @FXMLController(
     value = "/fxml/artist/ArtistDialog.fxml",    
@@ -55,9 +56,11 @@ public class ArtistDialogController extends BaseDialogController {
             artist.setRating(getRating());
             artist.setDescription(commentTextArea.getText().trim());           
 
-            if (edit) {
-
-            } else {           
+            if (edit) {               
+                //logger.info("Edited Artist: {}", artist);
+                artistRepository.update(resource);
+            } else { 
+                //logger.info("Added Artist: {}", artist);
                 artistRepository.add(artist);
             }             
             dialogStage.close();
@@ -93,24 +96,19 @@ public class ArtistDialogController extends BaseDialogController {
       
     @Override
     protected void add() {
-        
+        artist = new Artist();
     }
        
     @Override
     protected void edit() { 
         edit = true;
+        artist = (Artist) resource.getContent();
+        
         nameTextField.setText(artist.getName());
         ratingSpinner.getValueFactory().setValue(artist.getRating());
         commentTextArea.setText(artist.getDescription());
-        add();
     }
-
-    @Override
-    public void setEntity(IdAware entity) {
-        artist = (Artist) entity;
-        super.setEntity(entity);
-    }        
-            
+        
     public int getRating() {
         return rating.get();
     }

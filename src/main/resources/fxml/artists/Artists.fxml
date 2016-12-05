@@ -64,7 +64,7 @@
             </children>
         </GridPane>
         -->
-        <TableView fx:id="artistsTable" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="140.0">
+        <TableView fx:id="artistsTable" onMouseClicked="#onMouseClickTable" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="140.0">
             <columns>
                 <TableColumn fx:id="rankColumn" maxWidth="1000.0" minWidth="-Infinity" prefWidth="50.0" text="Rank" />
                 <TableColumn fx:id="artistColumn" minWidth="-Infinity" prefWidth="300.0" text="Artist" />

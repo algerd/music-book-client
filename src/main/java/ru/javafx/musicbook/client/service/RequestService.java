@@ -8,6 +8,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.ParameterizedTypeReference;
+import org.springframework.hateoas.MediaTypes;
+import org.springframework.hateoas.Resource;
+import org.springframework.hateoas.Resources;
+import org.springframework.hateoas.client.Traverson;
+import org.springframework.hateoas.mvc.TypeReferences;
 //import org.springframework.data.domain.PageRequest;
 //import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpEntity;
@@ -15,8 +21,9 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
-import ru.javafx.musicbook.client.entity.IdAware;
 import ru.javafx.musicbook.client.SessionManager;
+import ru.javafx.musicbook.client.entity.Artist;
+import ru.javafx.musicbook.client.entity.Entity;
 
 @Service
 @SuppressWarnings("unchecked")
@@ -55,7 +62,8 @@ public class RequestService {
         return strPageRequest;
     }
     */
-    public void post(String rel, IdAware entity, Class<? extends IdAware> responseType) {
+    /*
+    public void post(String rel, Entity entity, Class<? extends Entity> responseType) {
         try { 
             URI uri = new URI(basePath + rel);
             HttpHeaders headers = new HttpHeaders();
@@ -68,8 +76,10 @@ public class RequestService {
             logger.error(ex.getMessage());
         }
     }
-    
-    public void put(String rel, IdAware entity) {
+    */
+    /*
+    public void put(String rel, Entity entity) {
+       
         try { 
             URI uri = new URI(basePath + rel + "/" + entity.getId());
             HttpHeaders headers = new HttpHeaders();
@@ -80,7 +90,50 @@ public class RequestService {
         }  
         catch (URISyntaxException ex) {
             logger.error(ex.getMessage());
+        }       
+    }
+    */
+    
+    public void post(String rel, Entity entity, Class<? extends Entity> responseType) {
+        try { 
+            URI uri = new URI(basePath + rel);
+            HttpHeaders headers = new HttpHeaders();
+            headers.add(HttpHeaders.COOKIE, sessionManager.getSessionIdCookie());            
+            HttpEntity<Entity> request = new HttpEntity<>(entity, headers);
+            RestTemplate restTemplate = new RestTemplate();
+            //System.out.println(restTemplate.postForObject(uri, request, responseType));
+            URI entityUri = restTemplate.exchange(uri, HttpMethod.POST, request, String.class).getHeaders().getLocation();
+            
+            System.out.println(restTemplate.exchange(uri, HttpMethod.GET, new HttpEntity<>(headers), new ParameterizedTypeReference<Resource<Artist>>() {}).getBody());
+            
+            /*
+            Resource<Artist> resource = new Traverson(entityUri, MediaTypes.HAL_JSON).
+                    follow("")
+                    .withHeaders(headers)
+                    .toObject(new ParameterizedTypeReference<Resource<Artist>>() {});
+            
+            System.out.println(resource);
+            */
+            //System.out.println(restTemplate.exchange(uri, HttpMethod.POST, request, String.class).getHeaders().getLocation());          
+            
+        }  
+        catch (URISyntaxException ex) {
+            logger.error(ex.getMessage());
         }
+    }
+    
+    public void put(String rel, Resource<? extends Entity> resource) {    
+        try { 
+            URI uri = new URI(resource.getLink("self").getHref());
+            HttpHeaders headers = new HttpHeaders();
+            headers.add(HttpHeaders.COOKIE, sessionManager.getSessionIdCookie());            
+            HttpEntity request = new HttpEntity(resource.getContent(), headers);
+            RestTemplate restTemplate = new RestTemplate();
+            restTemplate.put(uri, request); 
+        }  
+        catch (URISyntaxException ex) {
+            logger.error(ex.getMessage());
+        }       
     }
     
     public void delete(String rel, int id) {

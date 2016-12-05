@@ -8,12 +8,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
+import org.springframework.hateoas.Resource;
 import org.springframework.stereotype.Service;
 import ru.javafx.musicbook.client.controller.DialogController;
 import ru.javafx.musicbook.client.controller.MainController;
-import ru.javafx.musicbook.client.entity.IdAware;
 import ru.javafx.musicbook.client.fxintegrity.BaseFxmlController;
 import ru.javafx.musicbook.client.fxintegrity.FXMLControllerLoader;
+import ru.javafx.musicbook.client.entity.Entity;
 
 @Service
 public class RequestViewService {
@@ -48,7 +49,7 @@ public class RequestViewService {
     }
     
     // вызов диалогового окна c передачей сущности в контроллер диалога
-    public void showDialog(Class<? extends BaseFxmlController> controllerClass, IdAware entity, Modality modality, double width, double heigth) {       
+    public void showDialog(Class<? extends BaseFxmlController> controllerClass, Resource<? extends Entity> resource, Modality modality, double width, double heigth) {       
         Stage stage = new Stage();           
         stage.initModality(modality);
         stage.initOwner(applicationContext.getBean("primaryStage", Stage.class));    
@@ -60,21 +61,21 @@ public class RequestViewService {
         }
         if (heigth > 0) {
             stage.setMinWidth(heigth);
-        }       
+        }          
         if (controller instanceof DialogController) {
             DialogController dialogController = (DialogController) controller;
             dialogController.setStage(stage);
-            dialogController.setEntity(entity);           
+            dialogController.setResource(resource);           
         }          
         stage.showAndWait();
     }
     
-    public void showDialog(Class<? extends BaseFxmlController> controllerClass, IdAware entity, double width, double heigth) {
-        showDialog(controllerClass, entity, Modality.WINDOW_MODAL, width, heigth);
+    public void showDialog(Class<? extends BaseFxmlController> controllerClass, Resource<? extends Entity> resource, double width, double heigth) {
+        showDialog(controllerClass, resource, Modality.WINDOW_MODAL, width, heigth);
     }
     
-    public void showDialog(Class<? extends BaseFxmlController> controllerClass, IdAware entity) {
-        showDialog(controllerClass, entity, Modality.WINDOW_MODAL, -1, -1);
+    public void showDialog(Class<? extends BaseFxmlController> controllerClass, Resource<? extends Entity> resource) {
+        showDialog(controllerClass, resource, Modality.WINDOW_MODAL, -1, -1);
     }
     
 }

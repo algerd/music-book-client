@@ -4,7 +4,8 @@ package ru.javafx.musicbook.client.service;
 import javafx.scene.Parent;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.input.MouseEvent;
-import ru.javafx.musicbook.client.entity.IdAware;
+import org.springframework.hateoas.Resource;
+import ru.javafx.musicbook.client.entity.Entity;
 
 public interface ContextMenuService {
     /**
@@ -12,7 +13,7 @@ public interface ContextMenuService {
      * @param itemType Тип элемента меню.
      * @param entity Значение для элемента меню.
      */
-    void add(ContextMenuItemType itemType, IdAware entity);
+    void add(ContextMenuItemType itemType, Resource<? extends Entity> entity);
     
     void add(ContextMenuItemType itemType);
     

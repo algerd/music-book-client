@@ -12,12 +12,14 @@ import javafx.scene.input.MouseEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.hateoas.Resource;
 import org.springframework.stereotype.Service;
 import ru.javafx.musicbook.client.controller.artist.ArtistDialogController;
-import ru.javafx.musicbook.client.entity.IdAware;
 import ru.javafx.musicbook.client.service.ContextMenuItemType;
 import ru.javafx.musicbook.client.service.ContextMenuService;
 import ru.javafx.musicbook.client.service.RequestViewService;
+import static ru.javafx.musicbook.client.service.ContextMenuItemType.*;
+import ru.javafx.musicbook.client.entity.Entity;
 
 @Service
 public class ContextMenuServiceImpl implements ContextMenuService { 
@@ -31,12 +33,12 @@ public class ContextMenuServiceImpl implements ContextMenuService {
     
     private final ContextMenu contextMenu = new ContextMenu();
     private final Map<ContextMenuItemType, EventHandler<ActionEvent>> menuMap = new HashMap<>();
-    private Map<ContextMenuItemType, IdAware> valueMap = new HashMap<>();
+    private Map<ContextMenuItemType, Resource<? extends Entity>> valueMap = new HashMap<>();
         
     public ContextMenuServiceImpl() {
         
-        menuMap.put(ContextMenuItemType.ADD_ARTIST, e -> requestViewService.showDialog(ArtistDialogController.class, valueMap.get(ContextMenuItemType.ADD_ARTIST)));      
-        menuMap.put(ContextMenuItemType.EDIT_ARTIST, e -> requestViewService.showDialog(ArtistDialogController.class, valueMap.get(ContextMenuItemType.EDIT_ARTIST)));          
+        menuMap.put(ADD_ARTIST, e -> requestViewService.showDialog(ArtistDialogController.class, valueMap.get(ADD_ARTIST)));      
+        menuMap.put(EDIT_ARTIST, e -> requestViewService.showDialog(ArtistDialogController.class, valueMap.get(EDIT_ARTIST)));          
         //menuMap.put(ContextMenuItemType.DELETE_ARTIST, e -> deleteAlertService.show((ArtistEntity) valueMap.get(ContextMenuItemType.DELETE_ARTIST)));      
         /*
         menuMap.put(ContextMenuItemType.ADD_ALBUM, e -> requestViewService.albumDialog(valueMap.get(ContextMenuItemType.ADD_ALBUM)));
@@ -78,9 +80,9 @@ public class ContextMenuServiceImpl implements ContextMenuService {
     }
     
     @Override
-    public void add(ContextMenuItemType itemType, IdAware entity) {
-        // сохранить в карте переменных entity для элемента меню itemType
-        valueMap.put(itemType, entity);
+    public void add(ContextMenuItemType itemType, Resource<? extends Entity> resource) {  
+        // сохранить в карте переменных resource для элемента меню itemType
+        valueMap.put(itemType, resource);
         // получить элемент меню
         MenuItem item = itemType.get();   
         // задать экшен элементу меню

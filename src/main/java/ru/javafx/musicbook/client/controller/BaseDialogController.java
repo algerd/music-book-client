@@ -3,13 +3,14 @@ package ru.javafx.musicbook.client.controller;
 
 import javafx.scene.control.Alert;
 import javafx.stage.Stage;
-import ru.javafx.musicbook.client.entity.IdAware;
+import org.springframework.hateoas.Resource;
+import ru.javafx.musicbook.client.entity.Entity;
 
 public abstract class BaseDialogController extends BaseAwareController implements DialogController {
      
     protected Stage dialogStage;
-    protected IdAware entity;
     protected boolean edit;
+    protected Resource<? extends Entity> resource;
     
     @Override
     public void setStage(Stage dialogStage) {
@@ -17,17 +18,15 @@ public abstract class BaseDialogController extends BaseAwareController implement
     }
     
     @Override
-    public void setEntity(IdAware entity) {
-        if (entity != null) {
-            this.entity = entity;
-            if (entity.getId() != 0) {
-                dialogStage.setTitle("Edit"); 
-                edit();
-            } 
-            else {
-                dialogStage.setTitle("Add");
-                add();
-            }
+    public void setResource(Resource<? extends Entity> resource) { 
+        this.resource = resource;
+        if (resource != null) {           
+            dialogStage.setTitle("Edit"); 
+            edit();
+        } 
+        else {
+            dialogStage.setTitle("Add");
+            add();
         }
     }
     

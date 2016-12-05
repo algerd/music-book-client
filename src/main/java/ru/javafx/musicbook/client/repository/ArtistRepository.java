@@ -17,6 +17,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.stereotype.Repository;
 import ru.javafx.musicbook.client.SessionManager;
 import ru.javafx.musicbook.client.entity.Artist;
+import ru.javafx.musicbook.client.entity.Entity;
 import ru.javafx.musicbook.client.service.RequestService;
 
 @Repository
@@ -38,6 +39,10 @@ public class ArtistRepository {
         requestService.post(REL_PATH, artist, Artist.class);
     }
     
+    public void update(Resource<? extends Entity> resource) {
+        requestService.put(REL_PATH, resource);
+    }
+    
     public PagedResources<Resource<Artist>> getArtists() throws URISyntaxException {    
 
         HttpHeaders headers = new HttpHeaders();
@@ -46,7 +51,7 @@ public class ArtistRepository {
         return new Traverson(new URI(basePath), MediaTypes.HAL_JSON)
                 .follow(REL_PATH)
                 .withHeaders(headers)
-                .toObject(new TypeReferences.PagedResourcesType<Resource<Artist>>() {});                    
+                .toObject(new TypeReferences.PagedResourcesType<Resource<Artist>>() {});         
     }
     /*
     public PagedResources<Resource<Artist>> getArtists(PageRequest pageRequest) throws URISyntaxException { 

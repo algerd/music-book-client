@@ -7,9 +7,8 @@ import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 
-public class Album implements IdAware {
+public class Album implements Entity {
 
-    private int id;
     //private int id_artist = 1; // id = 1 "Unknown" artist
     private final StringProperty name = new SimpleStringProperty("");
     private final IntegerProperty year = new SimpleIntegerProperty(0);
@@ -18,15 +17,6 @@ public class Album implements IdAware {
     private final StringProperty description = new SimpleStringProperty("");  
     
     public Album() {}
-
-    @Override
-    public int getId() {
-        return id;
-    }
-    @Override
-    public void setId(int id) {
-        this.id = id;
-    }  
     
     public String getName() {
         return name.get();
@@ -80,9 +70,8 @@ public class Album implements IdAware {
 
     @Override
     public int hashCode() {
-        int hash = 7;
-        hash = 79 * hash + this.id;
-        hash = 79 * hash + Objects.hashCode(this.name);
+        int hash = 5;
+        hash = 53 * hash + Objects.hashCode(this.name);
         return hash;
     }
 
@@ -98,9 +87,6 @@ public class Album implements IdAware {
             return false;
         }
         final Album other = (Album) obj;
-        if (this.id != other.id) {
-            return false;
-        }
         if (!Objects.equals(this.name, other.name)) {
             return false;
         }
@@ -109,7 +95,7 @@ public class Album implements IdAware {
 
     @Override
     public String toString() {
-        return getName();
-    }   
+        return "Album{" + "name=" + name + ", year=" + year + ", time=" + time + ", rating=" + rating + ", description=" + description + '}';
+    }
     
 }

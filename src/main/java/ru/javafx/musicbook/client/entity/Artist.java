@@ -7,24 +7,14 @@ import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 
-public class Artist implements IdAware {
-    
-    private int id;  
+public class Artist implements Entity {
+     
     private final StringProperty name = new SimpleStringProperty("");
     private final IntegerProperty rating = new SimpleIntegerProperty(0);
     private final StringProperty description = new SimpleStringProperty("");
     
     public Artist() {}
-
-    @Override
-    public int getId() {
-        return id;
-    }
-    @Override
-    public void setId(int id) {
-        this.id = id;
-    }  
-    
+   
     public String getName() {
         return name.get();
     }
@@ -58,8 +48,7 @@ public class Artist implements IdAware {
     @Override
     public int hashCode() {
         int hash = 5;
-        hash = 31 * hash + this.id;
-        hash = 31 * hash + Objects.hashCode(this.name);
+        hash = 17 * hash + Objects.hashCode(this.name);
         return hash;
     }
 
@@ -75,17 +64,15 @@ public class Artist implements IdAware {
             return false;
         }
         final Artist other = (Artist) obj;
-        if (this.id != other.id) {
-            return false;
-        }
         if (!Objects.equals(this.name, other.name)) {
             return false;
         }
         return true;
     }
-    
+
     @Override
     public String toString() {
-        return getName();
+        return "Artist{" + "name=" + name + ", rating=" + rating + ", description=" + description + '}';
     }
+       
 }

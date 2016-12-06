@@ -30,33 +30,7 @@ public class RequestService {
     
     @Value("${spring.data.rest.basePath}")
     private String basePath;
-    /*
-    PageRequest page1 = new PageRequest(0, 20, Direction.ASC, "lastName", "salary");
-    PageRequest page2 = new PageRequest(0, 20, new Sort(
-        new Order(Direction.ASC, "lastName"), 
-        new Order(Direction.DESC, "salary")
-    );
-     
-    Transform PageRequest object to string :
-        ?page=1&size=20&sort=id,asc&sort=name,desc
-    */
-    /*
-    public String parsePageRequest(PageRequest pageRequest) {
-        String strPageRequest = "?" 
-            + "page=" + pageRequest.getPageNumber()
-            + "&size=" + pageRequest.getPageSize();
-        
-        Iterator<Sort.Order> sortIterator = pageRequest.getSort().iterator();
-        while (sortIterator.hasNext()) {
-            Sort.Order order = sortIterator.next();
-            strPageRequest += "&"
-                + "sort=" + order.getProperty()
-                + "," + ((order.getDirection().equals(Sort.Direction.DESC)) ? "desc" : "asc");
-        }              
-        return strPageRequest;
-    }
-    */
-    
+   
     /*
     public URI post(String rel, Entity entity) {
         try { 

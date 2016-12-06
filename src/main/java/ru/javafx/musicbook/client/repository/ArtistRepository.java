@@ -7,7 +7,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-//import org.springframework.data.domain.PageRequest;
 import org.springframework.hateoas.MediaTypes;
 import org.springframework.hateoas.PagedResources;
 import org.springframework.hateoas.Resource;
@@ -34,13 +33,22 @@ public class ArtistRepository {
     
     @Value("${spring.data.rest.basePath}")
     private String basePath;  
-    
+    /*
+    public Resource<Artist> add(Artist artist) {
+        HttpHeaders headers = new HttpHeaders();
+        headers.add(HttpHeaders.COOKIE, sessionManager.getSessionIdCookie());
+        return new Traverson(requestService.post(REL_PATH, artist), MediaTypes.HAL_JSON).
+                follow("self")
+                .withHeaders(headers)
+                .toObject(new ParameterizedTypeReference<Resource<Artist>>() {});
+    }
+    */
     public void add(Artist artist) {
-        requestService.post(REL_PATH, artist, Artist.class);
+        requestService.post(REL_PATH, artist);
     }
     
     public void update(Resource<? extends Entity> resource) {
-        requestService.put(REL_PATH, resource);
+        requestService.put(resource);
     }
     
     public PagedResources<Resource<Artist>> getArtists() throws URISyntaxException {    

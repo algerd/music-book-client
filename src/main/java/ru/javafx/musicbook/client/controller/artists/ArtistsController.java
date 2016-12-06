@@ -23,8 +23,7 @@ import ru.javafx.musicbook.client.controller.BaseAwareController;
 import ru.javafx.musicbook.client.entity.Artist;
 import ru.javafx.musicbook.client.fxintegrity.FXMLController;
 import ru.javafx.musicbook.client.repository.ArtistRepository;
-import static ru.javafx.musicbook.client.service.ContextMenuItemType.ADD_ARTIST;
-import static ru.javafx.musicbook.client.service.ContextMenuItemType.EDIT_ARTIST;
+import static ru.javafx.musicbook.client.service.ContextMenuItemType.*;
 import ru.javafx.musicbook.client.service.RequestService;
 import ru.javafx.musicbook.client.utils.Helper;
 
@@ -124,7 +123,7 @@ public class ArtistsController extends BaseAwareController {
             // запретить удаление и редактирование записи с id = 1 (Unknown artist)
             //if (selectedItem != null && selectedItem.getId() != 1) {
                 contextMenuService.add(EDIT_ARTIST, selectedItem);
-                //contextMenuService.add(DELETE_ARTIST, selectedItem);                       
+                contextMenuService.add(DELETE_ARTIST, selectedItem);                       
             //}
             contextMenuService.show(view, mouseEvent);         
         }    

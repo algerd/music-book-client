@@ -3,36 +3,20 @@ package ru.javafx.musicbook.client.service;
 
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
+import java.util.Optional;
+import javafx.scene.control.Alert;
+import javafx.scene.control.ButtonType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.core.ParameterizedTypeReference;
-import org.springframework.hateoas.Link;
-import org.springframework.hateoas.MediaTypes;
-import static org.springframework.hateoas.MediaTypes.HAL_JSON;
 import org.springframework.hateoas.Resource;
-import org.springframework.hateoas.Resources;
-import org.springframework.hateoas.client.Traverson;
-import org.springframework.hateoas.mvc.TypeReferences;
-import org.springframework.hateoas.mvc.TypeReferences.ResourceType;
-import org.springframework.hateoas.mvc.TypeReferences.ResourcesType;
-//import org.springframework.data.domain.PageRequest;
-//import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
-import org.springframework.http.MediaType;
-import org.springframework.http.RequestEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 import ru.javafx.musicbook.client.SessionManager;
-import ru.javafx.musicbook.client.entity.Artist;
 import ru.javafx.musicbook.client.entity.Entity;
 
 @Service
@@ -72,61 +56,38 @@ public class RequestService {
         return strPageRequest;
     }
     */
-    /*
-    public void post(String rel, Entity entity, Class<? extends Entity> responseType) {
-        try { 
-            URI uri = new URI(basePath + rel);
-            HttpHeaders headers = new HttpHeaders();
-            headers.add(HttpHeaders.COOKIE, sessionManager.getSessionIdCookie());            
-            HttpEntity<IdAware> request = new HttpEntity<>(entity, headers);
-            RestTemplate restTemplate = new RestTemplate();
-            entity.setId(restTemplate.postForObject(uri, request, responseType).getId());
-        }  
-        catch (URISyntaxException ex) {
-            logger.error(ex.getMessage());
-        }
-    }
-    */
-    /*
-    public void put(String rel, Entity entity) {
-       
-        try { 
-            URI uri = new URI(basePath + rel + "/" + entity.getId());
-            HttpHeaders headers = new HttpHeaders();
-            headers.add(HttpHeaders.COOKIE, sessionManager.getSessionIdCookie());            
-            HttpEntity request = new HttpEntity(entity, headers);
-            RestTemplate restTemplate = new RestTemplate();
-            restTemplate.put(uri, request); 
-        }  
-        catch (URISyntaxException ex) {
-            logger.error(ex.getMessage());
-        }       
-    }
-    */
     
-    public void post(String rel, Entity entity, Class<? extends Entity> responseType) {
+    /*
+    public URI post(String rel, Entity entity) {
         try { 
             URI uri = new URI(basePath + rel);
             HttpHeaders headers = new HttpHeaders();
             headers.add(HttpHeaders.COOKIE, sessionManager.getSessionIdCookie());            
             HttpEntity<Entity> request = new HttpEntity<>(entity, headers);
             RestTemplate restTemplate = new RestTemplate();
-            //System.out.println(restTemplate.postForObject(uri, request, responseType));
-            URI entityUri = restTemplate.exchange(uri, HttpMethod.POST, request, String.class).getHeaders().getLocation();
-
-            Resource<Artist> resource = new Traverson(entityUri, MediaTypes.HAL_JSON).
-                    follow("self")
-                    .withHeaders(headers)
-                    .toObject(new ParameterizedTypeReference<Resource<Artist>>() {});
-            
-            logger.info("Resource: {}", resource);          
+            return restTemplate.exchange(uri, HttpMethod.POST, request, String.class).getHeaders().getLocation();
         }  
         catch (URISyntaxException ex) {
             logger.error(ex.getMessage());
         }
+        return null;
     }
+    */
     
-    public void put(String rel, Resource<? extends Entity> resource) {    
+    public void post(String rel, Entity entity) {
+        try { 
+            URI uri = new URI(basePath + rel);
+            HttpHeaders headers = new HttpHeaders();
+            headers.add(HttpHeaders.COOKIE, sessionManager.getSessionIdCookie());            
+            HttpEntity<Entity> request = new HttpEntity<>(entity, headers);
+            new RestTemplate().postForObject(uri, request, String.class);
+        }  
+        catch (URISyntaxException ex) {
+            logger.error(ex.getMessage());
+        }
+    }   
+    
+    public void put(Resource<? extends Entity> resource) {    
         try { 
             URI uri = new URI(resource.getLink("self").getHref());
             HttpHeaders headers = new HttpHeaders();
@@ -140,9 +101,9 @@ public class RequestService {
         }       
     }
     
-    public void delete(String rel, int id) {
+    public void delete(Resource<? extends Entity> resource) {
         try {
-            URI uri = new URI(basePath + rel + "/" + id);
+            URI uri = new URI(resource.getLink("self").getHref());
             HttpHeaders headers = new HttpHeaders();
             headers.add(HttpHeaders.COOKIE, sessionManager.getSessionIdCookie());
             HttpEntity request = new HttpEntity(headers);
@@ -154,5 +115,14 @@ public class RequestService {
         }
     }
     
-    
+    public void deleteWithAlert(Resource<? extends Entity> resource) {
+        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+        alert.setTitle("Confirmation");
+        alert.setContentText("Do you want to remove the entity ?");
+        Optional<ButtonType> result = alert.showAndWait();
+        if (result.get() == ButtonType.OK) {
+            delete(resource);
+        }
+    }
+       
 }

@@ -33,7 +33,6 @@ public class TopBarController extends BaseFxmlController {
     
     @FXML
     private void showArtists() {
-        logger.info("showArtists");
         requestViewService.show(ArtistsController.class);
     }
     

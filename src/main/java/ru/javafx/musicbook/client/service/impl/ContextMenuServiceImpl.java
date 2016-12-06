@@ -20,14 +20,16 @@ import ru.javafx.musicbook.client.service.ContextMenuService;
 import ru.javafx.musicbook.client.service.RequestViewService;
 import static ru.javafx.musicbook.client.service.ContextMenuItemType.*;
 import ru.javafx.musicbook.client.entity.Entity;
+import ru.javafx.musicbook.client.service.RequestService;
 
 @Service
 public class ContextMenuServiceImpl implements ContextMenuService { 
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
-      
-    //@Autowired
-    //private DeleteAlertService  deleteAlertService;
+    
+    @Autowired
+    private RequestService requestService;
+    
     @Autowired
     private RequestViewService requestViewService;
     
@@ -39,7 +41,7 @@ public class ContextMenuServiceImpl implements ContextMenuService {
         
         menuMap.put(ADD_ARTIST, e -> requestViewService.showDialog(ArtistDialogController.class, valueMap.get(ADD_ARTIST)));      
         menuMap.put(EDIT_ARTIST, e -> requestViewService.showDialog(ArtistDialogController.class, valueMap.get(EDIT_ARTIST)));          
-        //menuMap.put(ContextMenuItemType.DELETE_ARTIST, e -> deleteAlertService.show((ArtistEntity) valueMap.get(ContextMenuItemType.DELETE_ARTIST)));      
+        menuMap.put(DELETE_ARTIST, e -> requestService.deleteWithAlert(valueMap.get(DELETE_ARTIST)));      
         /*
         menuMap.put(ContextMenuItemType.ADD_ALBUM, e -> requestViewService.albumDialog(valueMap.get(ContextMenuItemType.ADD_ALBUM)));
         menuMap.put(ContextMenuItemType.EDIT_ALBUM, e -> requestViewService.albumDialog(valueMap.get(ContextMenuItemType.EDIT_ALBUM)));

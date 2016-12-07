@@ -3,7 +3,6 @@ package ru.javafx.musicbook.client.controller.artists;
 
 import java.net.URISyntaxException;
 import java.net.URL;
-import java.util.List;
 import java.util.ResourceBundle;
 import java.util.stream.Collectors;
 import javafx.beans.property.SimpleIntegerProperty;
@@ -26,7 +25,7 @@ import ru.javafx.musicbook.client.repository.ArtistRepository;
 import static ru.javafx.musicbook.client.service.ContextMenuItemType.*;
 import ru.javafx.musicbook.client.service.RequestService;
 import ru.javafx.musicbook.client.utils.Helper;
-import ru.javafx.musicbook.client.utils.PageRequest;
+import ru.javafx.musicbook.client.utils.Paginator;
 import ru.javafx.musicbook.client.utils.Sort;
 import ru.javafx.musicbook.client.utils.Sort.Direction;
 
@@ -39,7 +38,7 @@ public class ArtistsController extends BaseAwareController {
     private final Logger logger = LoggerFactory.getLogger(getClass());
     private Resource<Artist> selectedItem;
     private PagedResources<Resource<Artist>> resources;
-    private PageRequest pageRequest;
+    private Paginator paginator;
     
     public ArtistsController() {}
     
@@ -61,8 +60,8 @@ public class ArtistsController extends BaseAwareController {
     
     @Override
     public void initialize(URL url, ResourceBundle rb) {   
-        initArtistsTable();
-        pageRequest = new PageRequest(0, 5, new Sort(new Sort.Order(Direction.ASC, "name")));
+        paginator = new Paginator(0, 5, new Sort(new Sort.Order(Direction.ASC, "name"))); 
+        initArtistsTable();           
         setTableValue();
     } 
     
@@ -79,61 +78,34 @@ public class ArtistsController extends BaseAwareController {
         );
     }
     
-    public void setTableValue() {
-        requestGetArtists();
-        artistsTable.setItems(FXCollections.observableArrayList(resources.getContent().stream().collect(Collectors.toList())));      
-        //sort();       
-        Helper.setHeightTable(artistsTable, 10);  
+    public void setTableValue() {  
+        clearSelectionTable();
+        artistsTable.getItems().clear();
+        try {
+            resources = artistRepository.getArtists(paginator);
+            artistsTable.setItems(FXCollections.observableArrayList(resources.getContent().parallelStream().collect(Collectors.toList())));           
+            Helper.setHeightTable(artistsTable, 10);        
+        } catch (URISyntaxException ex) {
+            logger.error(ex.getMessage());
+        }      
     }    
     
     @FXML
     private void onPrevPage() {
-        if (resources.getPreviousLink() != null) {
-            pageRequest = (PageRequest) pageRequest.previous();
-            clearSelectionTable();
-            artistsTable.getItems().clear();
+        if (paginator.hasPrevious()) {
+            paginator.previous();
             setTableValue();
         } 
     }
     
     @FXML
     private void onNextPage() {
-        if (resources.getNextLink() != null) {
-            pageRequest = (PageRequest) pageRequest.next();
-            clearSelectionTable();
-            artistsTable.getItems().clear();
+        if (paginator.hasNext()) {
+            paginator.next();
             setTableValue();
         }    
     }
-    
-    private void requestGetArtists() {    
-        try { 
-            //resources = artistRepository.getArtists();  
-            //resources = artistRepository.getArtists(0, 5, null); 
-            /*
-            PageRequest pageRequest = new PageRequest(0, 5, new Sort(
-                    new Sort.Order(Direction.ASC, "name"),
-                    new Sort.Order(Direction.ASC, "rating")           
-            ));
-            */
-            resources = artistRepository.getArtists(pageRequest);
-            
-            PagedResources.PageMetadata metadata = resources.getMetadata();
-            //logger.info("Got {} of {} artists: ", resources.getContent().size(), metadata.getTotalElements());                                
-            /*                
-            resources.getContent().parallelStream().forEach(
-                resource -> {
-                    logger.info("content: {}", resource.getContent()); 
-                    logger.info("links: {}", resource.getLinks());
-                }
-            );
-            */
-        } 
-        catch (URISyntaxException ex) {
-            logger.error(ex.getMessage());
-        }
-    }
-    
+       
     /**
      * ЛКМ - зызов окна выбранного альбома selectedAlbum;
      * ПКМ - вызов контекстного меню для add, edit, delete выбранного selectedAlbum или нового альбома.

@@ -124,7 +124,7 @@ public class Paginator {
         this.totalPages = (size == 0 ? 0 : (long) Math.ceil((double) totalElements / (double) size));
     }
     
-    private long getTotalPages() {
+    public long getTotalPages() {
         return totalPages;
     }
    
@@ -132,7 +132,7 @@ public class Paginator {
         return page;
     }
 
-    public void setPage(int page) {
+    public void setPage(long page) {
         if (page < 0) {
 			throw new IllegalArgumentException("Page index must not be less than zero!");
 		}

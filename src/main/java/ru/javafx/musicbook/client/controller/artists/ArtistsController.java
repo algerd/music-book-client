@@ -3,11 +3,14 @@ package ru.javafx.musicbook.client.controller.artists;
 
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.ResourceBundle;
 import java.util.stream.Collectors;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
+import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.input.MouseButton;
@@ -47,7 +50,9 @@ public class ArtistsController extends BaseAwareController {
     
     @Autowired
     private RequestService requestService;
-       
+      
+    @FXML
+    private ChoiceBox<Long> pageChoiceBox;
     //table
     @FXML
     private TableView<Resource<Artist>> artistsTable;
@@ -63,7 +68,22 @@ public class ArtistsController extends BaseAwareController {
         paginator = new Paginator(0, 5, new Sort(new Sort.Order(Direction.ASC, "name"))); 
         initArtistsTable();           
         setTableValue();
+        initPageChoiceBox();
     } 
+    
+    private void initPageChoiceBox() {
+        List<Long> pageNumbers = new ArrayList<>();
+        for (long i = 1; i <= paginator.getTotalPages(); i++) {
+            pageNumbers.add(i);
+        }
+        pageChoiceBox.getItems().addAll(pageNumbers);
+        pageChoiceBox.getSelectionModel().selectFirst();
+        
+        pageChoiceBox.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
+            paginator.setPage(newValue - 1);
+            setTableValue();
+        });
+    }
     
     private void initArtistsTable() { 
         rankColumn.setCellValueFactory(
@@ -94,7 +114,7 @@ public class ArtistsController extends BaseAwareController {
     private void onPrevPage() {
         if (paginator.hasPrevious()) {
             paginator.previous();
-            setTableValue();
+            pageChoiceBox.getSelectionModel().select((int) paginator.getPage());
         } 
     }
     
@@ -102,7 +122,7 @@ public class ArtistsController extends BaseAwareController {
     private void onNextPage() {
         if (paginator.hasNext()) {
             paginator.next();
-            setTableValue();
+            pageChoiceBox.getSelectionModel().select((int) paginator.getPage());
         }    
     }
        

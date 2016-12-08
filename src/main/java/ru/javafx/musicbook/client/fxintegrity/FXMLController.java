@@ -29,6 +29,5 @@ public @interface FXMLController {
     String value() default "";
 	String[] css() default {}; 
 	String bundle() default "";
-    boolean loadable() default true;
     String title() default "";
 }

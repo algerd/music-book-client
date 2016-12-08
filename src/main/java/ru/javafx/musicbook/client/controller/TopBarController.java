@@ -12,7 +12,7 @@ import ru.javafx.musicbook.client.fxintegrity.BaseFxmlController;
 import ru.javafx.musicbook.client.fxintegrity.FXMLController;
 import ru.javafx.musicbook.client.service.RequestViewService;
 
-@FXMLController(loadable = false)
+@FXMLController
 public class TopBarController extends BaseFxmlController {
     
     private final Logger logger = LoggerFactory.getLogger(this.getClass());

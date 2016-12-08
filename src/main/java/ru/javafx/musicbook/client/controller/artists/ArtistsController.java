@@ -3,20 +3,16 @@ package ru.javafx.musicbook.client.controller.artists;
 
 import java.net.URISyntaxException;
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
 import java.util.ResourceBundle;
 import java.util.stream.Collectors;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
-import javafx.scene.control.ChoiceBox;
-import javafx.scene.control.ComboBox;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.VBox;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,15 +20,16 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.hateoas.PagedResources;
 import org.springframework.hateoas.Resource;
 import ru.javafx.musicbook.client.controller.BaseAwareController;
+import ru.javafx.musicbook.client.controller.PaginatorPaneController;
 import ru.javafx.musicbook.client.entity.Artist;
 import ru.javafx.musicbook.client.fxintegrity.FXMLController;
+import ru.javafx.musicbook.client.fxintegrity.FXMLControllerLoader;
 import ru.javafx.musicbook.client.repository.ArtistRepository;
 import static ru.javafx.musicbook.client.service.ContextMenuItemType.*;
 import ru.javafx.musicbook.client.service.RequestService;
 import ru.javafx.musicbook.client.utils.Helper;
 import ru.javafx.musicbook.client.utils.Paginator;
 import ru.javafx.musicbook.client.utils.Sort;
-import ru.javafx.musicbook.client.utils.Sort.Direction;
 
 @FXMLController(
     value = "/fxml/artists/Artists.fxml",    
@@ -42,10 +39,19 @@ public class ArtistsController extends BaseAwareController {
     
     private final Logger logger = LoggerFactory.getLogger(getClass());
     private Resource<Artist> selectedItem;
-    private PagedResources<Resource<Artist>> resources;
-    private Paginator paginator;
+    private PagedResources<Resource<Artist>> resources;    
+    private final Paginator paginator;
+
+    public Paginator getPaginator() {
+        return paginator;
+    }
     
-    public ArtistsController() {}
+    @Autowired
+    private FXMLControllerLoader fxmlLoader;
+    
+    public ArtistsController() {
+        paginator = new Paginator(0, 5, new Sort(new Sort.Order(Sort.Direction.ASC, "name")));
+    }
     
     @Autowired
     private ArtistRepository artistRepository;
@@ -54,9 +60,7 @@ public class ArtistsController extends BaseAwareController {
     private RequestService requestService;
     
     @FXML
-    private ChoiceBox<Integer> sizeChoiceBox;
-    @FXML
-    private ComboBox<Long> pageComboBox;
+    private VBox artistsTableVBox;
     //table
     @FXML
     private TableView<Resource<Artist>> artistsTable;
@@ -68,13 +72,8 @@ public class ArtistsController extends BaseAwareController {
     private TableColumn<Resource<Artist>, Integer> ratingColumn; 
     
     @Override
-    public void initialize(URL url, ResourceBundle rb) {   
-        paginator = new Paginator(0, 5, new Sort(new Sort.Order(Direction.ASC, "name"))); 
-        initArtistsTable();           
-        setTableValue();
-        initPageComboBox();
-        initSizeChoiceBox();
-        initListeners();
+    public void initialize(URL url, ResourceBundle rb) { 
+        initArtistsTable();       
     } 
     
     private void initArtistsTable() { 
@@ -88,6 +87,13 @@ public class ArtistsController extends BaseAwareController {
         artistsTable.getSelectionModel().selectedItemProperty().addListener(
             (observable, oldValue, newValue) -> selectedItem = artistsTable.getSelectionModel().getSelectedItem()
         );
+        initPaginatorPane();
+    }
+    
+    private void initPaginatorPane() {
+        PaginatorPaneController paginatorPaneController = (PaginatorPaneController) fxmlLoader.load(PaginatorPaneController.class);
+        artistsTableVBox.getChildren().add(paginatorPaneController.getView());              
+        paginatorPaneController.initPaginator(this);
     }
     
     public void setTableValue() {  
@@ -101,66 +107,7 @@ public class ArtistsController extends BaseAwareController {
             logger.error(ex.getMessage());
         }      
     }  
-    
-    private void initPageComboBox() {       
-        List<Long> pageNumbers = new ArrayList<>();
-        for (long i = 1; i <= paginator.getTotalPages(); i++) {
-            pageNumbers.add(i);
-        }
-        pageComboBox.getItems().clear();
-        pageComboBox.getItems().addAll(pageNumbers);
-        pageComboBox.getSelectionModel().selectFirst();
-        pageComboBox.setVisibleRowCount(8);             
-    }
-    
-    private void initSizeChoiceBox() {
-        List<Integer> sizeNumbers = Arrays.asList(5, 10, 15, 20, 25);
-        sizeChoiceBox.getItems().addAll(sizeNumbers);
-        sizeChoiceBox.getSelectionModel().selectFirst();               
-    }
-    
-    private void initListeners() {
-        pageComboBox.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
-            if (newValue != null) {
-                paginator.setPage(newValue - 1);
-                setTableValue();
-            }
-        });
-        sizeChoiceBox.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
-            paginator.setSize(newValue);
-            setTableValue();
-            initPageComboBox();
-        });
-    }
-    
-    @FXML
-    private void onFirstPage() {
-        paginator.first();
-        pageComboBox.getSelectionModel().select((int) paginator.getPage());
-    }
-    
-    @FXML
-    private void onLastPage() {
-        paginator.last();
-        pageComboBox.getSelectionModel().select((int) paginator.getPage());
-    }
-    
-    @FXML
-    private void onPrevPage() {
-        if (paginator.hasPrevious()) {
-            paginator.previous();
-            pageComboBox.getSelectionModel().select((int) paginator.getPage());
-        } 
-    }
-    
-    @FXML
-    private void onNextPage() {
-        if (paginator.hasNext()) {
-            paginator.next();
-            pageComboBox.getSelectionModel().select((int) paginator.getPage());
-        }    
-    }
-       
+          
     /**
      * ЛКМ - зызов окна выбранного альбома selectedAlbum;
      * ПКМ - вызов контекстного меню для add, edit, delete выбранного selectedAlbum или нового альбома.

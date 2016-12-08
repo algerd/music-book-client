@@ -22,8 +22,10 @@ import ru.javafx.musicbook.client.fxintegrity.FXMLController;
 public class PaginatorPaneController extends BaseFxmlController {
     
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
+    private static final int DEFAULT_PAGE_SIZE = 10;
     
     private PagedController parentController;
+    private Paginator paginator;
     
     @FXML
     private AnchorPane paginatorPane;
@@ -31,6 +33,10 @@ public class PaginatorPaneController extends BaseFxmlController {
     private ChoiceBox<Integer> sizeChoiceBox;
     @FXML
     private ComboBox<Long> pageComboBox;
+    
+    public PaginatorPaneController() {
+        paginator = new Paginator(DEFAULT_PAGE_SIZE);
+    }
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {             
@@ -46,7 +52,7 @@ public class PaginatorPaneController extends BaseFxmlController {
     
     private void initPageComboBox() {       
         List<Long> pageNumbers = new ArrayList<>();
-        for (long i = 1; i <= parentController.getPaginator().getTotalPages(); i++) {
+        for (long i = 1; i <= paginator.getTotalPages(); i++) {
             pageNumbers.add(i);
         }
         pageComboBox.getItems().clear();
@@ -64,12 +70,12 @@ public class PaginatorPaneController extends BaseFxmlController {
     private void initListeners() {
         pageComboBox.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
             if (newValue != null) {
-                parentController.getPaginator().setPage(newValue - 1);
+                paginator.setPage(newValue - 1);
                 parentController.setTableValue();
             }
         });
         sizeChoiceBox.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
-            parentController.getPaginator().setSize(newValue);
+            paginator.setSize(newValue);
             parentController.setTableValue();
             initPageComboBox();
         });
@@ -77,34 +83,42 @@ public class PaginatorPaneController extends BaseFxmlController {
     
     @FXML
     private void onFirstPage() {
-        parentController.getPaginator().first();
-        pageComboBox.getSelectionModel().select((int) parentController.getPaginator().getPage());
+        paginator.first();
+        pageComboBox.getSelectionModel().select((int) paginator.getPage());
     }
     
     @FXML
     private void onLastPage() {
-        parentController.getPaginator().last();
-        pageComboBox.getSelectionModel().select((int) parentController.getPaginator().getPage());
+        paginator.last();
+        pageComboBox.getSelectionModel().select((int) paginator.getPage());
     }
     
     @FXML
     private void onPrevPage() {
-        if (parentController.getPaginator().hasPrevious()) {
-            parentController.getPaginator().previous();
-            pageComboBox.getSelectionModel().select((int) parentController.getPaginator().getPage());
+        if (paginator.hasPrevious()) {
+            paginator.previous();
+            pageComboBox.getSelectionModel().select((int) paginator.getPage());
         } 
     }
     
     @FXML
     private void onNextPage() {
-        if (parentController.getPaginator().hasNext()) {
-            parentController.getPaginator().next();
-            pageComboBox.getSelectionModel().select((int) parentController.getPaginator().getPage());
+        if (paginator.hasNext()) {
+            paginator.next();
+            pageComboBox.getSelectionModel().select((int) paginator.getPage());
         }    
     }
     
     public void setParentController(ArtistsController parentController) {
         this.parentController = parentController;
+    }
+
+    public Paginator getPaginator() {
+        return paginator;
+    }
+
+    public void setPaginator(Paginator paginator) {
+        this.paginator = paginator;
     }
     
 }

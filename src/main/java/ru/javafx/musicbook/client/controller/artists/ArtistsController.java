@@ -25,12 +25,13 @@ import ru.javafx.musicbook.client.entity.Artist;
 import ru.javafx.musicbook.client.fxintegrity.FXMLController;
 import ru.javafx.musicbook.client.fxintegrity.FXMLControllerLoader;
 import ru.javafx.musicbook.client.controller.paginator.PagedController;
+import ru.javafx.musicbook.client.controller.paginator.Sort;
+import ru.javafx.musicbook.client.controller.paginator.Sort.Direction;
+import ru.javafx.musicbook.client.controller.paginator.Sort.Order;
 import ru.javafx.musicbook.client.repository.ArtistRepository;
 import static ru.javafx.musicbook.client.service.ContextMenuItemType.*;
 import ru.javafx.musicbook.client.service.RequestService;
 import ru.javafx.musicbook.client.utils.Helper;
-import ru.javafx.musicbook.client.controller.paginator.Paginator;
-import ru.javafx.musicbook.client.controller.paginator.Sort;
 
 @FXMLController(
     value = "/fxml/artists/Artists.fxml",    
@@ -40,8 +41,8 @@ public class ArtistsController extends BaseAwareController implements PagedContr
     
     private final Logger logger = LoggerFactory.getLogger(getClass());
     private Resource<Artist> selectedItem;
-    private PagedResources<Resource<Artist>> resources;    
-    private final Paginator paginator;
+    private PagedResources<Resource<Artist>> resources; 
+    private PaginatorPaneController paginatorPaneController;
    
     @Autowired
     private FXMLControllerLoader fxmlLoader;  
@@ -63,7 +64,6 @@ public class ArtistsController extends BaseAwareController implements PagedContr
     private TableColumn<Resource<Artist>, Integer> ratingColumn; 
     
     public ArtistsController() {
-        paginator = new Paginator(0, 5, new Sort(new Sort.Order(Sort.Direction.ASC, "name")));
     }
     
     @Override
@@ -86,8 +86,10 @@ public class ArtistsController extends BaseAwareController implements PagedContr
     }
     
     private void initPaginatorPane() {
-        PaginatorPaneController paginatorPaneController = (PaginatorPaneController) fxmlLoader.load(PaginatorPaneController.class);
-        artistsTableVBox.getChildren().add(paginatorPaneController.getView());              
+        paginatorPaneController = (PaginatorPaneController) fxmlLoader.load(PaginatorPaneController.class);
+        artistsTableVBox.getChildren().add(paginatorPaneController.getView());
+        paginatorPaneController.getPaginator().setSize(5);
+        paginatorPaneController.getPaginator().setSort(new Sort(new Order(Direction.ASC, "name")));
         paginatorPaneController.initPaginator(this);
     }
     
@@ -96,7 +98,7 @@ public class ArtistsController extends BaseAwareController implements PagedContr
         clearSelectionTable();
         artistsTable.getItems().clear();
         try {
-            resources = artistRepository.getArtists(paginator);
+            resources = artistRepository.getArtists(paginatorPaneController.getPaginator());
             artistsTable.setItems(FXCollections.observableArrayList(resources.getContent().parallelStream().collect(Collectors.toList())));           
             Helper.setHeightTable(artistsTable, 10);        
         } catch (URISyntaxException ex) {
@@ -151,9 +153,4 @@ public class ArtistsController extends BaseAwareController implements PagedContr
         selectedItem = null;
     }
     
-    @Override
-    public Paginator getPaginator() {
-        return paginator;
-    }
-
 }

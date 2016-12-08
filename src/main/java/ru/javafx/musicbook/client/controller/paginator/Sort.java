@@ -1,5 +1,5 @@
 
-package ru.javafx.musicbook.client.utils;
+package ru.javafx.musicbook.client.controller.paginator;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -8,7 +8,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import org.springframework.util.StringUtils;
-import ru.javafx.musicbook.client.utils.Sort.Order;
+import ru.javafx.musicbook.client.controller.paginator.Sort.Order;
 
 public class Sort implements Iterable<Order>, Serializable {
 

@@ -18,7 +18,7 @@ import ru.javafx.musicbook.client.SessionManager;
 import ru.javafx.musicbook.client.entity.Artist;
 import ru.javafx.musicbook.client.entity.Entity;
 import ru.javafx.musicbook.client.service.RequestService;
-import ru.javafx.musicbook.client.utils.Paginator;
+import ru.javafx.musicbook.client.controller.paginator.Paginator;
 
 @Repository
 public class ArtistRepository {

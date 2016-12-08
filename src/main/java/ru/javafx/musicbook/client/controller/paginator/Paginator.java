@@ -1,5 +1,5 @@
 
-package ru.javafx.musicbook.client.utils;
+package ru.javafx.musicbook.client.controller.paginator;
 
 import java.util.HashMap;
 import java.util.Iterator;

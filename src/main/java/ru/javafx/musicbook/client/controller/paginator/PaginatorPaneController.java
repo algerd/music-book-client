@@ -1,5 +1,5 @@
 
-package ru.javafx.musicbook.client.controller;
+package ru.javafx.musicbook.client.controller.paginator;
 
 import java.net.URL;
 import java.util.ArrayList;
@@ -17,13 +17,13 @@ import ru.javafx.musicbook.client.controller.artists.ArtistsController;
 import ru.javafx.musicbook.client.fxintegrity.BaseFxmlController;
 import ru.javafx.musicbook.client.fxintegrity.FXMLController;
 
-@FXMLController(value = "/fxml/PaginatorPane.fxml")
+@FXMLController(value = "/fxml/paginator/PaginatorPane.fxml")
 @Scope("prototype")
 public class PaginatorPaneController extends BaseFxmlController {
     
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
     
-    private ArtistsController parentController;
+    private PagedController parentController;
     
     @FXML
     private AnchorPane paginatorPane;

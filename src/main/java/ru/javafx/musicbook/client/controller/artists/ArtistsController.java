@@ -20,42 +20,33 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.hateoas.PagedResources;
 import org.springframework.hateoas.Resource;
 import ru.javafx.musicbook.client.controller.BaseAwareController;
-import ru.javafx.musicbook.client.controller.PaginatorPaneController;
+import ru.javafx.musicbook.client.controller.paginator.PaginatorPaneController;
 import ru.javafx.musicbook.client.entity.Artist;
 import ru.javafx.musicbook.client.fxintegrity.FXMLController;
 import ru.javafx.musicbook.client.fxintegrity.FXMLControllerLoader;
+import ru.javafx.musicbook.client.controller.paginator.PagedController;
 import ru.javafx.musicbook.client.repository.ArtistRepository;
 import static ru.javafx.musicbook.client.service.ContextMenuItemType.*;
 import ru.javafx.musicbook.client.service.RequestService;
 import ru.javafx.musicbook.client.utils.Helper;
-import ru.javafx.musicbook.client.utils.Paginator;
-import ru.javafx.musicbook.client.utils.Sort;
+import ru.javafx.musicbook.client.controller.paginator.Paginator;
+import ru.javafx.musicbook.client.controller.paginator.Sort;
 
 @FXMLController(
     value = "/fxml/artists/Artists.fxml",    
     title = "Artists")
 @Scope("prototype")
-public class ArtistsController extends BaseAwareController {
+public class ArtistsController extends BaseAwareController implements PagedController {
     
     private final Logger logger = LoggerFactory.getLogger(getClass());
     private Resource<Artist> selectedItem;
     private PagedResources<Resource<Artist>> resources;    
     private final Paginator paginator;
-
-    public Paginator getPaginator() {
-        return paginator;
-    }
-    
+   
     @Autowired
-    private FXMLControllerLoader fxmlLoader;
-    
-    public ArtistsController() {
-        paginator = new Paginator(0, 5, new Sort(new Sort.Order(Sort.Direction.ASC, "name")));
-    }
-    
+    private FXMLControllerLoader fxmlLoader;  
     @Autowired
-    private ArtistRepository artistRepository;
-    
+    private ArtistRepository artistRepository;   
     @Autowired
     private RequestService requestService;
     
@@ -70,6 +61,10 @@ public class ArtistsController extends BaseAwareController {
     private TableColumn<Resource<Artist>, String> artistColumn;
     @FXML
     private TableColumn<Resource<Artist>, Integer> ratingColumn; 
+    
+    public ArtistsController() {
+        paginator = new Paginator(0, 5, new Sort(new Sort.Order(Sort.Direction.ASC, "name")));
+    }
     
     @Override
     public void initialize(URL url, ResourceBundle rb) { 
@@ -96,6 +91,7 @@ public class ArtistsController extends BaseAwareController {
         paginatorPaneController.initPaginator(this);
     }
     
+    @Override
     public void setTableValue() {  
         clearSelectionTable();
         artistsTable.getItems().clear();
@@ -153,6 +149,11 @@ public class ArtistsController extends BaseAwareController {
     private void clearSelectionTable() {
         artistsTable.getSelectionModel().clearSelection();
         selectedItem = null;
+    }
+    
+    @Override
+    public Paginator getPaginator() {
+        return paginator;
     }
 
 }

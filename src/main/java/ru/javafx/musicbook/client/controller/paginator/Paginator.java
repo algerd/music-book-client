@@ -16,10 +16,10 @@ import java.util.Map;
  */
 public class Paginator {
     
-    private long totalElements;
-    private long totalPages;
-    private long page;
-	private long size;
+    private int totalElements;
+    private int totalPages;
+    private int page;
+	private int size;
     private Sort sort;
        
     public Paginator(int size) {
@@ -83,23 +83,23 @@ public class Paginator {
         return parameters;
     }
     
-    public long next() {
+    public int next() {
 		return (hasNext()) ? ++page : page;
 	}
 
-	public long previous() {
+	public int previous() {
 		return page == 0 ? 0 : --page;
 	}
 
-	public long first() {
+	public int first() {
 		return page = 0;
 	}
     
-    public long last() {
+    public int last() {
 		return page = (totalPages > 0 ? totalPages - 1 : 0);                
 	}
     
-	public long getOffset() {
+	public int getOffset() {
 		return page * size;
 	}
     
@@ -111,35 +111,35 @@ public class Paginator {
 		return page > 0;
 	}
 
-    public long getTotalElements() {
+    public int getTotalElements() {
         return totalElements;
     }
 
-    public void setTotalElements(long totalElements) {
+    public void setTotalElements(int totalElements) {
         this.totalElements = totalElements;
         setTotalPages();
     }
     
     private void setTotalPages() {
-        this.totalPages = (size == 0 ? 0 : (long) Math.ceil((double) totalElements / (double) size));
+        this.totalPages = (size == 0 ? 0 : (int) Math.ceil((double) totalElements / (double) size));
     }
     
-    public long getTotalPages() {
+    public int getTotalPages() {
         return totalPages;
     }
    
-    public long getPage() {
+    public int getPage() {
         return page;
     }
 
-    public void setPage(long page) {
+    public void setPage(int page) {
         if (page < 0) {
 			throw new IllegalArgumentException("Page index must not be less than zero!");
 		}
         this.page = (page > 0 && page * size > totalElements) ? last() : page;
     }
 
-    public long getSize() {        
+    public int getSize() {        
         return size;
     }
 
@@ -163,8 +163,8 @@ public class Paginator {
     @Override
     public int hashCode() {
         int hash = 7;
-        hash = 83 * hash + (int) (this.page ^ (this.page >>> 32));
-        hash = 83 * hash + (int) (this.size ^ (this.size >>> 32));
+        hash = 59 * hash + this.page;
+        hash = 59 * hash + this.size;
         return hash;
     }
 

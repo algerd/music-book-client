@@ -32,7 +32,7 @@ public class PaginatorPaneController extends BaseFxmlController {
     @FXML
     private ChoiceBox<Integer> sizeChoiceBox;
     @FXML
-    private ComboBox<Long> pageComboBox;
+    private ComboBox<Integer> pageComboBox;
     
     public PaginatorPaneController() {
         paginator = new Paginator(DEFAULT_PAGE_SIZE);
@@ -44,15 +44,15 @@ public class PaginatorPaneController extends BaseFxmlController {
     
     public void initPaginator(ArtistsController parentController) {
         this.parentController = parentController;
-        this.parentController.setTableValue();
+        this.parentController.setPageValue();
         initPageComboBox();
         initSizeChoiceBox();
         initListeners();
     }
     
     private void initPageComboBox() {       
-        List<Long> pageNumbers = new ArrayList<>();
-        for (long i = 1; i <= paginator.getTotalPages(); i++) {
+        List<Integer> pageNumbers = new ArrayList<>();
+        for (int i = 1; i <= paginator.getTotalPages(); i++) {
             pageNumbers.add(i);
         }
         pageComboBox.getItems().clear();
@@ -71,12 +71,12 @@ public class PaginatorPaneController extends BaseFxmlController {
         pageComboBox.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
             if (newValue != null) {
                 paginator.setPage(newValue - 1);
-                parentController.setTableValue();
+                parentController.setPageValue();
             }
         });
         sizeChoiceBox.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
             paginator.setSize(newValue);
-            parentController.setTableValue();
+            parentController.setPageValue();
             initPageComboBox();
         });
     }
@@ -84,20 +84,20 @@ public class PaginatorPaneController extends BaseFxmlController {
     @FXML
     private void onFirstPage() {
         paginator.first();
-        pageComboBox.getSelectionModel().select((int) paginator.getPage());
+        pageComboBox.getSelectionModel().select(paginator.getPage());
     }
     
     @FXML
     private void onLastPage() {
         paginator.last();
-        pageComboBox.getSelectionModel().select((int) paginator.getPage());
+        pageComboBox.getSelectionModel().select(paginator.getPage());
     }
     
     @FXML
     private void onPrevPage() {
         if (paginator.hasPrevious()) {
             paginator.previous();
-            pageComboBox.getSelectionModel().select((int) paginator.getPage());
+            pageComboBox.getSelectionModel().select(paginator.getPage());
         } 
     }
     
@@ -105,7 +105,7 @@ public class PaginatorPaneController extends BaseFxmlController {
     private void onNextPage() {
         if (paginator.hasNext()) {
             paginator.next();
-            pageComboBox.getSelectionModel().select((int) paginator.getPage());
+            pageComboBox.getSelectionModel().select(paginator.getPage());
         }    
     }
     

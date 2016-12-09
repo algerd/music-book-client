@@ -94,7 +94,7 @@ public class ArtistsController extends BaseAwareController implements PagedContr
     }
     
     @Override
-    public void setTableValue() {  
+    public void setPageValue() {  
         clearSelectionTable();
         artistsTable.getItems().clear();
         try {

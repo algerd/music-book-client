@@ -63,7 +63,7 @@ public class ArtistRepository {
                 .toObject(new TypeReferences.PagedResourcesType<Resource<Artist>>() {});         
     }
     */        
-    public PagedResources<Resource<Artist>> getArtists(Paginator paginator) throws URISyntaxException {    
+    public PagedResources<Resource<Artist>> getArtists(Paginator paginator, int minRating, int maxRating) throws URISyntaxException {    
         HttpHeaders headers = new HttpHeaders();
         headers.add(HttpHeaders.COOKIE, sessionManager.getSessionIdCookie());
         

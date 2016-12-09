@@ -5,11 +5,16 @@ import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.ResourceBundle;
 import java.util.stream.Collectors;
+import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
+import javafx.scene.control.ChoiceBox;
+import javafx.scene.control.Label;
+import javafx.scene.control.Spinner;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
+import javafx.scene.control.TextField;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.VBox;
@@ -19,6 +24,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.hateoas.PagedResources;
 import org.springframework.hateoas.Resource;
+import ru.javafx.musicbook.client.Params;
 import ru.javafx.musicbook.client.controller.BaseAwareController;
 import ru.javafx.musicbook.client.controller.paginator.PaginatorPaneController;
 import ru.javafx.musicbook.client.entity.Artist;
@@ -43,6 +49,11 @@ public class ArtistsController extends BaseAwareController implements PagedContr
     private Resource<Artist> selectedItem;
     private PagedResources<Resource<Artist>> resources; 
     private PaginatorPaneController paginatorPaneController;
+    // filter properties   
+    private String searchString = "";
+    //private GenreEntity genre;
+    private final IntegerProperty minRating = new SimpleIntegerProperty();
+    private final IntegerProperty maxRating = new SimpleIntegerProperty();
    
     @Autowired
     private FXMLControllerLoader fxmlLoader;  
@@ -53,6 +64,17 @@ public class ArtistsController extends BaseAwareController implements PagedContr
     
     @FXML
     private VBox artistsTableVBox;
+    //filter
+    //@FXML
+    //private ChoiceBox<GenreEntity> genreChoiceBox;
+    @FXML
+    private Spinner<Integer> minRatingSpinner; 
+    @FXML
+    private Spinner<Integer> maxRatingSpinner; 
+    @FXML
+    private TextField searchField;
+    @FXML
+    private Label resetSearchLabel; 
     //table
     @FXML
     private TableView<Resource<Artist>> artistsTable;
@@ -68,7 +90,9 @@ public class ArtistsController extends BaseAwareController implements PagedContr
     
     @Override
     public void initialize(URL url, ResourceBundle rb) { 
-        initArtistsTable();       
+        initArtistsTable();  
+        initFilters();
+        initFilterListeners();
     } 
     
     private void initArtistsTable() { 
@@ -89,8 +113,56 @@ public class ArtistsController extends BaseAwareController implements PagedContr
         paginatorPaneController = (PaginatorPaneController) fxmlLoader.load(PaginatorPaneController.class);
         artistsTableVBox.getChildren().add(paginatorPaneController.getView());
         paginatorPaneController.getPaginator().setSize(5);
-        paginatorPaneController.getPaginator().setSort(new Sort(new Order(Direction.ASC, "name")));
+        paginatorPaneController.getPaginator().setSort(new Sort(new Order(Direction.ASC, "rating")));
         paginatorPaneController.initPaginator(this);
+    }
+    
+    private void initFilters() {
+        setMinRating(Params.MIN_RATING);
+        setMaxRating(Params.MAX_RATING);
+        Helper.initIntegerSpinner(minRatingSpinner, Params.MIN_RATING, Params.MAX_RATING, Params.MIN_RATING, true, minRating);       
+        Helper.initIntegerSpinner(maxRatingSpinner, Params.MIN_RATING, Params.MAX_RATING, Params.MAX_RATING, true, maxRating);                      
+        resetSearchLabel.setVisible(false);
+    }
+    
+    private void initFilterListeners() { 
+        minRating.addListener((ObservableValue, oldValue, newValue)-> filter());
+        maxRating.addListener((ObservableValue, oldValue, newValue)-> filter());       
+        searchField.textProperty().addListener((ObservableValue, oldValue, newValue)-> {           
+            resetSearchLabel.setVisible(newValue.length() > 0);
+            searchString = newValue.trim();
+            filter();   
+        });
+        /*
+        genreChoiceBox.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
+            if (newValue != null) {
+                genre = newValue;
+                filter();
+            }
+        });
+        */
+    }
+    
+    private void filter() {
+        //logger.info("minRating {}", minRating.get());
+        //logger.info("maxRating {}", maxRating.get());
+        //logger.info("searchField {}", searchField.getText());
+        //
+        
+        setPageValue();
+    }
+    
+    @FXML
+    private void resetFilter() {
+        resetSearchField();
+        //genreChoiceBox.getSelectionModel().selectFirst();
+        initFilters();
+    } 
+    
+    @FXML
+    private void resetSearchField() {
+        searchField.textProperty().setValue("");
+        resetSearchLabel.setVisible(false);
     }
     
     @Override
@@ -98,14 +170,14 @@ public class ArtistsController extends BaseAwareController implements PagedContr
         clearSelectionTable();
         artistsTable.getItems().clear();
         try {
-            resources = artistRepository.getArtists(paginatorPaneController.getPaginator());
+            resources = artistRepository.getArtists(paginatorPaneController.getPaginator(), getMinRating(), getMaxRating());
             artistsTable.setItems(FXCollections.observableArrayList(resources.getContent().parallelStream().collect(Collectors.toList())));           
             Helper.setHeightTable(artistsTable, 10);        
         } catch (URISyntaxException ex) {
             logger.error(ex.getMessage());
         }      
     }  
-          
+           
     /**
      * ЛКМ - зызов окна выбранного альбома selectedAlbum;
      * ПКМ - вызов контекстного меню для add, edit, delete выбранного selectedAlbum или нового альбома.
@@ -151,6 +223,26 @@ public class ArtistsController extends BaseAwareController implements PagedContr
     private void clearSelectionTable() {
         artistsTable.getSelectionModel().clearSelection();
         selectedItem = null;
+    }
+    
+    public int getMaxRating() {
+        return maxRating.get();
+    }
+    public void setMaxRating(int value) {
+        maxRating.set(value);
+    }
+    public IntegerProperty maxRatingProperty() {
+        return maxRating;
+    }
+       
+    public int getMinRating() {
+        return minRating.get();
+    }
+    public void setMinRating(int value) {
+        minRating.set(value);
+    }
+    public IntegerProperty minRatingProperty() {
+        return minRating;
     }
     
 }

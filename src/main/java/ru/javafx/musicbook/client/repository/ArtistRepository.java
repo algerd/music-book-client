@@ -3,6 +3,8 @@ package ru.javafx.musicbook.client.repository;
 
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.HashMap;
+import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -62,7 +64,8 @@ public class ArtistRepository {
                 .withHeaders(headers)
                 .toObject(new TypeReferences.PagedResourcesType<Resource<Artist>>() {});         
     }
-    */        
+    */
+    /*
     public PagedResources<Resource<Artist>> getArtists(Paginator paginator, int minRating, int maxRating) throws URISyntaxException {    
         HttpHeaders headers = new HttpHeaders();
         headers.add(HttpHeaders.COOKIE, sessionManager.getSessionIdCookie());
@@ -70,6 +73,26 @@ public class ArtistRepository {
         PagedResources<Resource<Artist>> resource = new Traverson(new URI(basePath), MediaTypes.HAL_JSON)
                 .follow(REL_PATH)
                 .withTemplateParameters(paginator.getParameters())
+                .withHeaders(headers)
+                .toObject(new TypeReferences.PagedResourcesType<Resource<Artist>>() {}); 
+        
+        paginator.setTotalElements((int) resource.getMetadata().getTotalElements());
+        return resource;       
+    }
+    */
+    
+    public PagedResources<Resource<Artist>> getArtists(Paginator paginator, int minRating, int maxRating) throws URISyntaxException {    
+        HttpHeaders headers = new HttpHeaders();
+        headers.add(HttpHeaders.COOKIE, sessionManager.getSessionIdCookie());
+        
+        Map<String, Object> parameters = new HashMap<>();
+        parameters.put("minrating", minRating);
+        parameters.put("maxrating", maxRating);
+        parameters.putAll(paginator.getParameters());
+        
+        PagedResources<Resource<Artist>> resource = new Traverson(new URI(basePath), MediaTypes.HAL_JSON)
+                .follow(REL_PATH, "search", "by_rating")
+                .withTemplateParameters(parameters)
                 .withHeaders(headers)
                 .toObject(new TypeReferences.PagedResourcesType<Resource<Artist>>() {}); 
         

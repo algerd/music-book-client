@@ -54,7 +54,7 @@ public class Helper {
         
         // force the field to be numeric only
         spinner.getEditor().textProperty().addListener(
-            (observable, oldValue, newValue) -> {
+            (observable, oldValue, newValue) -> {               
                 if (newValue.equals("")) {
                     // установить в поле значение 0
                     ((StringProperty)observable).setValue("" + 0);                   
@@ -79,7 +79,7 @@ public class Helper {
                   ((StringProperty)observable).setValue(oldValue);
                 }                  
             }              
-        );        
+        );       
     }
     
     public static void limitTextInput(TextInputControl textInput, int limit) {

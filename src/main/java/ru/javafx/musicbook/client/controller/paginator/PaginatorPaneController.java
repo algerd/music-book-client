@@ -45,6 +45,10 @@ public class PaginatorPaneController extends BaseFxmlController {
     public void initPaginator(ArtistsController parentController) {
         this.parentController = parentController;
         this.parentController.setPageValue();
+        initBoxes();
+    }
+    
+    public void initBoxes() {
         initPageComboBox();
         initSizeChoiceBox();
         initListeners();

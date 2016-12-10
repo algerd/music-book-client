@@ -91,7 +91,6 @@ public class ArtistsController extends BaseAwareController implements PagedContr
     @Override
     public void initialize(URL url, ResourceBundle rb) { 
         initArtistsTable();  
-        initFilters();
         initFilterListeners();
     } 
     
@@ -110,6 +109,7 @@ public class ArtistsController extends BaseAwareController implements PagedContr
     }
     
     private void initPaginatorPane() {
+        initFilters();
         paginatorPaneController = (PaginatorPaneController) fxmlLoader.load(PaginatorPaneController.class);
         artistsTableVBox.getChildren().add(paginatorPaneController.getView());
         paginatorPaneController.getPaginator().setSize(5);
@@ -126,7 +126,10 @@ public class ArtistsController extends BaseAwareController implements PagedContr
     }
     
     private void initFilterListeners() { 
-        minRating.addListener((ObservableValue, oldValue, newValue)-> filter());
+        minRating.addListener((ObservableValue, oldValue, newValue)-> {
+            logger.info("minRating {}", minRating.get());
+            filter();
+        });
         maxRating.addListener((ObservableValue, oldValue, newValue)-> filter());       
         searchField.textProperty().addListener((ObservableValue, oldValue, newValue)-> {           
             resetSearchLabel.setVisible(newValue.length() > 0);
@@ -150,6 +153,7 @@ public class ArtistsController extends BaseAwareController implements PagedContr
         //
         
         setPageValue();
+        paginatorPaneController.initBoxes();
     }
     
     @FXML

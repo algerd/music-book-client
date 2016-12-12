@@ -9,7 +9,6 @@ import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
-import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.Spinner;
 import javafx.scene.control.TableColumn;
@@ -85,8 +84,7 @@ public class ArtistsController extends BaseAwareController implements PagedContr
     @FXML
     private TableColumn<Resource<Artist>, Integer> ratingColumn; 
     
-    public ArtistsController() {
-    }
+    public ArtistsController() {}
     
     @Override
     public void initialize(URL url, ResourceBundle rb) { 
@@ -101,7 +99,6 @@ public class ArtistsController extends BaseAwareController implements PagedContr
         artistColumn.setCellValueFactory(cellData -> cellData.getValue().getContent().nameProperty());       
         ratingColumn.setCellValueFactory(cellData -> cellData.getValue().getContent().ratingProperty().asObject()); 
         
-        // Добавить слушателя на выбор элемента в таблице.
         artistsTable.getSelectionModel().selectedItemProperty().addListener(
             (observable, oldValue, newValue) -> selectedItem = artistsTable.getSelectionModel().getSelectedItem()
         );
@@ -125,9 +122,8 @@ public class ArtistsController extends BaseAwareController implements PagedContr
         resetSearchLabel.setVisible(false);
     }
     
-    private void initFilterListeners() { 
+    private void initFilterListeners() {        
         minRating.addListener((ObservableValue, oldValue, newValue)-> {
-            logger.info("minRating {}", minRating.get());
             filter();
         });
         maxRating.addListener((ObservableValue, oldValue, newValue)-> filter());       
@@ -135,7 +131,7 @@ public class ArtistsController extends BaseAwareController implements PagedContr
             resetSearchLabel.setVisible(newValue.length() > 0);
             searchString = newValue.trim();
             filter();   
-        });
+        });       
         /*
         genreChoiceBox.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
             if (newValue != null) {
@@ -149,11 +145,9 @@ public class ArtistsController extends BaseAwareController implements PagedContr
     private void filter() {
         //logger.info("minRating {}", minRating.get());
         //logger.info("maxRating {}", maxRating.get());
-        //logger.info("searchField {}", searchField.getText());
-        //
-        
+        //logger.info("searchField {}", searchField.getText());        
         setPageValue();
-        paginatorPaneController.initBoxes();
+        paginatorPaneController.initPageComboBox();
     }
     
     @FXML
@@ -161,6 +155,7 @@ public class ArtistsController extends BaseAwareController implements PagedContr
         resetSearchField();
         //genreChoiceBox.getSelectionModel().selectFirst();
         initFilters();
+        paginatorPaneController.initPageComboBox();
     } 
     
     @FXML
@@ -247,6 +242,10 @@ public class ArtistsController extends BaseAwareController implements PagedContr
     }
     public IntegerProperty minRatingProperty() {
         return minRating;
+    }
+    
+    public class Filter {
+        
     }
     
 }

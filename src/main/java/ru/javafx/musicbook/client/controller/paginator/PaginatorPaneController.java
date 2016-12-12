@@ -45,16 +45,12 @@ public class PaginatorPaneController extends BaseFxmlController {
     public void initPaginator(ArtistsController parentController) {
         this.parentController = parentController;
         this.parentController.setPageValue();
-        initBoxes();
-    }
-    
-    public void initBoxes() {
         initPageComboBox();
         initSizeChoiceBox();
         initListeners();
     }
-    
-    private void initPageComboBox() {       
+        
+    public void initPageComboBox() {       
         List<Integer> pageNumbers = new ArrayList<>();
         for (int i = 1; i <= paginator.getTotalPages(); i++) {
             pageNumbers.add(i);
@@ -65,8 +61,9 @@ public class PaginatorPaneController extends BaseFxmlController {
         pageComboBox.setVisibleRowCount(8);             
     }
     
-    private void initSizeChoiceBox() {
+    public void initSizeChoiceBox() {
         List<Integer> sizeNumbers = Arrays.asList(5, 10, 15, 20, 25);
+        sizeChoiceBox.getItems().clear();
         sizeChoiceBox.getItems().addAll(sizeNumbers);
         sizeChoiceBox.getSelectionModel().selectFirst();               
     }
@@ -79,9 +76,11 @@ public class PaginatorPaneController extends BaseFxmlController {
             }
         });
         sizeChoiceBox.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
-            paginator.setSize(newValue);
-            parentController.setPageValue();
-            initPageComboBox();
+            if (newValue != null) {
+                paginator.setSize(newValue);
+                parentController.setPageValue();
+                initPageComboBox();
+            }
         });
     }
     

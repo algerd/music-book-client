@@ -15,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.hateoas.Resource;
 import org.springframework.stereotype.Service;
 import ru.javafx.musicbook.client.controller.artist.ArtistDialogController;
+import ru.javafx.musicbook.client.controller.genre.GenreDialogController;
 import ru.javafx.musicbook.client.service.ContextMenuItemType;
 import ru.javafx.musicbook.client.service.ContextMenuService;
 import ru.javafx.musicbook.client.service.RequestViewService;
@@ -42,6 +43,11 @@ public class ContextMenuServiceImpl implements ContextMenuService {
         menuMap.put(ADD_ARTIST, e -> requestViewService.showDialog(ArtistDialogController.class, valueMap.get(ADD_ARTIST)));      
         menuMap.put(EDIT_ARTIST, e -> requestViewService.showDialog(ArtistDialogController.class, valueMap.get(EDIT_ARTIST)));          
         menuMap.put(DELETE_ARTIST, e -> requestService.deleteWithAlert(valueMap.get(DELETE_ARTIST)));      
+        
+        menuMap.put(ContextMenuItemType.ADD_GENRE, e -> requestViewService.showDialog(GenreDialogController.class, valueMap.get(ADD_GENRE)));
+        menuMap.put(ContextMenuItemType.EDIT_GENRE, e -> requestViewService.showDialog(GenreDialogController.class, valueMap.get(EDIT_GENRE)));
+        menuMap.put(ContextMenuItemType.DELETE_GENRE, e -> requestService.deleteWithAlert(valueMap.get(DELETE_GENRE)));      
+
         /*
         menuMap.put(ContextMenuItemType.ADD_ALBUM, e -> requestViewService.albumDialog(valueMap.get(ContextMenuItemType.ADD_ALBUM)));
         menuMap.put(ContextMenuItemType.EDIT_ALBUM, e -> requestViewService.albumDialog(valueMap.get(ContextMenuItemType.EDIT_ALBUM)));
@@ -51,10 +57,7 @@ public class ContextMenuServiceImpl implements ContextMenuService {
         menuMap.put(ContextMenuItemType.EDIT_SONG, e -> requestViewService.songDialog(valueMap.get(ContextMenuItemType.EDIT_SONG)));        
         menuMap.put(ContextMenuItemType.DELETE_SONG, e -> deleteAlertService.show((SongEntity) valueMap.get(ContextMenuItemType.DELETE_SONG)));       
         
-        menuMap.put(ContextMenuItemType.ADD_GENRE, e -> requestViewService.genreDialog(valueMap.get(ContextMenuItemType.ADD_GENRE)));
-        menuMap.put(ContextMenuItemType.EDIT_GENRE, e -> requestViewService.genreDialog(valueMap.get(ContextMenuItemType.EDIT_GENRE)));
-        menuMap.put(ContextMenuItemType.DELETE_GENRE, e -> deleteAlertService.show((GenreEntity) valueMap.get(ContextMenuItemType.DELETE_GENRE)));     
-        
+                
         menuMap.put(ContextMenuItemType.ADD_MUSICIAN, e -> requestViewService.musicianDialog(valueMap.get(ContextMenuItemType.ADD_MUSICIAN)));
         menuMap.put(ContextMenuItemType.EDIT_MUSICIAN, e -> requestViewService.musicianDialog(valueMap.get(ContextMenuItemType.EDIT_MUSICIAN)));
         menuMap.put(ContextMenuItemType.DELETE_MUSICIAN, e -> deleteAlertService.show((MusicianEntity) valueMap.get(ContextMenuItemType.DELETE_MUSICIAN)));       

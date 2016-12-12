@@ -178,10 +178,6 @@ public class ArtistsController extends BaseAwareController implements PagedContr
         resetSearchLabel.setVisible(false);
     }
               
-    /**
-     * ЛКМ - зызов окна выбранного альбома selectedAlbum;
-     * ПКМ - вызов контекстного меню для add, edit, delete выбранного selectedAlbum или нового альбома.
-     */
     @FXML
     private void onMouseClickTable(MouseEvent mouseEvent) { 
         boolean isShowingContextMenu = contextMenuService.getContextMenu().isShowing();     

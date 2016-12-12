@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.web.*?>
+<?import javafx.geometry.*?>
+<?import java.lang.*?>
+<?import java.util.*?>
+<?import javafx.scene.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<AnchorPane id="AnchorPane" fx:id="view" xmlns="http://javafx.com/javafx/8.0.60" xmlns:fx="http://javafx.com/fxml/1" 
+            fx:controller="ru.javafx.musicbook.client.controller.genre.GenreDialogController">
+   <children>
+      <VBox layoutX="10.0" layoutY="20.0" spacing="20.0" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="10.0">
+         <children>
+            <HBox spacing="20.0">
+               <children>
+                  <AnchorPane minWidth="-Infinity" prefWidth="350.0">
+                     <children>
+                        <GridPane vgap="2.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                          <columnConstraints>
+                            <ColumnConstraints hgrow="SOMETIMES" minWidth="100.0" prefWidth="100.0" />
+                            <ColumnConstraints hgrow="SOMETIMES" maxWidth="-Infinity" minWidth="-Infinity" prefWidth="250.0" />
+                          </columnConstraints>
+                          <rowConstraints>
+                            <RowConstraints maxHeight="-Infinity" minHeight="-Infinity" prefHeight="25.0" vgrow="SOMETIMES" />
+                          </rowConstraints>
+                           <children>
+                              <Label text="Name:" />
+                              <TextField fx:id="nameTextField" GridPane.columnIndex="1" />
+                           </children>
+                        </GridPane>
+                     </children>
+                  </AnchorPane>
+               </children>
+            </HBox>
+            <TextArea fx:id="commentTextArea" text="Genre Description" />
+            <ButtonBar prefHeight="40.0" prefWidth="200.0">
+              <buttons>
+                  <Button mnemonicParsing="false" onAction="#handleOkButton" text="OK" />
+                  <Button mnemonicParsing="false" onAction="#handleCancelButton" text="Cancel" />
+              </buttons>
+            </ButtonBar>
+         </children>
+      </VBox>
+   </children>
+</AnchorPane>

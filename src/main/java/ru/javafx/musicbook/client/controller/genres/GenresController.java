@@ -8,6 +8,8 @@ import javafx.scene.control.Label;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
+import javafx.scene.input.MouseButton;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.VBox;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -19,12 +21,12 @@ import ru.javafx.musicbook.client.controller.BaseAwareController;
 import ru.javafx.musicbook.client.controller.paginator.PagedController;
 import ru.javafx.musicbook.client.controller.paginator.PaginatorPaneController;
 import ru.javafx.musicbook.client.controller.paginator.Sort;
-import ru.javafx.musicbook.client.entity.Artist;
 import ru.javafx.musicbook.client.entity.Genre;
 import ru.javafx.musicbook.client.fxintegrity.FXMLController;
 import ru.javafx.musicbook.client.fxintegrity.FXMLControllerLoader;
 import ru.javafx.musicbook.client.repository.ArtistRepository;
 import ru.javafx.musicbook.client.service.RequestService;
+import static ru.javafx.musicbook.client.service.ContextMenuItemType.*;
 
 @FXMLController(
     value = "/fxml/genres/Genres.fxml",    
@@ -85,6 +87,52 @@ public class GenresController extends BaseAwareController implements PagedContro
         paginatorPaneController.getPaginator().setSize(5);
         paginatorPaneController.getPaginator().setSort(new Sort(new Sort.Order(Sort.Direction.ASC, "name")));
         paginatorPaneController.initPaginator(this);
+    }
+    
+    @FXML
+    private void resetSearchLabel() {
+        searchField.textProperty().setValue("");
+        resetSearchLabel.setVisible(false);
+    }
+    
+    @FXML
+    private void onMouseClickTable(MouseEvent mouseEvent) { 
+        boolean isShowingContextMenu = contextMenuService.getContextMenu().isShowing();     
+        contextMenuService.clear();        
+        if (mouseEvent.getButton() == MouseButton.PRIMARY) {
+            // если контекстное меню выбрано, то лкм сбрасывает контекстное меню и выбор в таблице
+            if (isShowingContextMenu) {
+                clearSelectionTable();
+            }
+            // если лкм выбрана запись - показать её
+            if (selectedItem != null) {
+                //GenreEntity genre = repositoryService.getGenreRepository().selectById(selectedItem.getId());
+                //requestPageService.genrePane(genre);
+            }           
+        }
+        else if (mouseEvent.getButton() == MouseButton.SECONDARY) { 
+            contextMenuService.add(ADD_GENRE, null);
+            //if (selectedItem != null && selectedItem.getId() > 1) {
+                contextMenuService.add(EDIT_GENRE, selectedItem);
+                contextMenuService.add(DELETE_GENRE, selectedItem);                       
+            //}
+            contextMenuService.show(view, mouseEvent);       
+        }
+    }
+    
+    @FXML
+    private void showContextMenu(MouseEvent mouseEvent) {
+        clearSelectionTable();
+        contextMenuService.clear();
+		if (mouseEvent.getButton() == MouseButton.SECONDARY) {       
+            contextMenuService.add(ADD_GENRE, null);
+            contextMenuService.show(view, mouseEvent);
+        }      
+    }
+    
+    private void clearSelectionTable() {
+        genresTable.getSelectionModel().clearSelection();
+        selectedItem = null;
     }
     
     

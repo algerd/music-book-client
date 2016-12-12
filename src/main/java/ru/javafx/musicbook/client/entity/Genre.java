@@ -5,7 +5,7 @@ import java.util.Objects;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 
-public class Genre {
+public class Genre implements Entity {
 
     private final StringProperty name = new SimpleStringProperty("");
     private final StringProperty description = new SimpleStringProperty("");

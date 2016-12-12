@@ -100,8 +100,7 @@ public class ArtistDialogController extends BaseDialogController {
     @Override
     protected void edit() { 
         edit = true;
-        artist = (Artist) resource.getContent();
-        
+        artist = (Artist) resource.getContent();       
         nameTextField.setText(artist.getName());
         ratingSpinner.getValueFactory().setValue(artist.getRating());
         commentTextArea.setText(artist.getDescription());

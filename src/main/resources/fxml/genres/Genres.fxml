@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.*?>
+<?import java.util.*?>
+<?import javafx.scene.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<AnchorPane id="AnchorPane" fx:id="view" onMouseClicked="#showContextMenu" xmlns="http://javafx.com/javafx/8.0.60" xmlns:fx="http://javafx.com/fxml/1" 
+            fx:controller="ru.javafx.musicbook.client.controller.genres.GenresController">
+   <children>
+      <VBox fx:id="genresTableVBox" spacing="20.0" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="10.0">
+         <children>
+            <Label text="Genres" />
+            <GridPane>
+              <columnConstraints>
+                <ColumnConstraints hgrow="SOMETIMES" maxWidth="-Infinity" minWidth="-Infinity" prefWidth="100.0" />
+                <ColumnConstraints hgrow="SOMETIMES" maxWidth="-Infinity" minWidth="-Infinity" prefWidth="250.0" />
+              </columnConstraints>
+              <rowConstraints>
+                <RowConstraints maxHeight="-Infinity" minHeight="-Infinity" prefHeight="25.0" vgrow="SOMETIMES" />
+              </rowConstraints>
+               <children>
+                  <Label text="Search Genre" />
+                  <AnchorPane GridPane.columnIndex="1">
+                     <children>
+                        <TextField fx:id="searchField" prefWidth="250.0" />
+                        <Label fx:id="resetSearchLabel" onMouseClicked="#resetSearchLabel" text="Х" textFill="#f50707" AnchorPane.rightAnchor="4.0" AnchorPane.topAnchor="4.0">
+                           <cursor>
+                              <Cursor fx:constant="HAND" />
+                           </cursor></Label>
+                     </children>
+                  </AnchorPane>
+               </children>
+            </GridPane>
+            <TableView fx:id="genresTable" onMouseClicked="#onMouseClickTable">
+              <columns>
+                <TableColumn fx:id="genreColumn" maxWidth="1000.0" minWidth="-Infinity" prefWidth="200.0" text="Genre" />
+                <TableColumn maxWidth="-1.0" minWidth="-1.0" prefWidth="-1.0" text="Artists">
+                     <columns>
+                        <TableColumn fx:id="artistsAmountColumn" maxWidth="300.0" minWidth="-Infinity" prefWidth="60.0" text="Amount" />
+                        <TableColumn fx:id="artistsAvRatingColumn" maxWidth="300.0" minWidth="-Infinity" prefWidth="60.0" text="Av.Rating" />
+                     </columns>
+                  </TableColumn>
+                  <TableColumn maxWidth="-1.0" minWidth="-1.0" prefWidth="-1.0" text="Albums">
+                     <columns>
+                        <TableColumn fx:id="albumsAmountColumn" maxWidth="300.0" minWidth="-Infinity" prefWidth="60.0" text="Amount" />
+                        <TableColumn fx:id="albumsAvRatingColumn" maxWidth="300.0" minWidth="-Infinity" prefWidth="60.0" text="Av.Rating" />
+                     </columns>
+                  </TableColumn>
+                  <TableColumn maxWidth="-1.0" minWidth="-1.0" prefWidth="-1.0" text="Songs">
+                     <columns>
+                        <TableColumn fx:id="songsAmountColumn" maxWidth="300.0" minWidth="-Infinity" prefWidth="60.0" text="Amount" />
+                        <TableColumn fx:id="songsAvRatingColumn" maxWidth="300.0" minWidth="-Infinity" prefWidth="60.0" text="Av.Rating" />
+                     </columns>
+                  </TableColumn>
+                  <TableColumn maxWidth="-1.0" minWidth="-1.0" prefWidth="-1.0" text="Musicians">
+                     <columns>
+                        <TableColumn fx:id="musiciansAmountColumn" maxWidth="300.0" minWidth="-Infinity" prefWidth="60.0" text="Amount" />
+                        <TableColumn fx:id="musiciansAvRatingColumn" maxWidth="300.0" minWidth="-Infinity" prefWidth="60.0" text="Av.Rating" />
+                     </columns>
+                  </TableColumn>
+              </columns>
+               <columnResizePolicy>
+                  <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
+               </columnResizePolicy>
+            </TableView>
+         </children>
+      </VBox>
+   </children>
+</AnchorPane>

@@ -42,7 +42,7 @@ public class PaginatorPaneController extends BaseFxmlController {
     public void initialize(URL location, ResourceBundle resources) {             
     }
     
-    public void initPaginator(ArtistsController parentController) {
+    public void initPaginator(PagedController parentController) {
         this.parentController = parentController;
         this.parentController.setPageValue();
         initPageComboBox();

@@ -45,6 +45,7 @@ import ru.javafx.musicbook.client.utils.Helper;
 public class ArtistsController extends BaseAwareController implements PagedController {
     
     private final Logger logger = LoggerFactory.getLogger(getClass());
+    
     private Resource<Artist> selectedItem;
     private PagedResources<Resource<Artist>> resources; 
     private PaginatorPaneController paginatorPaneController;

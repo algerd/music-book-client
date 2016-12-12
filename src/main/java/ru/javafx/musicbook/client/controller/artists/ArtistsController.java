@@ -48,9 +48,9 @@ public class ArtistsController extends BaseAwareController implements PagedContr
     private Resource<Artist> selectedItem;
     private PagedResources<Resource<Artist>> resources; 
     private PaginatorPaneController paginatorPaneController;
-    // filter properties   
-    private String searchString = "";
+    // filter properties       
     //private GenreEntity genre;
+    private String searchString = "";
     private final IntegerProperty minRating = new SimpleIntegerProperty();
     private final IntegerProperty maxRating = new SimpleIntegerProperty();
    
@@ -90,7 +90,20 @@ public class ArtistsController extends BaseAwareController implements PagedContr
     public void initialize(URL url, ResourceBundle rb) { 
         initArtistsTable();  
         initFilterListeners();
-    } 
+    }
+    
+    @Override
+    public void setPageValue() {  
+        clearSelectionTable();
+        artistsTable.getItems().clear();
+        try {
+            resources = artistRepository.getArtists(paginatorPaneController.getPaginator(), getMinRating(), getMaxRating(), searchString);
+            artistsTable.setItems(FXCollections.observableArrayList(resources.getContent().parallelStream().collect(Collectors.toList())));           
+            Helper.setHeightTable(artistsTable, 10);        
+        } catch (URISyntaxException ex) {
+            logger.error(ex.getMessage());
+        }      
+    }
     
     private void initArtistsTable() { 
         rankColumn.setCellValueFactory(
@@ -145,7 +158,7 @@ public class ArtistsController extends BaseAwareController implements PagedContr
     private void filter() {
         //logger.info("minRating {}", minRating.get());
         //logger.info("maxRating {}", maxRating.get());
-        //logger.info("searchField {}", searchField.getText());        
+        logger.info("searchField {}", searchField.getText());        
         setPageValue();
         paginatorPaneController.initPageComboBox();
     }
@@ -163,20 +176,7 @@ public class ArtistsController extends BaseAwareController implements PagedContr
         searchField.textProperty().setValue("");
         resetSearchLabel.setVisible(false);
     }
-    
-    @Override
-    public void setPageValue() {  
-        clearSelectionTable();
-        artistsTable.getItems().clear();
-        try {
-            resources = artistRepository.getArtists(paginatorPaneController.getPaginator(), getMinRating(), getMaxRating());
-            artistsTable.setItems(FXCollections.observableArrayList(resources.getContent().parallelStream().collect(Collectors.toList())));           
-            Helper.setHeightTable(artistsTable, 10);        
-        } catch (URISyntaxException ex) {
-            logger.error(ex.getMessage());
-        }      
-    }  
-           
+              
     /**
      * ЛКМ - зызов окна выбранного альбома selectedAlbum;
      * ПКМ - вызов контекстного меню для add, edit, delete выбранного selectedAlbum или нового альбома.
@@ -242,10 +242,6 @@ public class ArtistsController extends BaseAwareController implements PagedContr
     }
     public IntegerProperty minRatingProperty() {
         return minRating;
-    }
-    
-    public class Filter {
-        
     }
     
 }

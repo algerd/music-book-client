@@ -81,17 +81,18 @@ public class ArtistRepository {
     }
     */
     
-    public PagedResources<Resource<Artist>> getArtists(Paginator paginator, int minRating, int maxRating) throws URISyntaxException {    
+    public PagedResources<Resource<Artist>> getArtists(Paginator paginator, int minRating, int maxRating, String search) throws URISyntaxException {    
         HttpHeaders headers = new HttpHeaders();
         headers.add(HttpHeaders.COOKIE, sessionManager.getSessionIdCookie());
         
         Map<String, Object> parameters = new HashMap<>();
         parameters.put("minrating", minRating);
         parameters.put("maxrating", maxRating);
+        parameters.put("search", search);
         parameters.putAll(paginator.getParameters());
         
         PagedResources<Resource<Artist>> resource = new Traverson(new URI(basePath), MediaTypes.HAL_JSON)
-                .follow(REL_PATH, "search", "by_rating")
+                .follow(REL_PATH, "search", "by_name_and_rating")
                 .withTemplateParameters(parameters)
                 .withHeaders(headers)
                 .toObject(new TypeReferences.PagedResourcesType<Resource<Artist>>() {}); 

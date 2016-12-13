@@ -100,7 +100,7 @@ public class ArtistsController extends BaseAwareController implements PagedContr
         try {
             resources = artistRepository.getArtists(paginatorPaneController.getPaginator(), getMinRating(), getMaxRating(), searchString);
             artistsTable.setItems(FXCollections.observableArrayList(resources.getContent().parallelStream().collect(Collectors.toList())));           
-            Helper.setHeightTable(artistsTable, 10);        
+            Helper.setHeightTable(artistsTable, paginatorPaneController.getPaginator().getSize());        
         } catch (URISyntaxException ex) {
             logger.error(ex.getMessage());
         }      
@@ -159,7 +159,7 @@ public class ArtistsController extends BaseAwareController implements PagedContr
     private void filter() {
         //logger.info("minRating {}", minRating.get());
         //logger.info("maxRating {}", maxRating.get());
-        logger.info("searchField {}", searchField.getText());        
+        //logger.info("searchField {}", searchField.getText());        
         setPageValue();
         paginatorPaneController.initPageComboBox();
     }

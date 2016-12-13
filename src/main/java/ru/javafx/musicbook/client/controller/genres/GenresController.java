@@ -1,8 +1,11 @@
 
 package ru.javafx.musicbook.client.controller.genres;
 
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.ResourceBundle;
+import java.util.stream.Collectors;
+import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
 import javafx.scene.control.TableColumn;
@@ -24,9 +27,10 @@ import ru.javafx.musicbook.client.controller.paginator.Sort;
 import ru.javafx.musicbook.client.entity.Genre;
 import ru.javafx.musicbook.client.fxintegrity.FXMLController;
 import ru.javafx.musicbook.client.fxintegrity.FXMLControllerLoader;
-import ru.javafx.musicbook.client.repository.ArtistRepository;
+import ru.javafx.musicbook.client.repository.GenreRepository;
 import ru.javafx.musicbook.client.service.RequestService;
 import static ru.javafx.musicbook.client.service.ContextMenuItemType.*;
+import ru.javafx.musicbook.client.utils.Helper;
 
 @FXMLController(
     value = "/fxml/genres/Genres.fxml",    
@@ -44,7 +48,7 @@ public class GenresController extends BaseAwareController implements PagedContro
     @Autowired
     private FXMLControllerLoader fxmlLoader;  
     @Autowired
-    private ArtistRepository artistRepository;   
+    private GenreRepository genreRepository;   
     @Autowired
     private RequestService requestService;
     
@@ -65,11 +69,21 @@ public class GenresController extends BaseAwareController implements PagedContro
     @Override
     public void initialize(URL url, ResourceBundle rb) { 
         initGenresTable();
+        initFilterListeners();
     }
     
     @Override
     public void setPageValue() {
-        
+        clearSelectionTable();
+        genresTable.getItems().clear();
+        try {
+            resources = genreRepository.get(paginatorPaneController.getPaginator(), searchString);
+            genresTable.setItems(FXCollections.observableArrayList(resources.getContent().parallelStream().collect(Collectors.toList())));           
+            logger.info("Genre Table Items: {}", genresTable.getItems());
+            Helper.setHeightTable(genresTable, paginatorPaneController.getPaginator().getSize(), 2);        
+        } catch (URISyntaxException ex) {
+            logger.error(ex.getMessage());
+        }      
     }
     
     private void initGenresTable() {
@@ -82,11 +96,30 @@ public class GenresController extends BaseAwareController implements PagedContro
     }
     
     private void initPaginatorPane() {
+        initFilters();
         paginatorPaneController = (PaginatorPaneController) fxmlLoader.load(PaginatorPaneController.class);
         genresTableVBox.getChildren().add(paginatorPaneController.getView());
         paginatorPaneController.getPaginator().setSize(5);
         paginatorPaneController.getPaginator().setSort(new Sort(new Sort.Order(Sort.Direction.ASC, "name")));
         paginatorPaneController.initPaginator(this);
+    }
+    
+    private void initFilterListeners() {        
+        searchField.textProperty().addListener((ObservableValue, oldValue, newValue)-> {           
+            resetSearchLabel.setVisible(newValue.length() > 0);
+            searchString = newValue.trim();
+            filter();   
+        });
+    }
+    
+    private void initFilters() {
+        resetSearchLabel.setVisible(false);
+    }
+    
+    private void filter() {
+        logger.info("searchField {}", searchField.getText());        
+        setPageValue();
+        paginatorPaneController.initPageComboBox();
     }
     
     @FXML

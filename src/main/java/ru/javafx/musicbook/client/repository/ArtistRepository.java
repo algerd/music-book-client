@@ -98,6 +98,8 @@ public class ArtistRepository {
                 .toObject(new TypeReferences.PagedResourcesType<Resource<Artist>>() {}); 
         
         paginator.setTotalElements((int) resource.getMetadata().getTotalElements());
+        //logger.info("Content: {}", resource.getContent());
+        //logger.info("Metadata: {}", resource.getMetadata());
         return resource;       
     }
 

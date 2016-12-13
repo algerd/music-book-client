@@ -24,7 +24,6 @@ import javafx.scene.Node;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.Label;
-import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
 import javafx.scene.control.cell.CheckBoxListCell;
 import javafx.scene.input.MouseEvent;
@@ -32,6 +31,7 @@ import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
 import javafx.util.Callback;
+import javafx.util.StringConverter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Scope;
@@ -76,7 +76,17 @@ public class ChoiceCheckBoxController<T> implements Initializable {
         checkBoxListPane.maxWidthProperty().bind(choiceCheckBox.maxWidthProperty());
         
         Callback<Resource<T>, ObservableValue<Boolean>> itemToBoolean = item -> itemMap.get(item);		
-		listView.setCellFactory(CheckBoxListCell.forListView(itemToBoolean));
+        StringConverter<Resource<T>> converter = new StringConverter<Resource<T>>() {
+            @Override
+            public String toString(Resource<T> value) {
+               return value.getContent().toString();
+            }
+            @Override
+            public Resource<T> fromString(String value) {
+               return null;
+            }         
+        };
+        listView.setCellFactory(CheckBoxListCell.forListView(itemToBoolean, converter));   
         setHeightList(listView, countVisibleRaw); 
        
         // при выборе элемента в списке активируется CheckBox
@@ -140,19 +150,6 @@ public class ChoiceCheckBoxController<T> implements Initializable {
     public void addItems(Map<Resource<T>, ObservableValue<Boolean>> map) {
         this.itemMap.putAll(map);
         listView.getItems().addAll(map.keySet());
-   
-        listView.setCellFactory(lv -> 
-            new ListCell<Resource<T>>() {
-                @Override
-                public void updateItem(Resource<T> item, boolean empty) {
-                    super.updateItem(item, empty);              
-                    if (item != null && !empty) {                
-                        setText(item.getContent().toString());
-                    }
-                    setGraphic(null);
-                }
-            }
-        );              
         sort();
         setTextToLabel();
         addListenerToCheckBox();

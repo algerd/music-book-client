@@ -85,7 +85,7 @@ public class ArtistDialogController extends BaseDialogController {
         Map<Resource<Genre>, ObservableValue<Boolean>> map = new HashMap<>();
         try {
             genreRepository.getAll().getContent().parallelStream().forEach(
-                genre -> map.put(genre, new SimpleBooleanProperty(true))    
+                genre -> map.put(genre, new SimpleBooleanProperty(false))    
             );
             includedChoiceCheckBoxController.addItems(map);
         } catch (URISyntaxException ex) {

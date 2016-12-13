@@ -1,23 +1,36 @@
 
 package ru.javafx.musicbook.client.controller.artist;
 
+import java.net.URISyntaxException;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.ResourceBundle;
+import java.util.logging.Level;
 import javafx.beans.property.IntegerProperty;
+import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleIntegerProperty;
+import javafx.beans.value.ObservableValue;
 import javafx.fxml.FXML;
 import javafx.scene.control.Spinner;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
+import javafx.scene.layout.AnchorPane;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
+import org.springframework.hateoas.Resource;
 import ru.javafx.musicbook.client.Params;
 import ru.javafx.musicbook.client.controller.BaseDialogController;
+import ru.javafx.musicbook.client.controller.helper.choiceCheckBox.ChoiceCheckBoxController;
 import ru.javafx.musicbook.client.entity.Artist;
+import ru.javafx.musicbook.client.entity.Genre;
 import ru.javafx.musicbook.client.fxintegrity.FXMLController;
 import ru.javafx.musicbook.client.repository.ArtistRepository;
+import ru.javafx.musicbook.client.repository.GenreRepository;
 import ru.javafx.musicbook.client.utils.Helper;
 
 @FXMLController(
@@ -32,7 +45,13 @@ public class ArtistDialogController extends BaseDialogController {
     
     @Autowired
     private ArtistRepository artistRepository;
+    @Autowired
+    private GenreRepository genreRepository;   
+    @FXML
+    private ChoiceCheckBoxController<Genre> includedChoiceCheckBoxController;
     
+    @FXML
+    private AnchorPane view;
     @FXML
     private TextField nameTextField;
     @FXML
@@ -45,6 +64,34 @@ public class ArtistDialogController extends BaseDialogController {
         Helper.initIntegerSpinner(ratingSpinner, Params.MIN_RATING, Params.MAX_RATING, Params.MIN_RATING, true, rating);      
         Helper.limitTextInput(nameTextField, 255);
         Helper.limitTextInput(commentTextArea, 1000);
+        includedChoiceCheckBoxController.setMainPane(view);
+        includedChoiceCheckBoxController.getChoiceCheckBox().setPrefWidth(250.0);
+    }
+    
+    private void initGenreChoiceCheckBox() {
+        /*
+        List<GenreEntity> artistGenres = new ArrayList<>();
+        if (edit) {        
+            repositoryService.getArtistGenreRepository().selectArtistGenreByArtist(artist).stream().forEach(artistGenre -> {
+                artistGenres.add(artistGenre.getGenre());
+            });
+        }
+        Map<GenreEntity, ObservableValue<Boolean>> map = new HashMap<>();
+        repositoryService.getGenreRepository().selectAll().stream().forEach(genre -> {                     
+            map.put(genre, new SimpleBooleanProperty(artistGenres.contains(genre)));
+        });
+        includedChoiceCheckBoxController.addItems(map);
+        */
+        Map<Resource<Genre>, ObservableValue<Boolean>> map = new HashMap<>();
+        try {
+            genreRepository.getAll().getContent().parallelStream().forEach(
+                genre -> map.put(genre, new SimpleBooleanProperty(true))    
+            );
+            includedChoiceCheckBoxController.addItems(map);
+        } catch (URISyntaxException ex) {
+            ex.printStackTrace();
+        }
+        
     }
          
     @FXML
@@ -95,6 +142,7 @@ public class ArtistDialogController extends BaseDialogController {
     @Override
     protected void add() {
         artist = new Artist();
+        initGenreChoiceCheckBox();      
     }
        
     @Override
@@ -104,6 +152,7 @@ public class ArtistDialogController extends BaseDialogController {
         nameTextField.setText(artist.getName());
         ratingSpinner.getValueFactory().setValue(artist.getRating());
         commentTextArea.setText(artist.getDescription());
+        initGenreChoiceCheckBox();
     }
         
     public int getRating() {

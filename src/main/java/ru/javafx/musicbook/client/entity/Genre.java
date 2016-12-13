@@ -59,7 +59,7 @@ public class Genre implements Entity {
 
     @Override
     public String toString() {
-        return "Genre{" + "name=" + name + ", description=" + description + '}';
+        return getName();
     }
     
 }

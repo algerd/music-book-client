@@ -27,6 +27,12 @@ public class SessionManager {
     public SessionManager() {
     }
     
+    public HttpHeaders createSessionHeaders() {
+        HttpHeaders headers = new HttpHeaders();
+        headers.add(HttpHeaders.COOKIE, getSessionIdCookie());
+        return headers;
+    }
+    
     /**
      * @return sessionId 
      */

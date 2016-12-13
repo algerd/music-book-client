@@ -33,9 +33,11 @@
                                     </rowConstraints>
                                     <children>
                                         <Label text="Name" />
-                                        <Label text="Rating" GridPane.rowIndex="1" />                         
+                                        <Label text="Rating" GridPane.rowIndex="1" />
+                                        <Label text="Genres" GridPane.rowIndex="2" />                         
                                         <TextField fx:id="nameTextField" GridPane.columnIndex="1" />
-                                        <Spinner fx:id="ratingSpinner" prefWidth="80.0" GridPane.columnIndex="1" GridPane.rowIndex="1" />                             
+                                        <Spinner fx:id="ratingSpinner" prefWidth="80.0" GridPane.columnIndex="1" GridPane.rowIndex="1" />  
+                                        <fx:include fx:id="includedChoiceCheckBox" source="../helper/choiceCheckBox/ChoiceCheckBox.fxml" GridPane.columnIndex="1" GridPane.rowIndex="2" />                           
                                     </children>
                                 </GridPane>                       
                             </children>

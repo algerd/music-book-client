@@ -12,7 +12,7 @@ public class Artist implements Entity {
     private final StringProperty name = new SimpleStringProperty("");
     private final IntegerProperty rating = new SimpleIntegerProperty(0);
     private final StringProperty description = new SimpleStringProperty("");
-    
+
     public Artist() {}
    
     public String getName() {

@@ -3,12 +3,14 @@ package ru.javafx.musicbook.client.repository;
 
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.hateoas.MediaTypes;
 import org.springframework.hateoas.PagedResources;
 import org.springframework.hateoas.Resource;
@@ -36,20 +38,28 @@ public class ArtistRepository {
     
     @Value("${spring.data.rest.basePath}")
     private String basePath;  
-    /*
-    public Resource<Artist> add(Artist artist) {
-        HttpHeaders headers = new HttpHeaders();
-        headers.add(HttpHeaders.COOKIE, sessionManager.getSessionIdCookie());
-        return new Traverson(requestService.post(REL_PATH, artist), MediaTypes.HAL_JSON).
-                follow("self")
-                .withHeaders(headers)
-                .toObject(new ParameterizedTypeReference<Resource<Artist>>() {});
+
+    public Resource<Artist> add(Artist artist, boolean returnResource) {
+        URI uri = requestService.post(REL_PATH, artist);
+        if (returnResource) {
+            return new Traverson(uri, MediaTypes.HAL_JSON)//
+                    .follow("self")
+                    .withHeaders(sessionManager.createSessionHeaders())
+                    .toObject(new ParameterizedTypeReference<Resource<Artist>>() {});
+        }
+        return null;
     }
-    */
+    
+    public int save(Artist artist) {
+        URI uri = requestService.post(REL_PATH, artist);      
+        return requestService.extractId(uri.getPath());
+    }
+    
+    /*
     public void add(Artist artist) {
         requestService.post(REL_PATH, artist);
     }
-    
+    */
     public void update(Resource<? extends Entity> resource) {
         requestService.put(resource);
     }

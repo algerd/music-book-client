@@ -31,7 +31,10 @@ public class RequestService {
     @Value("${spring.data.rest.basePath}")
     private String basePath;
    
-    /*
+    public int extractId(String href) {
+        return Integer.valueOf(href.substring(href.lastIndexOf("/") + 1));
+    }
+    
     public URI post(String rel, Entity entity) {
         try { 
             URI uri = new URI(basePath + rel);
@@ -46,27 +49,23 @@ public class RequestService {
         }
         return null;
     }
-    */
     
+    /*
     public void post(String rel, Entity entity) {
         try { 
             URI uri = new URI(basePath + rel);
-            HttpHeaders headers = new HttpHeaders();
-            headers.add(HttpHeaders.COOKIE, sessionManager.getSessionIdCookie());            
-            HttpEntity<Entity> request = new HttpEntity<>(entity, headers);
+            HttpEntity<Entity> request = new HttpEntity<>(entity, sessionManager.createSessionHeaders());
             new RestTemplate().postForObject(uri, request, String.class);
         }  
         catch (URISyntaxException ex) {
             logger.error(ex.getMessage());
         }
     }   
-    
+    */
     public void put(Resource<? extends Entity> resource) {    
         try { 
-            URI uri = new URI(resource.getLink("self").getHref());
-            HttpHeaders headers = new HttpHeaders();
-            headers.add(HttpHeaders.COOKIE, sessionManager.getSessionIdCookie());            
-            HttpEntity request = new HttpEntity(resource.getContent(), headers);
+            URI uri = new URI(resource.getLink("self").getHref());           
+            HttpEntity request = new HttpEntity(resource.getContent(), sessionManager.createSessionHeaders());
             RestTemplate restTemplate = new RestTemplate();
             restTemplate.put(uri, request); 
         }  
@@ -78,9 +77,7 @@ public class RequestService {
     public void delete(Resource<? extends Entity> resource) {
         try {
             URI uri = new URI(resource.getLink("self").getHref());
-            HttpHeaders headers = new HttpHeaders();
-            headers.add(HttpHeaders.COOKIE, sessionManager.getSessionIdCookie());
-            HttpEntity request = new HttpEntity(headers);
+            HttpEntity request = new HttpEntity(sessionManager.createSessionHeaders());
             RestTemplate restTemplate = new RestTemplate();         
             restTemplate.exchange(uri, HttpMethod.DELETE, request, Object.class);
         }  

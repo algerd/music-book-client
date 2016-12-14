@@ -27,8 +27,10 @@ import ru.javafx.musicbook.client.Params;
 import ru.javafx.musicbook.client.controller.BaseDialogController;
 import ru.javafx.musicbook.client.controller.helper.choiceCheckBox.ChoiceCheckBoxController;
 import ru.javafx.musicbook.client.entity.Artist;
+import ru.javafx.musicbook.client.entity.ArtistGenre;
 import ru.javafx.musicbook.client.entity.Genre;
 import ru.javafx.musicbook.client.fxintegrity.FXMLController;
+import ru.javafx.musicbook.client.repository.ArtistGenreRepository;
 import ru.javafx.musicbook.client.repository.ArtistRepository;
 import ru.javafx.musicbook.client.repository.GenreRepository;
 import ru.javafx.musicbook.client.utils.Helper;
@@ -45,6 +47,8 @@ public class ArtistDialogController extends BaseDialogController {
     
     @Autowired
     private ArtistRepository artistRepository;
+    @Autowired
+    private ArtistGenreRepository artistGenreRepository;
     @Autowired
     private GenreRepository genreRepository;   
     @FXML
@@ -90,8 +94,7 @@ public class ArtistDialogController extends BaseDialogController {
             includedChoiceCheckBoxController.addItems(map);
         } catch (URISyntaxException ex) {
             ex.printStackTrace();
-        }
-        
+        }       
     }
          
     @FXML
@@ -99,15 +102,49 @@ public class ArtistDialogController extends BaseDialogController {
         if (isInputValid()) { 
             artist.setName(nameTextField.getText().trim());
             artist.setRating(getRating());
-            artist.setDescription(commentTextArea.getText().trim());           
-
+            artist.setDescription(commentTextArea.getText().trim());  
+            
+            /*
+            Если артист создаётся снуля, то сначала надо его сохранить, получить его id, 
+            получить id добавляемых жанров и сохранить связки id(id_artist + id_genre) в соединительной таблице artist_genre
+            */
+            int idArtist = 0;
+             if (!edit) {
+                /*
+                Resource<Artist> resourceArtist = artistRepository.add(artist, true);
+                String href = resourceArtist.getId().getHref();
+                int idArtist = Integer.valueOf(href.substring(href.lastIndexOf("/") + 1));
+                */
+                idArtist = artistRepository.save(artist);
+                //logger.info("Id: {}", idArtist);                
+            } else {
+                // Cначала удалить все жанры из бд для артиста, а потом добавить
+                //repositoryService.getArtistGenreRepository().deleteArtistGenreByArtist(artist);
+                String href = resource.getId().getHref();
+                idArtist = Integer.valueOf(href.substring(href.lastIndexOf("/") + 1));
+            }       
+            // Извлечь жанры из списка и сохранить их в связке связанные с артистом             
+            for (Resource<Genre> resourceGenre : includedChoiceCheckBoxController.getItemMap().keySet()) {
+                ObservableValue<Boolean> value = includedChoiceCheckBoxController.getItemMap().get(resourceGenre);    
+                if (value.getValue()) {
+                    //logger.info("Artist Genre: {}", resourceGenre.getContent());
+                    String href = resourceGenre.getId().getHref();
+                    int idGenre = Integer.valueOf(href.substring(href.lastIndexOf("/") + 1));                   
+                    ArtistGenre artistGenre = new ArtistGenre();
+                    artistGenre.setIdArtist(idArtist);
+                    artistGenre.setIdGenre(idGenre);                   
+                    artistGenreRepository.add(artistGenre);                   
+                }
+            } 
+             /*
             if (edit) {               
                 //logger.info("Edited Artist: {}", artist);
                 artistRepository.update(resource);
             } else { 
                 //logger.info("Added Artist: {}", artist);
                 artistRepository.add(artist);
-            }             
+            }   
+            */
             dialogStage.close();
             edit = false;
         }

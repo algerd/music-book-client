@@ -6,6 +6,7 @@ import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.logging.Level;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,6 +24,7 @@ import ru.javafx.musicbook.client.entity.Artist;
 import ru.javafx.musicbook.client.entity.Entity;
 import ru.javafx.musicbook.client.service.RequestService;
 import ru.javafx.musicbook.client.controller.paginator.Paginator;
+import ru.javafx.musicbook.client.entity.Genre;
 
 @Repository
 public class ArtistRepository {
@@ -53,6 +55,16 @@ public class ArtistRepository {
     public int save(Artist artist) {
         URI uri = requestService.post(REL_PATH, artist);      
         return requestService.extractId(uri.getPath());
+    }
+    
+    public void saveGenre(Resource<? extends Entity> resource, Genre genre) {        
+        try {
+            String absRef = resource.getId().getHref() + "/genres";
+            URI uri = new URI(absRef);
+            requestService.postAbs(absRef, genre);
+        } catch (URISyntaxException ex) {
+            ex.printStackTrace();
+        } 
     }
     
     /*

@@ -37,10 +37,8 @@ public class RequestService {
     
     public URI post(String rel, Entity entity) {
         try { 
-            URI uri = new URI(basePath + rel);
-            HttpHeaders headers = new HttpHeaders();
-            headers.add(HttpHeaders.COOKIE, sessionManager.getSessionIdCookie());            
-            HttpEntity<Entity> request = new HttpEntity<>(entity, headers);
+            URI uri = new URI(basePath + rel);           
+            HttpEntity<Entity> request = new HttpEntity<>(entity, sessionManager.createSessionHeaders());
             RestTemplate restTemplate = new RestTemplate();
             return restTemplate.exchange(uri, HttpMethod.POST, request, String.class).getHeaders().getLocation();
         }  
@@ -49,6 +47,18 @@ public class RequestService {
         }
         return null;
     }
+    
+    public void postAbs(String absRef, Entity entity) {
+        try {          
+            HttpEntity<Entity> request = new HttpEntity<>(entity, sessionManager.createSessionHeaders());
+            RestTemplate restTemplate = new RestTemplate();
+            restTemplate.exchange(new URI(absRef), HttpMethod.POST, request, String.class);
+        }  
+        catch (URISyntaxException ex) {
+            logger.error(ex.getMessage());
+        }
+    }
+    
     
     /*
     public void post(String rel, Entity entity) {

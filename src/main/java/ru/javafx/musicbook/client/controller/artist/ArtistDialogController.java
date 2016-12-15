@@ -33,6 +33,7 @@ import ru.javafx.musicbook.client.fxintegrity.FXMLController;
 import ru.javafx.musicbook.client.repository.ArtistGenreRepository;
 import ru.javafx.musicbook.client.repository.ArtistRepository;
 import ru.javafx.musicbook.client.repository.GenreRepository;
+import ru.javafx.musicbook.client.service.RequestService;
 import ru.javafx.musicbook.client.utils.Helper;
 
 @FXMLController(
@@ -44,6 +45,9 @@ public class ArtistDialogController extends BaseDialogController {
     private final Logger logger = LoggerFactory.getLogger(getClass());
     private Artist artist; 
     private final IntegerProperty rating = new SimpleIntegerProperty();
+    
+    @Autowired
+    private RequestService requestService;
     
     @Autowired
     private ArtistRepository artistRepository;
@@ -105,35 +109,21 @@ public class ArtistDialogController extends BaseDialogController {
             artist.setDescription(commentTextArea.getText().trim());  
             
             /*
-            Если артист создаётся снуля, то сначала надо его сохранить, получить его id, 
-            получить id добавляемых жанров и сохранить связки id(id_artist + id_genre) в соединительной таблице artist_genre
+            Если артист создаётся снуля, то сначала надо его сохранить
             */
-            int idArtist = 0;
              if (!edit) {
-                /*
-                Resource<Artist> resourceArtist = artistRepository.add(artist, true);
-                String href = resourceArtist.getId().getHref();
-                int idArtist = Integer.valueOf(href.substring(href.lastIndexOf("/") + 1));
-                */
-                idArtist = artistRepository.save(artist);
-                //logger.info("Id: {}", idArtist);                
+                resource = artistRepository.add(artist, true); 
             } else {
                 // Cначала удалить все жанры из бд для артиста, а потом добавить
                 //repositoryService.getArtistGenreRepository().deleteArtistGenreByArtist(artist);
-                String href = resource.getId().getHref();
-                idArtist = Integer.valueOf(href.substring(href.lastIndexOf("/") + 1));
+                //String href = resource.getId().getHref();
+                //idArtist = Integer.valueOf(href.substring(href.lastIndexOf("/") + 1));
             }       
             // Извлечь жанры из списка и сохранить их в связке связанные с артистом             
             for (Resource<Genre> resourceGenre : includedChoiceCheckBoxController.getItemMap().keySet()) {
                 ObservableValue<Boolean> value = includedChoiceCheckBoxController.getItemMap().get(resourceGenre);    
-                if (value.getValue()) {
-                    //logger.info("Artist Genre: {}", resourceGenre.getContent());
-                    String href = resourceGenre.getId().getHref();
-                    int idGenre = Integer.valueOf(href.substring(href.lastIndexOf("/") + 1));                   
-                    ArtistGenre artistGenre = new ArtistGenre();
-                    artistGenre.setIdArtist(idArtist);
-                    artistGenre.setIdGenre(idGenre);                   
-                    artistGenreRepository.add(artistGenre);                   
+                if (value.getValue()) {   
+                    artistRepository.saveGenre(resource, resourceGenre.getContent());
                 }
             } 
              /*

@@ -3,12 +3,9 @@ package ru.javafx.musicbook.client.controller.artist;
 
 import java.net.URISyntaxException;
 import java.net.URL;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.ResourceBundle;
-import java.util.logging.Level;
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleIntegerProperty;
@@ -23,6 +20,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.hateoas.Resource;
+import org.springframework.hateoas.Resources;
 import ru.javafx.musicbook.client.Params;
 import ru.javafx.musicbook.client.controller.BaseDialogController;
 import ru.javafx.musicbook.client.controller.helper.choiceCheckBox.ChoiceCheckBoxController;
@@ -45,6 +43,7 @@ public class ArtistDialogController extends BaseDialogController {
     private final Logger logger = LoggerFactory.getLogger(getClass());
     private Artist artist; 
     private final IntegerProperty rating = new SimpleIntegerProperty();
+    private Resources<Resource<ArtistGenre>> artistGenres;
     
     @Autowired
     private RequestService requestService;
@@ -90,6 +89,13 @@ public class ArtistDialogController extends BaseDialogController {
         });
         includedChoiceCheckBoxController.addItems(map);
         */
+        
+        
+        if (edit) {
+            //String href = resourceGenre.getId().getHref();
+            //artistGenres = artistGenreRepository.getArtistGenres()
+        }
+        
         Map<Resource<Genre>, ObservableValue<Boolean>> map = new HashMap<>();
         try {
             genreRepository.getAll().getContent().parallelStream().forEach(
@@ -112,18 +118,17 @@ public class ArtistDialogController extends BaseDialogController {
             Если артист создаётся снуля, то сначала надо его сохранить
             */
              if (!edit) {
-                resource = artistRepository.add(artist, true); 
+                resource = artistRepository.saveAndGetResource(artist); 
             } else {
                 // Cначала удалить все жанры из бд для артиста, а потом добавить
-                //repositoryService.getArtistGenreRepository().deleteArtistGenreByArtist(artist);
-                //String href = resource.getId().getHref();
-                //idArtist = Integer.valueOf(href.substring(href.lastIndexOf("/") + 1));
+
             }       
             // Извлечь жанры из списка и сохранить их в связке связанные с артистом             
             for (Resource<Genre> resourceGenre : includedChoiceCheckBoxController.getItemMap().keySet()) {
                 ObservableValue<Boolean> value = includedChoiceCheckBoxController.getItemMap().get(resourceGenre);    
-                if (value.getValue()) {   
-                    artistRepository.saveGenre(resource, resourceGenre.getContent());
+                if (value.getValue()) {  
+                    String href = resourceGenre.getId().getHref();
+                    artistRepository.saveGenre(resource, Integer.valueOf(href.substring(href.lastIndexOf("/") + 1)));
                 }
             } 
              /*
@@ -132,7 +137,7 @@ public class ArtistDialogController extends BaseDialogController {
                 artistRepository.update(resource);
             } else { 
                 //logger.info("Added Artist: {}", artist);
-                artistRepository.add(artist);
+                artistRepository.saveAndGetResource(artist);
             }   
             */
             dialogStage.close();

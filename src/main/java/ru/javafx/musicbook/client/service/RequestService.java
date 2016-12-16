@@ -47,31 +47,16 @@ public class RequestService {
         }
         return null;
     }
-    
-    public void postAbs(String absRef, Entity entity) {
+
+    public void postAbs(String absRef) {
         try {          
-            HttpEntity<Entity> request = new HttpEntity<>(entity, sessionManager.createSessionHeaders());
-            RestTemplate restTemplate = new RestTemplate();
-            restTemplate.exchange(new URI(absRef), HttpMethod.POST, request, String.class);
+            new RestTemplate().exchange(new URI(absRef), HttpMethod.POST, new HttpEntity(sessionManager.createSessionHeaders()), String.class);
         }  
         catch (URISyntaxException ex) {
             logger.error(ex.getMessage());
         }
     }
     
-    
-    /*
-    public void post(String rel, Entity entity) {
-        try { 
-            URI uri = new URI(basePath + rel);
-            HttpEntity<Entity> request = new HttpEntity<>(entity, sessionManager.createSessionHeaders());
-            new RestTemplate().postForObject(uri, request, String.class);
-        }  
-        catch (URISyntaxException ex) {
-            logger.error(ex.getMessage());
-        }
-    }   
-    */
     public void put(Resource<? extends Entity> resource) {    
         try { 
             URI uri = new URI(resource.getLink("self").getHref());           

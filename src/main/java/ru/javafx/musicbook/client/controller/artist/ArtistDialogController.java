@@ -3,7 +3,9 @@ package ru.javafx.musicbook.client.controller.artist;
 
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.ResourceBundle;
 import javafx.beans.property.IntegerProperty;
@@ -76,30 +78,20 @@ public class ArtistDialogController extends BaseDialogController {
     }
     
     private void initGenreChoiceCheckBox() {
-        /*
-        List<GenreEntity> artistGenres = new ArrayList<>();
-        if (edit) {        
-            repositoryService.getArtistGenreRepository().selectArtistGenreByArtist(artist).stream().forEach(artistGenre -> {
-                artistGenres.add(artistGenre.getGenre());
-            });
-        }
-        Map<GenreEntity, ObservableValue<Boolean>> map = new HashMap<>();
-        repositoryService.getGenreRepository().selectAll().stream().forEach(genre -> {                     
-            map.put(genre, new SimpleBooleanProperty(artistGenres.contains(genre)));
-        });
-        includedChoiceCheckBoxController.addItems(map);
-        */
-        
-        
-        if (edit) {
-            //String href = resourceGenre.getId().getHref();
-            //artistGenres = artistGenreRepository.getArtistGenres()
-        }
-        
         Map<Resource<Genre>, ObservableValue<Boolean>> map = new HashMap<>();
-        try {
+        List<Genre> genres = new ArrayList<>();
+        try {         
+            if (edit) {
+                List<Resource<Genre>> genreResources = artistRepository.getGenres(resource);
+                genreResources.parallelStream().forEach(genreResource -> {
+                    genres.add(genreResource.getContent());
+                });              
+            }   
+            logger.info("Artist genres: {}", genres);
             genreRepository.getAll().getContent().parallelStream().forEach(
-                genre -> map.put(genre, new SimpleBooleanProperty(false))    
+                genre -> {    
+                    map.put(genre, new SimpleBooleanProperty(genres.contains(genre.getContent())));
+                }
             );
             includedChoiceCheckBoxController.addItems(map);
         } catch (URISyntaxException ex) {

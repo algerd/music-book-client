@@ -68,7 +68,7 @@ public class GenreRepository {
                 .follow(REL_PATH)
                 .withHeaders(sessionManager.createSessionHeaders())
                 .toObject(new TypeReferences.ResourcesType<Resource<Genre>>() {}); 
-        logger.info("Content: {}", resources.getContent());
+        //logger.info("Content: {}", resources.getContent());
         return resources;       
     }
 }

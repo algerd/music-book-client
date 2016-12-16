@@ -3,7 +3,9 @@ package ru.javafx.musicbook.client.repository;
 
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -13,6 +15,7 @@ import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.hateoas.MediaTypes;
 import org.springframework.hateoas.PagedResources;
 import org.springframework.hateoas.Resource;
+import org.springframework.hateoas.Resources;
 import org.springframework.hateoas.client.Traverson;
 import org.springframework.hateoas.mvc.TypeReferences;
 import org.springframework.stereotype.Repository;
@@ -21,6 +24,8 @@ import ru.javafx.musicbook.client.entity.Artist;
 import ru.javafx.musicbook.client.entity.Entity;
 import ru.javafx.musicbook.client.service.RequestService;
 import ru.javafx.musicbook.client.controller.paginator.Paginator;
+import ru.javafx.musicbook.client.entity.ArtistGenre;
+import ru.javafx.musicbook.client.entity.Genre;
 
 @Repository
 public class ArtistRepository {
@@ -75,32 +80,26 @@ public class ArtistRepository {
         return resource;       
     }
     
-    /*
-    public PagedResources<Resource<Artist>> getArtists() throws URISyntaxException {    
-
-        HttpHeaders headers = new HttpHeaders();
-        headers.saveAndGetResource(HttpHeaders.COOKIE, sessionManager.getSessionIdCookie());
-
-        return new Traverson(new URI(basePath), MediaTypes.HAL_JSON)
-                .follow(REL_PATH)
-                .withHeaders(headers)
-                .toObject(new TypeReferences.PagedResourcesType<Resource<Artist>>() {});         
-    }
-    */
-    /*
-    public PagedResources<Resource<Artist>> getArtists(Paginator paginator, int minRating, int maxRating) throws URISyntaxException {    
-        HttpHeaders headers = new HttpHeaders();
-        headers.saveAndGetResource(HttpHeaders.COOKIE, sessionManager.getSessionIdCookie());
+    public List<Resource<Genre>> getGenres(Resource<? extends Entity> artistResource) throws URISyntaxException {
+        List<Resource<Genre>> genreResources = new ArrayList<>();
+        Resources<Resource<ArtistGenre>> artistGenreResources = new Traverson(new URI(artistResource.getId().getHref()), MediaTypes.HAL_JSON)
+                .follow("artistGenres")
+                .withHeaders(sessionManager.createSessionHeaders())
+                .toObject(new ParameterizedTypeReference<Resources<Resource<ArtistGenre>>>() {});
         
-        PagedResources<Resource<Artist>> resource = new Traverson(new URI(basePath), MediaTypes.HAL_JSON)
-                .follow(REL_PATH)
-                .withTemplateParameters(paginator.getParameters())
-                .withHeaders(headers)
-                .toObject(new TypeReferences.PagedResourcesType<Resource<Artist>>() {}); 
-        
-        paginator.setTotalElements((int) resource.getMetadata().getTotalElements());
-        return resource;       
+        artistGenreResources.getContent().parallelStream().forEach(artistGenre -> {
+            try {
+                Resource<Genre> genreResource = new Traverson(new URI(artistGenre.getId().getHref()), MediaTypes.HAL_JSON)
+                        .follow("genre")
+                        .withHeaders(sessionManager.createSessionHeaders())    
+                        .toObject(new ParameterizedTypeReference<Resource<Genre>>() {});
+                genreResources.add(genreResource);
+            } catch (URISyntaxException ex) {
+                //logger.error(ex.getMessage());
+                ex.printStackTrace();
+            }          
+        });
+        return genreResources;
     }
-    */
     
 }

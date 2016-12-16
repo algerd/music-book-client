@@ -51,7 +51,7 @@ public class Genre implements Entity {
             return false;
         }
         final Genre other = (Genre) obj;
-        if (!Objects.equals(this.name, other.name)) {
+        if (!Objects.equals(getName(), other.getName())) {
             return false;
         }
         return true;

@@ -8,6 +8,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.ResourceBundle;
+import java.util.logging.Level;
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleIntegerProperty;
@@ -46,6 +47,7 @@ public class ArtistDialogController extends BaseDialogController {
     private Artist artist; 
     private final IntegerProperty rating = new SimpleIntegerProperty();
     private Resources<Resource<ArtistGenre>> artistGenres;
+    private List<Genre> genres = new ArrayList<>();
     
     @Autowired
     private RequestService requestService;
@@ -79,19 +81,15 @@ public class ArtistDialogController extends BaseDialogController {
     
     private void initGenreChoiceCheckBox() {
         Map<Resource<Genre>, ObservableValue<Boolean>> map = new HashMap<>();
-        List<Genre> genres = new ArrayList<>();
         try {         
             if (edit) {
                 List<Resource<Genre>> genreResources = artistRepository.getGenres(resource);
-                genreResources.parallelStream().forEach(genreResource -> {
-                    genres.add(genreResource.getContent());
-                });              
+                genreResources.parallelStream().forEach(
+                    genreResource -> genres.add(genreResource.getContent())
+                );              
             }   
-            logger.info("Artist genres: {}", genres);
             genreRepository.getAll().getContent().parallelStream().forEach(
-                genre -> {    
-                    map.put(genre, new SimpleBooleanProperty(genres.contains(genre.getContent())));
-                }
+                genre -> map.put(genre, new SimpleBooleanProperty(genres.contains(genre.getContent())))             
             );
             includedChoiceCheckBoxController.addItems(map);
         } catch (URISyntaxException ex) {
@@ -106,32 +104,27 @@ public class ArtistDialogController extends BaseDialogController {
             artist.setRating(getRating());
             artist.setDescription(commentTextArea.getText().trim());  
             
-            /*
-            Если артист создаётся снуля, то сначала надо его сохранить
-            */
-             if (!edit) {
-                resource = artistRepository.saveAndGetResource(artist); 
+             if (edit) {
+                artistRepository.update(resource);               
             } else {
-                // Cначала удалить все жанры из бд для артиста, а потом добавить
-
+                resource = artistRepository.saveAndGetResource(artist); 
             }       
-            // Извлечь жанры из списка и сохранить их в связке связанные с артистом             
-            for (Resource<Genre> resourceGenre : includedChoiceCheckBoxController.getItemMap().keySet()) {
-                ObservableValue<Boolean> value = includedChoiceCheckBoxController.getItemMap().get(resourceGenre);    
-                if (value.getValue()) {  
-                    String href = resourceGenre.getId().getHref();
-                    artistRepository.saveGenre(resource, Integer.valueOf(href.substring(href.lastIndexOf("/") + 1)));
+            // Извлечь жанры из списка и сохранить их в связке связанные с артистом
+            includedChoiceCheckBoxController.getItemMap().keySet().parallelStream().forEach(resourceGenre -> {
+                ObservableValue<Boolean> flag = includedChoiceCheckBoxController.getItemMap().get(resourceGenre); 
+                String href = resourceGenre.getId().getHref();
+                int idGenre = Integer.valueOf(href.substring(href.lastIndexOf("/") + 1));
+                //удалить невыбранные жанры, если они есть у артиста
+                if (!flag.getValue() && genres.contains(resourceGenre.getContent())) {
+                    //logger.info("deleted genre: {}", resourceGenre.getContent());
+                    artistRepository.deleteGenre(resource, idGenre);
                 }
-            } 
-             /*
-            if (edit) {               
-                //logger.info("Edited Artist: {}", artist);
-                artistRepository.update(resource);
-            } else { 
-                //logger.info("Added Artist: {}", artist);
-                artistRepository.saveAndGetResource(artist);
-            }   
-            */
+                //добавить выбранные жанры, если их ещё нет
+                if (flag.getValue() && !genres.contains(resourceGenre.getContent())) { 
+                    //logger.info("added genre: {}", resourceGenre.getContent());
+                    artistRepository.saveGenre(resource, idGenre);
+                }
+            }); 
             dialogStage.close();
             edit = false;
         }
@@ -148,12 +141,21 @@ public class ArtistDialogController extends BaseDialogController {
         
         if (nameTextField.getText() == null || nameTextField.getText().trim().equals("")) {
             errorMessage += "Введите имя артиста!\n"; 
-        } 
+        }     
         /*
         if (!edit && !repositoryService.getArtistRepository().isUniqueColumnValue("name", nameTextField.getText())) {
-            errorMessage += "Такой артист уже есть!\n";
-        } 
+        errorMessage += "Такой артист уже есть!\n";
+        }
         */
+        
+        try {
+            if(!edit && artistRepository.exist(nameTextField.getText())) {
+                errorMessage += "Такой артист уже есть!\n";
+            }
+        } catch (URISyntaxException ex) {
+            ex.printStackTrace();
+        }
+        
         if (errorMessage.equals("")) {
             return true;
         } 

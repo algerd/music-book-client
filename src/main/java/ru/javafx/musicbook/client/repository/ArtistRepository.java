@@ -19,6 +19,7 @@ import org.springframework.hateoas.Resources;
 import org.springframework.hateoas.client.Traverson;
 import org.springframework.hateoas.mvc.TypeReferences;
 import org.springframework.stereotype.Repository;
+import org.springframework.web.client.HttpClientErrorException;
 import ru.javafx.musicbook.client.SessionManager;
 import ru.javafx.musicbook.client.entity.Artist;
 import ru.javafx.musicbook.client.entity.Entity;
@@ -40,7 +41,7 @@ public class ArtistRepository {
     private SessionManager sessionManager;
     
     @Value("${spring.data.rest.basePath}")
-    private String basePath; 
+    private String basePath;  
     
     public void save(Artist artist) {
         requestService.post(REL_PATH, artist);
@@ -57,8 +58,28 @@ public class ArtistRepository {
         requestService.postAbs(resource.getId().getHref() + "/genres/" + idGenre);
     }   
     
+    public void deleteGenre(Resource<? extends Entity> resource, int idGenre) {
+        requestService.deleteAbs(resource.getId().getHref() + "/genres/" + idGenre);
+    }
+    
     public void update(Resource<? extends Entity> resource) {
         requestService.put(resource);
+    }
+    
+    public boolean exist(String search)  throws URISyntaxException {
+        Map<String, Object> parameters = new HashMap<>();
+        parameters.put("search", search);       
+        try {
+        Resource<Artist> artistResource = new Traverson(new URI(basePath), MediaTypes.HAL_JSON)
+                .follow(REL_PATH, "search", "by_name")
+                .withTemplateParameters(parameters)
+                .withHeaders(sessionManager.createSessionHeaders())    
+                .toObject(new ParameterizedTypeReference<Resource<Artist>>() {});
+        }
+        catch (HttpClientErrorException ex) {
+            return false;
+        }
+        return true;             
     }
     
     public PagedResources<Resource<Artist>> getArtists(Paginator paginator, int minRating, int maxRating, String search) throws URISyntaxException {            

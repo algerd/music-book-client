@@ -57,6 +57,15 @@ public class RequestService {
         }
     }
     
+    public void deleteAbs(String absRef) {
+        try {          
+            new RestTemplate().exchange(new URI(absRef), HttpMethod.DELETE, new HttpEntity(sessionManager.createSessionHeaders()), String.class);
+        }  
+        catch (URISyntaxException ex) {
+            logger.error(ex.getMessage());
+        }
+    }
+    
     public void put(Resource<? extends Entity> resource) {    
         try { 
             URI uri = new URI(resource.getLink("self").getHref());           

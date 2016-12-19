@@ -3,12 +3,17 @@ package ru.javafx.musicbook.client.controller.artists;
 
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
 import java.util.ResourceBundle;
+import java.util.logging.Level;
 import java.util.stream.Collectors;
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
+import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.Spinner;
 import javafx.scene.control.TableColumn;
@@ -17,12 +22,15 @@ import javafx.scene.control.TextField;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.VBox;
+import javafx.util.StringConverter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
+import org.springframework.hateoas.Link;
 import org.springframework.hateoas.PagedResources;
 import org.springframework.hateoas.Resource;
+import org.springframework.hateoas.Resources;
 import ru.javafx.musicbook.client.Params;
 import ru.javafx.musicbook.client.controller.BaseAwareController;
 import ru.javafx.musicbook.client.controller.paginator.PaginatorPaneController;
@@ -33,7 +41,9 @@ import ru.javafx.musicbook.client.controller.paginator.PagedController;
 import ru.javafx.musicbook.client.controller.paginator.Sort;
 import ru.javafx.musicbook.client.controller.paginator.Sort.Direction;
 import ru.javafx.musicbook.client.controller.paginator.Sort.Order;
+import ru.javafx.musicbook.client.entity.Genre;
 import ru.javafx.musicbook.client.repository.ArtistRepository;
+import ru.javafx.musicbook.client.repository.GenreRepository;
 import static ru.javafx.musicbook.client.service.ContextMenuItemType.*;
 import ru.javafx.musicbook.client.service.RequestService;
 import ru.javafx.musicbook.client.utils.Helper;
@@ -58,15 +68,17 @@ public class ArtistsController extends BaseAwareController implements PagedContr
     @Autowired
     private FXMLControllerLoader fxmlLoader;  
     @Autowired
-    private ArtistRepository artistRepository;   
+    private ArtistRepository artistRepository;
+    @Autowired
+    private GenreRepository genreRepository;   
     @Autowired
     private RequestService requestService;
     
     @FXML
     private VBox artistsTableVBox;
     //filter
-    //@FXML
-    //private ChoiceBox<GenreEntity> genreChoiceBox;
+    @FXML
+    private ChoiceBox<Resource<Genre>> genreChoiceBox;
     @FXML
     private Spinner<Integer> minRatingSpinner; 
     @FXML
@@ -91,6 +103,25 @@ public class ArtistsController extends BaseAwareController implements PagedContr
     public void initialize(URL url, ResourceBundle rb) { 
         initArtistsTable();  
         initFilterListeners();
+        initGenreChoiceBox();
+    }
+    
+    private void initGenreChoiceBox() {
+        Helper.initResourceChoiceBox(genreChoiceBox); 
+        List <Resource<Genre>> genreResources = new ArrayList<>();
+        
+        Genre emptyGenre = new Genre();
+        emptyGenre.setName("All genres");
+        Resource<Genre> emptyResource = new Resource<>(emptyGenre, new Link("emptyLink"));
+        genreResources.add(emptyResource);
+        try {
+            genreResources.addAll(genreRepository.getAll().getContent().parallelStream().collect(Collectors.toList()));         
+            genreResources.sort(Comparator.comparing(genreResource -> genreResource.getContent().getName()));
+            genreChoiceBox.getItems().addAll(genreResources);
+            genreChoiceBox.getSelectionModel().selectFirst();
+        } catch (URISyntaxException ex) {
+            ex.printStackTrace();
+        }
     }
     
     @Override

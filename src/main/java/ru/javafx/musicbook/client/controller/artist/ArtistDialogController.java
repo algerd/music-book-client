@@ -8,7 +8,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.ResourceBundle;
-import java.util.logging.Level;
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleIntegerProperty;
@@ -142,20 +141,13 @@ public class ArtistDialogController extends BaseDialogController {
         if (nameTextField.getText() == null || nameTextField.getText().trim().equals("")) {
             errorMessage += "Введите имя артиста!\n"; 
         }     
-        /*
-        if (!edit && !repositoryService.getArtistRepository().isUniqueColumnValue("name", nameTextField.getText())) {
-        errorMessage += "Такой артист уже есть!\n";
-        }
-        */
-        
         try {
-            if(!edit && artistRepository.exist(nameTextField.getText())) {
+            if (!artist.getName().equals(nameTextField.getText()) && artistRepository.exist(nameTextField.getText())) {
                 errorMessage += "Такой артист уже есть!\n";
             }
         } catch (URISyntaxException ex) {
             ex.printStackTrace();
-        }
-        
+        }        
         if (errorMessage.equals("")) {
             return true;
         } 

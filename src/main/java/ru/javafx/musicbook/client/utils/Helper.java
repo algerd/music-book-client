@@ -22,6 +22,9 @@ import javafx.scene.control.TextInputControl;
 import javafx.scene.paint.Color;
 import javafx.util.Callback;
 import javafx.util.StringConverter;
+import org.springframework.hateoas.Resource;
+import ru.javafx.musicbook.client.entity.Entity;
+import ru.javafx.musicbook.client.entity.Genre;
 
 @SuppressWarnings("unchecked")
 public class Helper {
@@ -90,7 +93,21 @@ public class Helper {
             }
             
         });
-    }   
+    } 
+    
+    public static void initResourceChoiceBox(ChoiceBox choiceBox) {
+        choiceBox.setConverter(new StringConverter<Resource<? extends Entity>>() {
+            @Override
+            public String toString(Resource<? extends Entity> value) {
+               return value.getContent().toString();
+            }
+            @Override
+            public Resource<? extends Entity> fromString(String value) {
+               return null;
+            }         
+        });
+    }
+    
     /*
     public static void initEntityChoiceBox(ChoiceBox choiceBox) {
         choiceBox.setConverter(new StringConverter<Entity>() {

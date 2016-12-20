@@ -27,6 +27,7 @@ import ru.javafx.musicbook.client.service.RequestService;
 import ru.javafx.musicbook.client.controller.paginator.Paginator;
 import ru.javafx.musicbook.client.entity.ArtistGenre;
 import ru.javafx.musicbook.client.entity.Genre;
+import ru.javafx.musicbook.client.utils.Helper;
 
 @Repository
 public class ArtistRepository {
@@ -99,6 +100,24 @@ public class ArtistRepository {
         //logger.info("Content: {}", resource.getContent());
         //logger.info("Metadata: {}", resource.getMetadata());
         return resource;       
+    }
+    
+    public PagedResources<Resource<ArtistGenre>> getArtists(Paginator paginator, int minRating, int maxRating, String search, Resource<Genre> resourceGenre) throws URISyntaxException {
+        Map<String, Object> parameters = new HashMap<>();
+        int idGenre = Helper.getId(resourceGenre);
+        parameters.put("id", idGenre);
+        parameters.putAll(paginator.getParameters());
+        
+        PagedResources<Resource<ArtistGenre>> resource = new Traverson(new URI(basePath), MediaTypes.HAL_JSON)
+                .follow(REL_PATH, "search", "by_genre")
+                .withTemplateParameters(parameters)
+                .withHeaders(sessionManager.createSessionHeaders())
+                .toObject(new TypeReferences.PagedResourcesType<Resource<ArtistGenre>>() {});
+        
+        paginator.setTotalElements((int) resource.getMetadata().getTotalElements());
+        //logger.info("Content: {}", resource.getContent());
+        //logger.info("Metadata: {}", resource.getMetadata());
+        return resource;         
     }
     
     public List<Resource<Genre>> getGenres(Resource<? extends Entity> artistResource) throws URISyntaxException {

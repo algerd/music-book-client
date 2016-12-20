@@ -24,10 +24,14 @@ import javafx.util.Callback;
 import javafx.util.StringConverter;
 import org.springframework.hateoas.Resource;
 import ru.javafx.musicbook.client.entity.Entity;
-import ru.javafx.musicbook.client.entity.Genre;
 
 @SuppressWarnings("unchecked")
 public class Helper {
+    
+    public static int getId(Resource<? extends Entity> resource) {
+        String href = resource.getId().getHref();
+        return Integer.valueOf(href.substring(href.lastIndexOf("/") + 1));
+    }
 
     /**
      * Задать диапазон спиннера, его начальное значение, возможность редактирования и отловить случаи неправильного ввода в поле.

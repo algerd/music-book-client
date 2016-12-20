@@ -131,6 +131,7 @@ public class ArtistsController extends BaseAwareController implements PagedContr
         artistsTable.getItems().clear();
         try {
             resources = artistRepository.getArtists(paginatorPaneController.getPaginator(), getMinRating(), getMaxRating(), searchString);
+            //resources = artistRepository.getArtists(paginatorPaneController.getPaginator(), getMinRating(), getMaxRating(), searchString, resorceGenre);
             artistsTable.setItems(FXCollections.observableArrayList(resources.getContent().parallelStream().collect(Collectors.toList())));           
             Helper.setHeightTable(artistsTable, paginatorPaneController.getPaginator().getSize());        
         } catch (URISyntaxException ex) {

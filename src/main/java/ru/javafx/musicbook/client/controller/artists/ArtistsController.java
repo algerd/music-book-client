@@ -60,7 +60,7 @@ public class ArtistsController extends BaseAwareController implements PagedContr
     private PagedResources<Resource<Artist>> resources; 
     private PaginatorPaneController paginatorPaneController;
     // filter properties       
-    //private GenreEntity genre;
+    private Resource<Genre> resorceGenre;
     private String searchString = "";
     private final IntegerProperty minRating = new SimpleIntegerProperty();
     private final IntegerProperty maxRating = new SimpleIntegerProperty();
@@ -108,12 +108,13 @@ public class ArtistsController extends BaseAwareController implements PagedContr
     
     private void initGenreChoiceBox() {
         Helper.initResourceChoiceBox(genreChoiceBox); 
-        List <Resource<Genre>> genreResources = new ArrayList<>();
-        
+           
         Genre emptyGenre = new Genre();
         emptyGenre.setName("All genres");
-        Resource<Genre> emptyResource = new Resource<>(emptyGenre, new Link("emptyLink"));
-        genreResources.add(emptyResource);
+        resorceGenre = new Resource<>(emptyGenre, new Link("emptyLink"));
+        
+        List <Resource<Genre>> genreResources = new ArrayList<>();
+        genreResources.add(resorceGenre);
         try {
             genreResources.addAll(genreRepository.getAll().getContent().parallelStream().collect(Collectors.toList()));         
             genreResources.sort(Comparator.comparing(genreResource -> genreResource.getContent().getName()));
@@ -176,21 +177,20 @@ public class ArtistsController extends BaseAwareController implements PagedContr
             resetSearchLabel.setVisible(newValue.length() > 0);
             searchString = newValue.trim();
             filter();   
-        });       
-        /*
+        });           
         genreChoiceBox.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
             if (newValue != null) {
-                genre = newValue;
+                resorceGenre = newValue;
                 filter();
             }
         });
-        */
     }
     
     private void filter() {
-        //logger.info("minRating {}", minRating.get());
+        //logger.info("minRating {resorceGenre}", minRating.get());
         //logger.info("maxRating {}", maxRating.get());
-        //logger.info("searchField {}", searchField.getText());        
+        //logger.info("searchField {}", searchField.getText());
+        //logger.info("genre {}", resorceGenre.getContent().getName());
         setPageValue();
         paginatorPaneController.initPageComboBox();
     }
@@ -198,7 +198,7 @@ public class ArtistsController extends BaseAwareController implements PagedContr
     @FXML
     private void resetFilter() {
         resetSearchField();
-        //genreChoiceBox.getSelectionModel().selectFirst();
+        genreChoiceBox.getSelectionModel().selectFirst();
         initFilters();
         paginatorPaneController.initPageComboBox();
     } 

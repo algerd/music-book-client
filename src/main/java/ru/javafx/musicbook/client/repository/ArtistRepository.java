@@ -102,22 +102,30 @@ public class ArtistRepository {
         return resource;       
     }
     
-    public PagedResources<Resource<ArtistGenre>> getArtists(Paginator paginator, int minRating, int maxRating, String search, Resource<Genre> resourceGenre) throws URISyntaxException {
+    public PagedResources<Resource<Artist>> getArtists(Paginator paginator, int minRating, int maxRating, String search, Resource<Genre> resourceGenre) throws URISyntaxException {                   
         Map<String, Object> parameters = new HashMap<>();
-        int idGenre = Helper.getId(resourceGenre);
-        parameters.put("id", idGenre);
+        parameters.put("minrating", minRating);
+        parameters.put("maxrating", maxRating);
+        parameters.put("search", search);
+        String rel;
+        if (resourceGenre.getContent().getName().equals("All genres")) {
+            rel = "by_name_and_rating"; 
+        } else {
+            rel = "by_genre_and_rating_and_name";
+            parameters.put("id_genre", Helper.getId(resourceGenre));      
+        }         
         parameters.putAll(paginator.getParameters());
-        
-        PagedResources<Resource<ArtistGenre>> resource = new Traverson(new URI(basePath), MediaTypes.HAL_JSON)
-                .follow(REL_PATH, "search", "by_genre")
+                  
+        PagedResources<Resource<Artist>> resource = new Traverson(new URI(basePath), MediaTypes.HAL_JSON)
+                .follow(REL_PATH, "search", rel)
                 .withTemplateParameters(parameters)
                 .withHeaders(sessionManager.createSessionHeaders())
-                .toObject(new TypeReferences.PagedResourcesType<Resource<ArtistGenre>>() {});
+                .toObject(new TypeReferences.PagedResourcesType<Resource<Artist>>() {}); 
         
         paginator.setTotalElements((int) resource.getMetadata().getTotalElements());
         //logger.info("Content: {}", resource.getContent());
         //logger.info("Metadata: {}", resource.getMetadata());
-        return resource;         
+        return resource;       
     }
     
     public List<Resource<Genre>> getGenres(Resource<? extends Entity> artistResource) throws URISyntaxException {

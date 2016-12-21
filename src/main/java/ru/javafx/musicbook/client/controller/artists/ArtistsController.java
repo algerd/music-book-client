@@ -7,7 +7,6 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.ResourceBundle;
-import java.util.logging.Level;
 import java.util.stream.Collectors;
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleIntegerProperty;
@@ -22,7 +21,6 @@ import javafx.scene.control.TextField;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.VBox;
-import javafx.util.StringConverter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,7 +28,6 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.hateoas.Link;
 import org.springframework.hateoas.PagedResources;
 import org.springframework.hateoas.Resource;
-import org.springframework.hateoas.Resources;
 import ru.javafx.musicbook.client.Params;
 import ru.javafx.musicbook.client.controller.BaseAwareController;
 import ru.javafx.musicbook.client.controller.paginator.PaginatorPaneController;
@@ -62,6 +59,8 @@ public class ArtistsController extends BaseAwareController implements PagedContr
     // filter properties       
     private Resource<Genre> resorceGenre;
     private String searchString = "";
+    private String sort;
+    private String order;
     private final IntegerProperty minRating = new SimpleIntegerProperty();
     private final IntegerProperty maxRating = new SimpleIntegerProperty();
    
@@ -87,6 +86,10 @@ public class ArtistsController extends BaseAwareController implements PagedContr
     private TextField searchField;
     @FXML
     private Label resetSearchLabel; 
+    @FXML
+    private ChoiceBox<String> sortChoiceBox;
+    @FXML
+    private ChoiceBox<String> orderChoiceBox;   
     //table
     @FXML
     private TableView<Resource<Artist>> artistsTable;
@@ -100,10 +103,20 @@ public class ArtistsController extends BaseAwareController implements PagedContr
     public ArtistsController() {}
     
     @Override
-    public void initialize(URL url, ResourceBundle rb) { 
+    public void initialize(URL url, ResourceBundle rb) {
+        sort = "Rating";
+        order = "Asc";
+        initSortAndOrderChoiceBoxes();
         initGenreChoiceBox();
         initArtistsTable();  
         initFilterListeners();     
+    }
+    
+    private void initSortAndOrderChoiceBoxes() {
+        sortChoiceBox.getItems().addAll("Rating", "Name");
+        sortChoiceBox.getSelectionModel().selectFirst();
+        orderChoiceBox.getItems().addAll("Asc", "Desc");
+        orderChoiceBox.getSelectionModel().selectFirst();   
     }
     
     private void initGenreChoiceBox() {
@@ -129,8 +142,7 @@ public class ArtistsController extends BaseAwareController implements PagedContr
     public void setPageValue() {  
         clearSelectionTable();
         artistsTable.getItems().clear();
-        try {
-            //resources = artistRepository.getArtists(paginatorPaneController.getPaginator(), getMinRating(), getMaxRating(), searchString);
+        try {         
             resources = artistRepository.getArtists(paginatorPaneController.getPaginator(), getMinRating(), getMaxRating(), searchString, resorceGenre);
             artistsTable.setItems(FXCollections.observableArrayList(resources.getContent().parallelStream().collect(Collectors.toList())));           
             Helper.setHeightTable(artistsTable, paginatorPaneController.getPaginator().getSize());        
@@ -157,8 +169,16 @@ public class ArtistsController extends BaseAwareController implements PagedContr
         paginatorPaneController = (PaginatorPaneController) fxmlLoader.load(PaginatorPaneController.class);
         artistsTableVBox.getChildren().add(paginatorPaneController.getView());
         paginatorPaneController.getPaginator().setSize(5);
-        paginatorPaneController.getPaginator().setSort(new Sort(new Order(Direction.ASC, "rating")));
+        //paginatorPaneController.getPaginator().setSort(new Sort(new Order(Direction.ASC, "rating")));
+        paginatorPaneController.getPaginator().setSort(getSort());
         paginatorPaneController.initPaginator(this);
+    }
+    
+    private Sort getSort() {
+        return new Sort(new Order(
+           order.equals("Asc") ? Direction.ASC : Direction.DESC,
+           sort.toLowerCase()
+        ));
     }
     
     private void initFilters() {
@@ -185,13 +205,19 @@ public class ArtistsController extends BaseAwareController implements PagedContr
                 filter();
             }
         });
+        sortChoiceBox.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
+            sort = newValue;
+            filter();
+        });
+        orderChoiceBox.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
+            order = newValue;
+            filter();
+        });
+        
     }
     
     private void filter() {
-        //logger.info("minRating {resorceGenre}", minRating.get());
-        //logger.info("maxRating {}", maxRating.get());
-        //logger.info("searchField {}", searchField.getText());
-        //logger.info("genre {}", resorceGenre.getContent().getName());
+        paginatorPaneController.getPaginator().setSort(getSort());
         setPageValue();
         paginatorPaneController.initPageComboBox();
     }
@@ -199,7 +225,9 @@ public class ArtistsController extends BaseAwareController implements PagedContr
     @FXML
     private void resetFilter() {
         resetSearchField();
-        genreChoiceBox.getSelectionModel().selectFirst();
+        sortChoiceBox.getSelectionModel().selectFirst();
+        orderChoiceBox.getSelectionModel().selectFirst();
+        genreChoiceBox.getSelectionModel().selectFirst();    
         initFilters();
         paginatorPaneController.initPageComboBox();
     } 

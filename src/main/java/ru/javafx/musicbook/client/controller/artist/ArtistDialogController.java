@@ -33,7 +33,6 @@ import ru.javafx.musicbook.client.fxintegrity.FXMLController;
 import ru.javafx.musicbook.client.repository.ArtistGenreRepository;
 import ru.javafx.musicbook.client.repository.ArtistRepository;
 import ru.javafx.musicbook.client.repository.GenreRepository;
-import ru.javafx.musicbook.client.service.RequestService;
 import ru.javafx.musicbook.client.utils.Helper;
 
 @FXMLController(
@@ -47,9 +46,6 @@ public class ArtistDialogController extends BaseDialogController {
     private final IntegerProperty rating = new SimpleIntegerProperty();
     private Resources<Resource<ArtistGenre>> artistGenres;
     private List<Genre> genres = new ArrayList<>();
-    
-    @Autowired
-    private RequestService requestService;
     
     @Autowired
     private ArtistRepository artistRepository;
@@ -82,10 +78,15 @@ public class ArtistDialogController extends BaseDialogController {
         Map<Resource<Genre>, ObservableValue<Boolean>> map = new HashMap<>();
         try {         
             if (edit) {
+                /*
                 List<Resource<Genre>> genreResources = artistRepository.getGenres(resource);
                 genreResources.parallelStream().forEach(
                     genreResource -> genres.add(genreResource.getContent())
-                );              
+                ); 
+                */
+                artistRepository.getGenres(resource).getContent().parallelStream().forEach(
+                    genreResource -> genres.add(genreResource.getContent())
+                );                     
             }   
             genreRepository.getAll().getContent().parallelStream().forEach(
                 genre -> map.put(genre, new SimpleBooleanProperty(genres.contains(genre.getContent())))             

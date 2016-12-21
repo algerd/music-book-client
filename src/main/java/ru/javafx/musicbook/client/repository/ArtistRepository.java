@@ -127,7 +127,7 @@ public class ArtistRepository {
         //logger.info("Metadata: {}", resource.getMetadata());
         return resource;       
     }
-    
+    /*
     public List<Resource<Genre>> getGenres(Resource<? extends Entity> artistResource) throws URISyntaxException {
         List<Resource<Genre>> genreResources = new ArrayList<>();
         Resources<Resource<ArtistGenre>> artistGenreResources = new Traverson(new URI(artistResource.getId().getHref()), MediaTypes.HAL_JSON)
@@ -149,5 +149,16 @@ public class ArtistRepository {
         });
         return genreResources;
     }
+    */
+    public Resources<Resource<Genre>> getGenres(Resource<? extends Entity> artistResource) throws URISyntaxException {
+        Map<String, Object> parameters = new HashMap<>();
+        parameters.put("id_artist", Helper.getId(artistResource));
+
+        return new Traverson(new URI(basePath), MediaTypes.HAL_JSON)
+                .follow("genres", "search", "by_artist")
+                .withTemplateParameters(parameters)
+                .withHeaders(sessionManager.createSessionHeaders())
+                .toObject(new ParameterizedTypeReference<Resources<Resource<Genre>>>() {});      
+    }    
     
 }

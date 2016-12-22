@@ -77,7 +77,7 @@ public class GenresController extends BaseAwareController implements PagedContro
         clearSelectionTable();
         genresTable.getItems().clear();
         try {
-            resources = genreRepository.getPage(paginatorPaneController.getPaginator(), searchString);
+            resources = genreRepository.searchByName(paginatorPaneController.getPaginator(), searchString);
             genresTable.setItems(FXCollections.observableArrayList(resources.getContent().parallelStream().collect(Collectors.toList())));           
             logger.info("Genre Table Items: {}", genresTable.getItems());
             Helper.setHeightTable(genresTable, paginatorPaneController.getPaginator().getSize(), 2);        

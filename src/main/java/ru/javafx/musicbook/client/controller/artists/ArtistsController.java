@@ -129,7 +129,7 @@ public class ArtistsController extends BaseAwareController implements PagedContr
         List <Resource<Genre>> genreResources = new ArrayList<>();
         genreResources.add(resorceGenre);
         try {
-            genreResources.addAll(genreRepository.getAll().getContent().parallelStream().collect(Collectors.toList()));         
+            genreResources.addAll(genreRepository.findAll().getContent().parallelStream().collect(Collectors.toList()));         
             genreResources.sort(Comparator.comparing(genreResource -> genreResource.getContent().getName()));
             genreChoiceBox.getItems().addAll(genreResources);
             genreChoiceBox.getSelectionModel().selectFirst();
@@ -143,7 +143,7 @@ public class ArtistsController extends BaseAwareController implements PagedContr
         clearSelectionTable();
         artistsTable.getItems().clear();
         try {         
-            resources = artistRepository.getArtists(paginatorPaneController.getPaginator(), getMinRating(), getMaxRating(), searchString, resorceGenre);
+            resources = artistRepository.searchByGenreAndRatingAndName(paginatorPaneController.getPaginator(), getMinRating(), getMaxRating(), searchString, resorceGenre);
             artistsTable.setItems(FXCollections.observableArrayList(resources.getContent().parallelStream().collect(Collectors.toList())));           
             Helper.setHeightTable(artistsTable, paginatorPaneController.getPaginator().getSize());        
         } catch (URISyntaxException ex) {
@@ -212,8 +212,7 @@ public class ArtistsController extends BaseAwareController implements PagedContr
         orderChoiceBox.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
             order = newValue;
             filter();
-        });
-        
+        });        
     }
     
     private void filter() {

@@ -19,9 +19,6 @@ public class ArtistGenreRepository {
     @Autowired
     private RequestService requestService;
     
-    @Autowired
-    private SessionManager sessionManager;
-    
     @Value("${spring.data.rest.basePath}")
     private String basePath; 
     

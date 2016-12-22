@@ -3,9 +3,7 @@ package ru.javafx.musicbook.client.repository;
 
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -15,7 +13,6 @@ import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.hateoas.MediaTypes;
 import org.springframework.hateoas.PagedResources;
 import org.springframework.hateoas.Resource;
-import org.springframework.hateoas.Resources;
 import org.springframework.hateoas.client.Traverson;
 import org.springframework.hateoas.mvc.TypeReferences;
 import org.springframework.stereotype.Repository;
@@ -25,7 +22,6 @@ import ru.javafx.musicbook.client.entity.Artist;
 import ru.javafx.musicbook.client.entity.Entity;
 import ru.javafx.musicbook.client.service.RequestService;
 import ru.javafx.musicbook.client.controller.paginator.Paginator;
-import ru.javafx.musicbook.client.entity.ArtistGenre;
 import ru.javafx.musicbook.client.entity.Genre;
 import ru.javafx.musicbook.client.utils.Helper;
 
@@ -83,7 +79,7 @@ public class ArtistRepository {
         return true;             
     }
     
-    public PagedResources<Resource<Artist>> getArtists(Paginator paginator, int minRating, int maxRating, String search) throws URISyntaxException {            
+    public PagedResources<Resource<Artist>> searchByNameAndRating(Paginator paginator, int minRating, int maxRating, String search) throws URISyntaxException {            
         Map<String, Object> parameters = new HashMap<>();
         parameters.put("minrating", minRating);
         parameters.put("maxrating", maxRating);
@@ -102,22 +98,20 @@ public class ArtistRepository {
         return resource;       
     }
     
-    public PagedResources<Resource<Artist>> getArtists(Paginator paginator, int minRating, int maxRating, String search, Resource<Genre> resourceGenre) throws URISyntaxException {                   
+    public PagedResources<Resource<Artist>> searchByGenreAndRatingAndName(Paginator paginator, int minRating, int maxRating, String search, Resource<Genre> resourceGenre) throws URISyntaxException {                   
+        if (resourceGenre == null || resourceGenre.getContent().getName().equals("All genres")) {
+            return searchByNameAndRating(paginator, minRating, maxRating, search);
+        }
+        
         Map<String, Object> parameters = new HashMap<>();
         parameters.put("minrating", minRating);
         parameters.put("maxrating", maxRating);
         parameters.put("search", search);
-        String rel;
-        if (resourceGenre.getContent().getName().equals("All genres")) {
-            rel = "by_name_and_rating"; 
-        } else {
-            rel = "by_genre_and_rating_and_name";
-            parameters.put("id_genre", Helper.getId(resourceGenre));      
-        }         
+        parameters.put("id_genre", Helper.getId(resourceGenre));        
         parameters.putAll(paginator.getParameters());
                   
         PagedResources<Resource<Artist>> resource = new Traverson(new URI(basePath), MediaTypes.HAL_JSON)
-                .follow(REL_PATH, "search", rel)
+                .follow(REL_PATH, "search", "by_genre_and_rating_and_name")
                 .withTemplateParameters(parameters)
                 .withHeaders(sessionManager.createSessionHeaders())
                 .toObject(new TypeReferences.PagedResourcesType<Resource<Artist>>() {}); 
@@ -126,39 +120,5 @@ public class ArtistRepository {
         //logger.info("Content: {}", resource.getContent());
         //logger.info("Metadata: {}", resource.getMetadata());
         return resource;       
-    }
-    /*
-    public List<Resource<Genre>> getGenres(Resource<? extends Entity> artistResource) throws URISyntaxException {
-        List<Resource<Genre>> genreResources = new ArrayList<>();
-        Resources<Resource<ArtistGenre>> artistGenreResources = new Traverson(new URI(artistResource.getId().getHref()), MediaTypes.HAL_JSON)
-                .follow("artistGenres")
-                .withHeaders(sessionManager.createSessionHeaders())
-                .toObject(new ParameterizedTypeReference<Resources<Resource<ArtistGenre>>>() {});
-        
-        artistGenreResources.getContent().parallelStream().forEach(artistGenre -> {
-            try {
-                Resource<Genre> genreResource = new Traverson(new URI(artistGenre.getId().getHref()), MediaTypes.HAL_JSON)
-                        .follow("genre")
-                        .withHeaders(sessionManager.createSessionHeaders())    
-                        .toObject(new ParameterizedTypeReference<Resource<Genre>>() {});
-                genreResources.add(genreResource);
-            } catch (URISyntaxException ex) {
-                //logger.error(ex.getMessage());
-                ex.printStackTrace();
-            }          
-        });
-        return genreResources;
-    }
-    */
-    public Resources<Resource<Genre>> getGenres(Resource<? extends Entity> artistResource) throws URISyntaxException {
-        Map<String, Object> parameters = new HashMap<>();
-        parameters.put("id_artist", Helper.getId(artistResource));
-
-        return new Traverson(new URI(basePath), MediaTypes.HAL_JSON)
-                .follow("genres", "search", "by_artist")
-                .withTemplateParameters(parameters)
-                .withHeaders(sessionManager.createSessionHeaders())
-                .toObject(new ParameterizedTypeReference<Resources<Resource<Genre>>>() {});      
-    }    
-    
+    } 
 }

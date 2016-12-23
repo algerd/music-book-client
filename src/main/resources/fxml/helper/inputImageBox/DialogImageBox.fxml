@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.text.*?>
+<?import javafx.geometry.*?>
+<?import javafx.scene.image.*?>
+<?import java.lang.*?>
+<?import java.util.*?>
+<?import javafx.scene.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<AnchorPane fx:id="dialogImageBox" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" xmlns="http://javafx.com/javafx/8.0.40" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ru.javafx.musicbook.client.controller.helper.inputImageBox.DialogImageBoxController">
+    <children>
+        <StackPane fx:id="imagePane" onDragDropped="#dragDroppedImage" onDragOver="#dragOverImage" onMouseClicked="#showContextMenu" style="-fx-border-color: blue;" AnchorPane.bottomAnchor="30.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+            <children>
+                <TextFlow fx:id="imageTextFlow" prefHeight="200.0" prefWidth="200.0">
+                    <children>
+                        <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Drag &amp; drop image or reference of image " />
+                    </children>
+                    <padding>
+                       <Insets bottom="10.0" left="10.0" right="10.0" top="75.0" />
+                    </padding>
+                </TextFlow>
+                <ProgressIndicator fx:id="imageProgress" maxHeight="70.0" maxWidth="70.0" progress="0.0" />
+                <ImageView fx:id="imageView" fitHeight="200.0" fitWidth="200.0" pickOnBounds="true" preserveRatio="true" />
+            </children>
+            <padding>
+               <Insets bottom="2.0" left="2.0" right="2.0" top="2.0" />
+            </padding>
+        </StackPane>
+        <HBox prefHeight="30.0" spacing="36.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0">
+            <children>
+                <Button mnemonicParsing="false" onAction="#loadImage" text="Load" />
+                <Button mnemonicParsing="false" onAction="#pasteImage" text="Paste" />
+                <Button mnemonicParsing="false" onAction="#clearImage" text="Clear" />
+            </children>
+            <padding>
+                <Insets bottom="2.0" left="2.0" right="2.0" top="2.0" />
+            </padding>
+        </HBox>
+    </children>
+</AnchorPane>

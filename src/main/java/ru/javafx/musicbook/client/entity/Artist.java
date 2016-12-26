@@ -12,6 +12,7 @@ public class Artist implements Entity {
     private final StringProperty name = new SimpleStringProperty("");
     private final IntegerProperty rating = new SimpleIntegerProperty(0);
     private final StringProperty description = new SimpleStringProperty("");
+    private final StringProperty imageLink = new SimpleStringProperty("");
 
     public Artist() {}
    
@@ -44,6 +45,16 @@ public class Artist implements Entity {
     public StringProperty descriptionProperty() {
         return description;
     } 
+    
+    public String getImageLink() {
+        return imageLink.get();
+    }
+    public void setImageLink(String value) {
+        imageLink.set(value);
+    }
+    public StringProperty imageLinkProperty() {
+        return imageLink;
+    }
 
     @Override
     public int hashCode() {

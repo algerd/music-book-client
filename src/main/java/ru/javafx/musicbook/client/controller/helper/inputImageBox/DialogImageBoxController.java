@@ -1,9 +1,12 @@
 package ru.javafx.musicbook.client.controller.helper.inputImageBox;
 
 import java.io.File;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.file.Files;
 import java.util.ResourceBundle;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Alert;
@@ -123,6 +126,11 @@ public class DialogImageBoxController implements Initializable {
             return true;
         }
         return false;
+    }
+    
+    public void setImage(String strUrl) {
+        imageView.setImage(new Image(strUrl, true));
+        imageTextFlow.setVisible(false);
     }
     
     public void saveImage() {     

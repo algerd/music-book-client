@@ -19,7 +19,8 @@
         <VBox spacing="20.0" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="10.0">
             <children>
                 <HBox spacing="20.0">
-                    <children>                
+                    <children>
+                        <fx:include fx:id="includedDialogImageBox" source="../helper/inputImageBox/DialogImageBox.fxml" />                
                         <AnchorPane minWidth="250.0" prefWidth="300.0">
                             <children>
                                 <GridPane vgap="3.0">

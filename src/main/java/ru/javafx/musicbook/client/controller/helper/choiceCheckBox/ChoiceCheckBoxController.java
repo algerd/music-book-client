@@ -123,8 +123,7 @@ public class ChoiceCheckBoxController<T> implements Initializable {
                 items.add(item);
             }
         }
-        //items.sort(Comparator.comparing(T::toString));
-        
+        //items.sort(Comparator.comparing(T::toString));       
         String str = "";
         for (Resource<T> item : items) {
             if (!str.equals("")) {

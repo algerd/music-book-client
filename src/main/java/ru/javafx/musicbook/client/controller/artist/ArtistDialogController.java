@@ -25,6 +25,7 @@ import org.springframework.hateoas.Resource;
 import ru.javafx.musicbook.client.Params;
 import ru.javafx.musicbook.client.controller.BaseDialogController;
 import ru.javafx.musicbook.client.controller.helper.choiceCheckBox.ChoiceCheckBoxController;
+import ru.javafx.musicbook.client.controller.helper.inputImageBox.DialogImageBoxController;
 import ru.javafx.musicbook.client.entity.Artist;
 import ru.javafx.musicbook.client.entity.Genre;
 import ru.javafx.musicbook.client.fxintegrity.FXMLController;
@@ -46,10 +47,12 @@ public class ArtistDialogController extends BaseDialogController {
     @Autowired
     private ArtistRepository artistRepository;
     @Autowired
-    private GenreRepository genreRepository;   
-    @FXML
-    private ChoiceCheckBoxController<Genre> includedChoiceCheckBoxController;
+    private GenreRepository genreRepository;  
     
+    @FXML
+    private DialogImageBoxController includedDialogImageBoxController;
+    @FXML
+    private ChoiceCheckBoxController<Genre> includedChoiceCheckBoxController;   
     @FXML
     private AnchorPane view;
     @FXML
@@ -64,6 +67,7 @@ public class ArtistDialogController extends BaseDialogController {
         Helper.initIntegerSpinner(ratingSpinner, Params.MIN_RATING, Params.MAX_RATING, Params.MIN_RATING, true, rating);      
         Helper.limitTextInput(nameTextField, 255);
         Helper.limitTextInput(commentTextArea, 1000);
+        includedDialogImageBoxController.setStage(dialogStage);
         includedChoiceCheckBoxController.setMainPane(view);
         includedChoiceCheckBoxController.getChoiceCheckBox().setPrefWidth(250.0);
     }

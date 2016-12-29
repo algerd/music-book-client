@@ -1,7 +1,6 @@
 package ru.javafx.musicbook.client.controller.helper.inputImageBox;
 
 import java.io.File;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.file.Files;
 import java.util.ResourceBundle;
@@ -32,8 +31,7 @@ import ru.javafx.musicbook.client.utils.ImageUtil;
 @FXMLController(value = "/fxml/helper/inputImageBox/DialogImageBox.fxml")
 @Scope("prototype")
 public class DialogImageBoxController implements Initializable {
-    
-    //private Entity entity;    
+       
     private String imageFormat = Params.SAVED_IMAGE_FORMAT;
     private int width = Params.WIDTH_COVER;
     private int heigth = Params.HEIGTH_COVER;        
@@ -137,40 +135,18 @@ public class DialogImageBoxController implements Initializable {
         imageView.setImage(new Image(strUrl, true));
         imageTextFlow.setVisible(false);
     }
-    /*
-    public void saveImage() {     
-        File imageFile = getImageFile();
-        imageFile.mkdirs();
-        Image image = imageView.getImage();                     
-        if (image != null) {
-            Image resizedImage = ImageUtil.resizeImage(image, width, heigth, true);  
-            ImageUtil.writeImage(resizedImage, imageFormat, imageFile);
-        } else {
-            ImageUtil.deleteImage(imageFile);
-        }
-    }
-    */
+
     public void saveImage(Resource<? extends Entity> resource) {     
         Image image = imageView.getImage();                     
         if (image != null) {
-            Image resizedImage = ImageUtil.resizeImage(image, width, heigth, true); 
-            requestService.postImage(resource.getId().getHref(), resizedImage, imageFormat);
+            //Image resizedImage = ImageUtil.resizeImage(image, width, heigth, true); 
+            //requestService.postImage(resource.getId().getHref(), resizedImage, imageFormat);
+            requestService.postImage(resource.getId().getHref(), image, imageFormat);
         } else {
             //ImageUtil.deleteImage(imageFile);
         }
     }
     
-    public void saveImage(File savedFile, int width, int heigth, boolean preservedRatio) {
-        savedFile.mkdirs();
-        Image image = imageView.getImage();                     
-        if (image != null) {
-            Image resizedImage = ImageUtil.resizeImage(image, width, heigth, preservedRatio);  
-            ImageUtil.writeImage(resizedImage, imageFormat, savedFile);
-        } else {
-            ImageUtil.deleteImage(savedFile);
-        }
-    }
-          
     @FXML
     private void showContextMenu(MouseEvent mouseEvent) {
         contextMenu.getItems().clear();
@@ -195,11 +171,7 @@ public class DialogImageBoxController implements Initializable {
             });
         }    
     }  
-    /*
-    public void setEntity(Entity entity) {
-        this.entity = entity;
-    }
-    */
+
     public void setStage(Stage stage) {
         this.stage = stage;
     }

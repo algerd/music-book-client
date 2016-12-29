@@ -3,7 +3,6 @@ package ru.javafx.musicbook.client.utils;
 
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
-import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -22,22 +21,7 @@ import org.apache.log4j.Logger;
 public class ImageUtil {
     
     private static final Logger LOG = LogManager.getLogger(ImageUtil.class);
-    /*
-    public static void writeImage2(Image image, String imageFormat) {
-        try {          
-            BufferedImage bImage = SwingFXUtils.fromFXImage(image, null);            
-            ByteArrayOutputStream baos = new ByteArrayOutputStream();   
-            ImageIO.write(bImage, imageFormat, baos);  
-            baos.flush();
-            byte[] imageInByte = baos.toByteArray();
-            baos.close();
-        } 
-        catch (IOException e) {
-            LOG.error("Error: ", e);
-            //e.printStackTrace();
-        }
-    }
-    */    
+    
     public static Image readImage(File file) {	
         Image image = null;
 		try {
@@ -51,7 +35,7 @@ public class ImageUtil {
         }
         return image;
     }
-    
+    /*
     public static void writeImage(Image image, String imageFormat, File file) {
         try {          
             BufferedImage bImage = SwingFXUtils.fromFXImage(image, null);                                                      
@@ -62,7 +46,7 @@ public class ImageUtil {
             //e.printStackTrace();
         }
     }
-    
+    */
     public static void deleteImage(File file) {
         try {          
             Files.deleteIfExists(file.toPath());
@@ -168,5 +152,4 @@ public class ImageUtil {
         g2d.dispose();      
         return SwingFXUtils.toFXImage(outputBufImage, null);
     }
-    
 }

@@ -12,7 +12,6 @@ import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonType;
 import javafx.scene.image.Image;
 import javax.imageio.ImageIO;
-import org.apache.tomcat.util.codec.binary.Base64;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -46,14 +45,13 @@ public class RequestService {
         return new Image(url, true);
     }
     
-    // пока только для IMAGE_JPEG
     public HttpStatus postImage(String ref, Image image, String imageFormat) {       
         try {
             BufferedImage bImage = SwingFXUtils.fromFXImage(image, null);
             ByteArrayOutputStream baos = new ByteArrayOutputStream();
             ImageIO.write(bImage, imageFormat, baos);
             baos.flush();
-            byte[] byteArray = baos.toByteArray();
+            byte[] byteArray = baos.toByteArray();         
             baos.close();
             
             URI uri = new URI(ref + "/image");  

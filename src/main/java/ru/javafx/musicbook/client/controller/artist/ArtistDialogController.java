@@ -168,15 +168,15 @@ public class ArtistDialogController extends BaseDialogController {
         ratingSpinner.getValueFactory().setValue(artist.getRating());
         commentTextArea.setText(artist.getDescription());
         initGenreChoiceCheckBox();
-
-        
+      
         //получить url изображения 
-        //String imageLink = artist.getImageLink();
+        //String imageLink = resource.getId().getHref() + "/image";
+        /*
         String imageLink = "http://localhost:8080/images/artist/test.jpg";
         if (!imageLink.equals("")) {
             includedDialogImageBoxController.setImage(imageLink);      
         } 
-        
+        */
     }
         
     public int getRating() {

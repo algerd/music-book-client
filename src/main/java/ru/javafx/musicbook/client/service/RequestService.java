@@ -44,6 +44,7 @@ public class RequestService {
         return new Image(url, true);
     }
     
+    /*
     public HttpStatus postImage(String ref, Image image, String imageFormat) {
         try {             
             BufferedImage bImage = SwingFXUtils.fromFXImage(image, null);            
@@ -67,6 +68,39 @@ public class RequestService {
         }
         return null;
     }
+    */
+    // пока только для IMAGE_JPEG
+    public HttpStatus postImage(String ref, Image image, String imageFormat) {       
+        try {
+            BufferedImage bImage = SwingFXUtils.fromFXImage(image, null);
+            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+            ImageIO.write(bImage, imageFormat, baos);
+            baos.flush();
+            byte[] byteArray = baos.toByteArray();
+            baos.close();
+            
+            URI uri = new URI(ref + "/image");  
+            HttpHeaders headers = sessionManager.createSessionHeaders(); 
+            imageFormat = imageFormat.toLowerCase();
+            MediaType contentType;
+            if (imageFormat.equals("jpg") || imageFormat.equals("jpeg")) {
+                contentType = MediaType.IMAGE_JPEG;
+            } else if (imageFormat.equals("png")) {
+                contentType = MediaType.IMAGE_PNG;
+            } else {
+                return null;
+            }
+            headers.setContentType(contentType);
+            HttpEntity<byte[]> entity = new HttpEntity<>(byteArray, headers);
+            RestTemplate restTemplate = new RestTemplate();
+            return restTemplate.exchange(uri, HttpMethod.POST, entity , String.class).getStatusCode();                     
+        } catch (IOException | URISyntaxException ex) {
+            logger.error(ex.getMessage());
+            //ex.printStackTrace(); 
+        }
+        return null;
+    }  
+    /////////////////////////////////////////////////////////////////
    
     public int extractId(String href) {
         return Integer.valueOf(href.substring(href.lastIndexOf("/") + 1));

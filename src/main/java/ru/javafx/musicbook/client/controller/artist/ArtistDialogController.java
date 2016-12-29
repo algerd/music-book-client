@@ -1,8 +1,6 @@
 
 package ru.javafx.musicbook.client.controller.artist;
 
-import java.io.File;
-import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.ArrayList;
@@ -10,7 +8,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.ResourceBundle;
-import java.util.logging.Level;
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleIntegerProperty;
@@ -19,7 +16,6 @@ import javafx.fxml.FXML;
 import javafx.scene.control.Spinner;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
-import javafx.scene.image.Image;
 import javafx.scene.layout.AnchorPane;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -119,6 +115,12 @@ public class ArtistDialogController extends BaseDialogController {
                     artistRepository.saveGenre(resource, idGenre);
                 }
             }); 
+            
+            //if (includedDialogImageBoxController.isChangedImage()) {
+                includedDialogImageBoxController.saveImage(resource);
+                //includedDialogImageBoxController.setChangedImage(false);                              
+            //}
+            
             dialogStage.close();
             edit = false;
         }
@@ -172,7 +174,7 @@ public class ArtistDialogController extends BaseDialogController {
         //String imageLink = artist.getImageLink();
         String imageLink = "http://localhost:8080/images/artist/90.jpg";
         if (!imageLink.equals("")) {
-             includedDialogImageBoxController.setImage(imageLink);      
+            includedDialogImageBoxController.setImage(imageLink);      
         } 
         
     }

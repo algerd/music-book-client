@@ -5,8 +5,6 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.file.Files;
 import java.util.ResourceBundle;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Alert;
@@ -22,9 +20,13 @@ import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.text.TextFlow;
 import javafx.stage.Stage;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
+import org.springframework.hateoas.Resource;
 import ru.javafx.musicbook.client.Params;
+import ru.javafx.musicbook.client.entity.Entity;
 import ru.javafx.musicbook.client.fxintegrity.FXMLController;
+import ru.javafx.musicbook.client.service.RequestService;
 import ru.javafx.musicbook.client.utils.ImageUtil;
 
 @FXMLController(value = "/fxml/helper/inputImageBox/DialogImageBox.fxml")
@@ -38,6 +40,9 @@ public class DialogImageBoxController implements Initializable {
     private boolean changedImage = false;       
     private Stage stage;
     private final ContextMenu contextMenu = new ContextMenu();
+    
+    @Autowired
+    private RequestService requestService;
     
     @FXML
     private AnchorPane dialogImageBox;
@@ -132,7 +137,7 @@ public class DialogImageBoxController implements Initializable {
         imageView.setImage(new Image(strUrl, true));
         imageTextFlow.setVisible(false);
     }
-    
+    /*
     public void saveImage() {     
         File imageFile = getImageFile();
         imageFile.mkdirs();
@@ -142,6 +147,16 @@ public class DialogImageBoxController implements Initializable {
             ImageUtil.writeImage(resizedImage, imageFormat, imageFile);
         } else {
             ImageUtil.deleteImage(imageFile);
+        }
+    }
+    */
+    public void saveImage(Resource<? extends Entity> resource) {     
+        Image image = imageView.getImage();                     
+        if (image != null) {
+            Image resizedImage = ImageUtil.resizeImage(image, width, heigth, true); 
+            requestService.postImage(resource.getId().getHref(), resizedImage, imageFormat);
+        } else {
+            //ImageUtil.deleteImage(imageFile);
         }
     }
     

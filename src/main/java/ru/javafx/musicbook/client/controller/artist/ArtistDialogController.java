@@ -172,7 +172,7 @@ public class ArtistDialogController extends BaseDialogController {
         
         //получить url изображения 
         //String imageLink = artist.getImageLink();
-        String imageLink = "http://localhost:8080/images/artist/90.jpg";
+        String imageLink = "http://localhost:8080/images/artist/test.jpg";
         if (!imageLink.equals("")) {
             includedDialogImageBoxController.setImage(imageLink);      
         } 

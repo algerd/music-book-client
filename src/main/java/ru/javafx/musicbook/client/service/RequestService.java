@@ -40,35 +40,12 @@ public class RequestService {
     @Value("${spring.data.rest.basePath}")
     private String basePath;
     
+    //////////////////////////////////////////////////////////////////////
+    
     public Image getImage(String url) {
         return new Image(url, true);
     }
     
-    /*
-    public HttpStatus postImage(String ref, Image image, String imageFormat) {
-        try {             
-            BufferedImage bImage = SwingFXUtils.fromFXImage(image, null);            
-            ByteArrayOutputStream baos = new ByteArrayOutputStream();
-            ImageIO.write(bImage, imageFormat, baos);
-            baos.flush();
-            String encodedImage = (new Base64(false)).encodeToString(baos.toByteArray());
-            baos.close();
-            encodedImage = java.net.URLEncoder.encode(encodedImage, "ISO-8859-1");  
-                      
-            URI uri = new URI(ref);  
-            HttpHeaders headers = sessionManager.createSessionHeaders();
-            headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);     
-            HttpEntity<String> request = new HttpEntity<>(encodedImage, headers);
-            RestTemplate restTemplate = new RestTemplate();
-            return restTemplate.exchange(uri, HttpMethod.POST, request, String.class).getStatusCode();
-        }  
-        catch (IOException | URISyntaxException ex) {
-            logger.error(ex.getMessage());
-            //ex.printStackTrace(); 
-        }
-        return null;
-    }
-    */
     // пока только для IMAGE_JPEG
     public HttpStatus postImage(String ref, Image image, String imageFormat) {       
         try {

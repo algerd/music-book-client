@@ -39,13 +39,11 @@ public class RequestService {
     @Value("${spring.data.rest.basePath}")
     private String basePath;
     
-    //////////////////////////////////////////////////////////////////////
-    
     public Image getImage(String url) {
         return new Image(url, true);
     }
     
-    public HttpStatus postImage(String ref, Image image, String imageFormat) {       
+    public HttpStatus postImage(Resource<? extends Entity> resource, Image image, String imageFormat) {       
         try {
             BufferedImage bImage = SwingFXUtils.fromFXImage(image, null);
             ByteArrayOutputStream baos = new ByteArrayOutputStream();
@@ -54,7 +52,7 @@ public class RequestService {
             byte[] byteArray = baos.toByteArray();         
             baos.close();
             
-            URI uri = new URI(ref + "/image");  
+            URI uri = new URI(resource.getId().getHref() + "/image");  
             HttpHeaders headers = sessionManager.createSessionHeaders(); 
             imageFormat = imageFormat.toLowerCase();
             MediaType contentType;
@@ -75,7 +73,6 @@ public class RequestService {
         }
         return null;
     }  
-    /////////////////////////////////////////////////////////////////
    
     public int extractId(String href) {
         return Integer.valueOf(href.substring(href.lastIndexOf("/") + 1));

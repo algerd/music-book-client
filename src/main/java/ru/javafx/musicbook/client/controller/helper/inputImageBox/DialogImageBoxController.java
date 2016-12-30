@@ -31,7 +31,7 @@ import ru.javafx.musicbook.client.utils.ImageUtil;
 @FXMLController(value = "/fxml/helper/inputImageBox/DialogImageBox.fxml")
 @Scope("prototype")
 public class DialogImageBoxController implements Initializable {
-       
+    // надо убрать это и сделать автоматическим определение формата изображения  
     private String imageFormat = Params.SAVED_IMAGE_FORMAT;
     private int width = Params.WIDTH_COVER;
     private int heigth = Params.HEIGTH_COVER;        
@@ -139,9 +139,7 @@ public class DialogImageBoxController implements Initializable {
     public void saveImage(Resource<? extends Entity> resource) {     
         Image image = imageView.getImage();                     
         if (image != null) {
-            //Image resizedImage = ImageUtil.resizeImage(image, width, heigth, true); 
-            //requestService.postImage(resource.getId().getHref(), resizedImage, imageFormat);
-            requestService.postImage(resource.getId().getHref(), image, imageFormat);
+            requestService.postImage(resource, image, imageFormat);
         } else {
             //ImageUtil.deleteImage(imageFile);
         }
@@ -175,11 +173,11 @@ public class DialogImageBoxController implements Initializable {
     public void setStage(Stage stage) {
         this.stage = stage;
     }
-
+    
     public void setImageFormat(String imageFormat) {
         this.imageFormat = imageFormat;
     }
-
+    
     public int getWidth() {
         return width;
     }

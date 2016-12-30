@@ -83,6 +83,17 @@ public class RequestService {
             //ex.printStackTrace(); 
         }      
     }
+    
+    public void getImage(Resource<? extends Entity> resource) {
+        try {  
+            
+            URI uri = new URI(resource.getId().getHref() + "/image"); 
+            
+        } catch (URISyntaxException ex) {
+            logger.error(ex.getMessage());
+            //ex.printStackTrace(); 
+        }      
+    }
    
     public int extractId(String href) {
         return Integer.valueOf(href.substring(href.lastIndexOf("/") + 1));

@@ -141,7 +141,7 @@ public class DialogImageBoxController implements Initializable {
         if (image != null) {
             requestService.postImage(resource, image, imageFormat);
         } else {
-            //ImageUtil.deleteImage(imageFile);
+            requestService.deleteImage(resource);
         }
     }
     

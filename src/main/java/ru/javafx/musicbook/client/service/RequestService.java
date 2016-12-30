@@ -73,6 +73,16 @@ public class RequestService {
         }
         return null;
     }  
+    
+    public void deleteImage(Resource<? extends Entity> resource) {
+        try {  
+            URI uri = new URI(resource.getId().getHref() + "/image"); 
+            new RestTemplate().exchange(uri, HttpMethod.DELETE, new HttpEntity(sessionManager.createSessionHeaders()), String.class);
+        } catch (URISyntaxException ex) {
+            logger.error(ex.getMessage());
+            //ex.printStackTrace(); 
+        }      
+    }
    
     public int extractId(String href) {
         return Integer.valueOf(href.substring(href.lastIndexOf("/") + 1));

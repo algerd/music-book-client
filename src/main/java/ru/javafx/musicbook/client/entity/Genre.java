@@ -9,7 +9,6 @@ public class Genre implements Entity {
 
     private final StringProperty name = new SimpleStringProperty("");
     private final StringProperty description = new SimpleStringProperty("");
-    private final StringProperty imageLink = new SimpleStringProperty("");
     
     public Genre() {}
    
@@ -32,16 +31,6 @@ public class Genre implements Entity {
     public StringProperty descriptionProperty() {
         return description;
     } 
-    
-    public String getImageLink() {
-        return imageLink.get();
-    }
-    public void setImageLink(String value) {
-        imageLink.set(value);
-    }
-    public StringProperty imageLinkProperty() {
-        return imageLink;
-    }
 
     @Override
     public int hashCode() {

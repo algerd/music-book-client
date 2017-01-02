@@ -21,7 +21,7 @@ import org.apache.log4j.Logger;
 public class ImageUtil {
     
     private static final Logger LOG = LogManager.getLogger(ImageUtil.class);
-    
+   
     public static Image readImage(File file) {	
         Image image = null;
 		try {
@@ -35,28 +35,7 @@ public class ImageUtil {
         }
         return image;
     }
-    /*
-    public static void writeImage(Image image, String imageFormat, File file) {
-        try {          
-            BufferedImage bImage = SwingFXUtils.fromFXImage(image, null);                                                      
-            ImageIO.write(bImage, imageFormat, file);  
-        } 
-        catch (IOException e) {
-            LOG.error("Error: ", e);
-            //e.printStackTrace();
-        }
-    }
-    */
-    public static void deleteImage(File file) {
-        try {          
-            Files.deleteIfExists(file.toPath());
-        } 
-        catch (IOException e) {
-            //e.printStackTrace();
-            LOG.error("Error: ", e);
-        }
-    }
-    
+
     public static File openFileChooser() {
         FileChooser fileChooser = new FileChooser();
         fileChooser.setTitle("Load an image file");
@@ -125,31 +104,5 @@ public class ImageUtil {
 		}		
 		return null;
 	}
-             
-    /*
-    Change dimension of Image
-    */
-    public static Image resizeImage(Image image, int scaledWidth, int scaledHeight, boolean preserveRatio) {  
-        double imageHeight = image.getHeight();
-        double imageWidth = image.getWidth();
-        
-        if ((int) imageHeight == scaledHeight && (int) imageWidth == scaledWidth) {
-            return image;
-        }              
-        if (preserveRatio) {           
-            if (imageHeight/scaledHeight > imageWidth/scaledWidth) {
-                scaledWidth = (int) (scaledHeight * imageWidth / imageHeight);
-            } else {
-                scaledHeight = (int) (scaledWidth * imageHeight / imageWidth);
-            }        
-        }                   
-        BufferedImage inputBufImage = SwingFXUtils.fromFXImage(image, null);     
-        // creates output image
-        BufferedImage outputBufImage = new BufferedImage(scaledWidth, scaledHeight, inputBufImage.getType());       
-        // scales the input image to the output image
-        Graphics2D g2d = outputBufImage.createGraphics();
-        g2d.drawImage(inputBufImage, 0, 0, scaledWidth, scaledHeight, null);
-        g2d.dispose();      
-        return SwingFXUtils.toFXImage(outputBufImage, null);
-    }
+
 }

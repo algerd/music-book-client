@@ -51,7 +51,7 @@ public class RequestService {
             baos.flush();
             byte[] byteArray = baos.toByteArray();         
             baos.close();
-            
+
             URI uri = new URI(resource.getId().getHref() + "/image");  
             HttpHeaders headers = sessionManager.createSessionHeaders(); 
             imageFormat = imageFormat.toLowerCase();

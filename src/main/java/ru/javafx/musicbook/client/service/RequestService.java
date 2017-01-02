@@ -43,27 +43,18 @@ public class RequestService {
         return new Image(url, true);
     }
     
-    public HttpStatus postImage(Resource<? extends Entity> resource, Image image, String imageFormat) {       
+    public HttpStatus postImage(Resource<? extends Entity> resource, Image image) {       
         try {
             BufferedImage bImage = SwingFXUtils.fromFXImage(image, null);
             ByteArrayOutputStream baos = new ByteArrayOutputStream();
-            ImageIO.write(bImage, imageFormat, baos);
+            ImageIO.write(bImage, "jpg", baos);
             baos.flush();
             byte[] byteArray = baos.toByteArray();         
             baos.close();
 
             URI uri = new URI(resource.getId().getHref() + "/image");  
             HttpHeaders headers = sessionManager.createSessionHeaders(); 
-            imageFormat = imageFormat.toLowerCase();
-            MediaType contentType;
-            if (imageFormat.equals("jpg") || imageFormat.equals("jpeg")) {
-                contentType = MediaType.IMAGE_JPEG;
-            } else if (imageFormat.equals("png")) {
-                contentType = MediaType.IMAGE_PNG;
-            } else {
-                return null;
-            }
-            headers.setContentType(contentType);
+            headers.setContentType(MediaType.IMAGE_JPEG);
             HttpEntity<byte[]> entity = new HttpEntity<>(byteArray, headers);
             RestTemplate restTemplate = new RestTemplate();
             return restTemplate.exchange(uri, HttpMethod.POST, entity , String.class).getStatusCode();                     

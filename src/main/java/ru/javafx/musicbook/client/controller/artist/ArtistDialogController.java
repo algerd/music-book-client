@@ -114,13 +114,11 @@ public class ArtistDialogController extends BaseDialogController {
                 if (flag.getValue() && !genres.contains(resourceGenre.getContent())) { 
                     artistRepository.saveGenre(resource, idGenre);
                 }
-            }); 
-            
-            //if (includedDialogImageBoxController.isChangedImage()) {
+            });            
+            if (includedDialogImageBoxController.isChangedImage()) {
                 includedDialogImageBoxController.saveImage(resource);
-                //includedDialogImageBoxController.setChangedImage(false);                              
-            //}
-            
+                includedDialogImageBoxController.setChangedImage(false);                              
+            }           
             dialogStage.close();
             edit = false;
         }
@@ -168,15 +166,9 @@ public class ArtistDialogController extends BaseDialogController {
         ratingSpinner.getValueFactory().setValue(artist.getRating());
         commentTextArea.setText(artist.getDescription());
         initGenreChoiceCheckBox();
-      
-        //получить url изображения 
-        //String imageLink = resource.getId().getHref() + "/image";
-        
-        String imageLink = "http://localhost:8080/images/artists/test.jpg";
-        if (!imageLink.equals("")) {
-            includedDialogImageBoxController.setImage(imageLink);      
-        } 
-        
+        if (resource.hasLink("get_image")) {
+            includedDialogImageBoxController.setImage(resource.getLink("get_image").getHref()); 
+        }
     }
         
     public int getRating() {

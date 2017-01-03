@@ -52,7 +52,7 @@ public class RequestService {
             byte[] byteArray = baos.toByteArray();         
             baos.close();
 
-            URI uri = new URI(resource.getId().getHref() + "/image");  
+            URI uri = new URI(resource.getLink("post_delete_image").getHref());          
             HttpHeaders headers = sessionManager.createSessionHeaders(); 
             headers.setContentType(MediaType.IMAGE_JPEG);
             HttpEntity<byte[]> entity = new HttpEntity<>(byteArray, headers);
@@ -67,25 +67,14 @@ public class RequestService {
     
     public void deleteImage(Resource<? extends Entity> resource) {
         try {  
-            URI uri = new URI(resource.getId().getHref() + "/image"); 
+            URI uri = new URI(resource.getLink("post_delete_image").getHref());
             new RestTemplate().exchange(uri, HttpMethod.DELETE, new HttpEntity(sessionManager.createSessionHeaders()), String.class);
         } catch (URISyntaxException ex) {
             logger.error(ex.getMessage());
             //ex.printStackTrace(); 
         }      
     }
-    
-    public void getImage(Resource<? extends Entity> resource) {
-        try {  
-            
-            URI uri = new URI(resource.getId().getHref() + "/image"); 
-            
-        } catch (URISyntaxException ex) {
-            logger.error(ex.getMessage());
-            //ex.printStackTrace(); 
-        }      
-    }
-   
+
     public int extractId(String href) {
         return Integer.valueOf(href.substring(href.lastIndexOf("/") + 1));
     }

@@ -79,7 +79,6 @@ public class GenresController extends BaseAwareController implements PagedContro
         try {
             resources = genreRepository.searchByName(paginatorPaneController.getPaginator(), searchString);
             genresTable.setItems(FXCollections.observableArrayList(resources.getContent().parallelStream().collect(Collectors.toList())));           
-            logger.info("Genre Table Items: {}", genresTable.getItems());
             Helper.setHeightTable(genresTable, paginatorPaneController.getPaginator().getSize(), 2);        
         } catch (URISyntaxException ex) {
             logger.error(ex.getMessage());
@@ -117,7 +116,7 @@ public class GenresController extends BaseAwareController implements PagedContro
     }
     
     private void filter() {
-        logger.info("searchField {}", searchField.getText());        
+        //logger.info("searchField {}", searchField.getText());        
         setPageValue();
         paginatorPaneController.initPageComboBox();
     }

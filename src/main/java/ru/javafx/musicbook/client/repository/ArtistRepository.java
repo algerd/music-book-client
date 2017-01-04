@@ -7,8 +7,6 @@ import java.util.HashMap;
 import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.hateoas.MediaTypes;
 import org.springframework.hateoas.PagedResources;
@@ -17,38 +15,31 @@ import org.springframework.hateoas.client.Traverson;
 import org.springframework.hateoas.mvc.TypeReferences;
 import org.springframework.stereotype.Repository;
 import org.springframework.web.client.HttpClientErrorException;
-import ru.javafx.musicbook.client.SessionManager;
 import ru.javafx.musicbook.client.entity.Artist;
 import ru.javafx.musicbook.client.entity.Entity;
-import ru.javafx.musicbook.client.service.RequestService;
 import ru.javafx.musicbook.client.controller.paginator.Paginator;
 import ru.javafx.musicbook.client.entity.Genre;
+import ru.javafx.musicbook.client.repository.impl.CrudRepositoryImpl;
+import ru.javafx.musicbook.client.repository.impl.WrapChangedEntity;
 import ru.javafx.musicbook.client.utils.Helper;
 
 @Repository
-public class ArtistRepository {
+public class ArtistRepository extends CrudRepositoryImpl<Artist> {
     
     private static final String REL_PATH = "artists";
     private final Logger logger = LoggerFactory.getLogger(getClass());
-    
-    @Autowired
-    private RequestService requestService;
-    
-    @Autowired
-    private SessionManager sessionManager;
-    
-    @Value("${spring.data.rest.basePath}")
-    private String basePath;  
-    
+    /*   
     public void save(Artist artist) {
         requestService.post(REL_PATH, artist);
     }
-
+    */
     public Resource<Artist> saveAndGetResource(Artist artist) {
-        return new Traverson(requestService.post(REL_PATH, artist), MediaTypes.HAL_JSON)//
+        Resource<Artist> resourceArtist = new Traverson(requestService.post(REL_PATH, artist), MediaTypes.HAL_JSON)//
                 .follow("self")
                 .withHeaders(sessionManager.createSessionHeaders())
-                .toObject(new ParameterizedTypeReference<Resource<Artist>>() {});      
+                .toObject(new ParameterizedTypeReference<Resource<Artist>>() {});
+        super.setAdded(new WrapChangedEntity<>(resourceArtist, resourceArtist));
+        return resourceArtist;
     }
 
     public void saveGenre(Resource<? extends Entity> resource, int idGenre) {        
@@ -59,8 +50,17 @@ public class ArtistRepository {
         requestService.deleteAbs(resource.getId().getHref() + "/genres/" + idGenre);
     }
     
-    public void update(Resource<? extends Entity> resource) {
-        requestService.put(resource);
+    public void update(Resource<? extends Entity> resource) {       
+        try {
+            Resource<Artist> oldResource = new Traverson(new URI(resource.getId().getHref()), MediaTypes.HAL_JSON)//
+                    .follow("self")
+                    .withHeaders(sessionManager.createSessionHeaders())
+                    .toObject(new ParameterizedTypeReference<Resource<Artist>>() {});
+            requestService.put(resource);
+            super.setUpdated(new WrapChangedEntity<>(oldResource, (Resource<Artist>)resource));
+        } catch (URISyntaxException ex) {
+            ex.printStackTrace();
+        }       
     }
     
     public boolean exist(String search)  throws URISyntaxException {

@@ -10,6 +10,7 @@ import java.util.ResourceBundle;
 import java.util.stream.Collectors;
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleIntegerProperty;
+import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.scene.control.ChoiceBox;
@@ -41,6 +42,7 @@ import ru.javafx.musicbook.client.controller.paginator.Sort.Order;
 import ru.javafx.musicbook.client.entity.Genre;
 import ru.javafx.musicbook.client.repository.ArtistRepository;
 import ru.javafx.musicbook.client.repository.GenreRepository;
+import ru.javafx.musicbook.client.repository.impl.WrapChangedEntity;
 import static ru.javafx.musicbook.client.service.ContextMenuItemType.*;
 import ru.javafx.musicbook.client.service.RequestService;
 import ru.javafx.musicbook.client.utils.Helper;
@@ -109,6 +111,7 @@ public class ArtistsController extends BaseAwareController implements PagedContr
         initSortAndOrderChoiceBoxes();
         initGenreChoiceBox();
         initArtistsTable();  
+        initRepositoryListeners();
         initFilterListeners();     
     }
     
@@ -236,7 +239,19 @@ public class ArtistsController extends BaseAwareController implements PagedContr
         searchField.textProperty().setValue("");
         resetSearchLabel.setVisible(false);
     }
-              
+    
+    private void initRepositoryListeners() { 
+        artistRepository.clearInsertListeners(this);          
+        artistRepository.clearDeleteListeners(this);           
+        //artistRepository.clearUpdateListeners(this);       
+        //genreRepository.clearChangeListeners(this);  
+        
+        artistRepository.addInsertListener((observable, oldVal, newVal) -> filter(), this);          
+        artistRepository.addDeleteListener((observable, oldVal, newVal) -> filter(), this);           
+        //artistRepository.addUpdateListener(this::updated, this);       
+        //genreRepository.addChangeListener(this::changedGenre, this);          
+    }
+                  
     @FXML
     private void onMouseClickTable(MouseEvent mouseEvent) { 
         boolean isShowingContextMenu = contextMenuService.getContextMenu().isShowing();     

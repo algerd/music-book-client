@@ -34,12 +34,12 @@ public class ArtistRepository extends CrudRepositoryImpl<Artist> {
     }
     */
     public Resource<Artist> saveAndGetResource(Artist artist) {
-        Resource<Artist> resourceArtist = new Traverson(requestService.post(REL_PATH, artist), MediaTypes.HAL_JSON)//
+        Resource<Artist> resource = new Traverson(requestService.post(REL_PATH, artist), MediaTypes.HAL_JSON)//
                 .follow("self")
                 .withHeaders(sessionManager.createSessionHeaders())
                 .toObject(new ParameterizedTypeReference<Resource<Artist>>() {});
-        super.setAdded(new WrapChangedEntity<>(resourceArtist, resourceArtist));
-        return resourceArtist;
+        super.setAdded(new WrapChangedEntity<>(resource, resource));
+        return resource;
     }
 
     public void saveGenre(Resource<? extends Entity> resource, int idGenre) {        

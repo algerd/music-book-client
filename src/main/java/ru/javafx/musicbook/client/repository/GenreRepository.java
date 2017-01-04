@@ -19,6 +19,7 @@ import ru.javafx.musicbook.client.controller.paginator.Paginator;
 import ru.javafx.musicbook.client.entity.Entity;
 import ru.javafx.musicbook.client.entity.Genre;
 import ru.javafx.musicbook.client.repository.impl.CrudRepositoryImpl;
+import ru.javafx.musicbook.client.repository.impl.WrapChangedEntity;
 import ru.javafx.musicbook.client.utils.Helper;
 
 @Repository
@@ -26,13 +27,32 @@ public class GenreRepository extends CrudRepositoryImpl<Genre> {
 
     private static final String REL_PATH = "genres";
     private final Logger logger = LoggerFactory.getLogger(getClass());
-       
+    /*   
     public void add(Genre genre) {
         requestService.post(REL_PATH, genre);
     }
+    */
+    public Resource<Genre> saveAndGetResource(Genre genre) {
+        Resource<Genre> resource = new Traverson(requestService.post(REL_PATH, genre), MediaTypes.HAL_JSON)//
+                .follow("self")
+                .withHeaders(sessionManager.createSessionHeaders())
+                .toObject(new ParameterizedTypeReference<Resource<Genre>>() {});
+        super.setAdded(new WrapChangedEntity<>(resource, resource));
+        return resource;
+    }
     
     public void update(Resource<? extends Entity> resource) {
-        requestService.put(resource);
+        //requestService.put(resource);
+        try {
+            Resource<Genre> oldResource = new Traverson(new URI(resource.getId().getHref()), MediaTypes.HAL_JSON)//
+                    .follow("self")
+                    .withHeaders(sessionManager.createSessionHeaders())
+                    .toObject(new ParameterizedTypeReference<Resource<Genre>>() {});
+            requestService.put(resource);
+            super.setUpdated(new WrapChangedEntity<>(oldResource, (Resource<Genre>)resource));
+        } catch (URISyntaxException ex) {
+            ex.printStackTrace();
+        }  
     } 
     
     public PagedResources<Resource<Genre>> searchByName(Paginator paginator, String search) throws URISyntaxException {    

@@ -45,13 +45,12 @@ public class GenreDialogController extends BaseDialogController {
             genre.setName(nameTextField.getText().trim());
             genre.setDescription(commentTextArea.getText().trim());           
 
-            if (edit) {               
-                //logger.info("Edited Genre: {}", genre);
-                genreRepository.update(resource);
-            } else { 
-                //logger.info("Added Genre: {}", genre);
-                genreRepository.add(genre);
-            }             
+            if (edit) {
+                genreRepository.update(resource);               
+            } else {
+                resource = genreRepository.saveAndGetResource(genre); 
+            }                       
+            
             dialogStage.close();
             edit = false;
         }

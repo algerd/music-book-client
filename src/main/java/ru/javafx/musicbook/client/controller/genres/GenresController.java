@@ -69,6 +69,7 @@ public class GenresController extends BaseAwareController implements PagedContro
     @Override
     public void initialize(URL url, ResourceBundle rb) { 
         initGenresTable();
+        initRepositoryListeners();
         initFilterListeners();
     }
     
@@ -125,6 +126,28 @@ public class GenresController extends BaseAwareController implements PagedContro
     private void resetSearchLabel() {
         searchField.textProperty().setValue("");
         resetSearchLabel.setVisible(false);
+    }
+    
+    private void initRepositoryListeners() {
+       //repositoryService.getArtistGenreRepository().clearChangeListeners(this);                      
+       //repositoryService.getAlbumGenreRepository().clearChangeListeners(this);                          
+       //repositoryService.getSongGenreRepository().clearChangeListeners(this);                       
+       //repositoryService.getMusicianGenreRepository().clearChangeListeners(this);                         
+       //repositoryService.getArtistRepository().clearDeleteListeners(this);  
+       //repositoryService.getAlbumRepository().clearDeleteListeners(this);  
+       //repositoryService.getSongRepository().clearDeleteListeners(this);  
+       //repositoryService.getMusicianRepository().clearDeleteListeners(this);                         
+       genreRepository.clearChangeListeners(this);     
+        
+        //repositoryService.getArtistGenreRepository().addChangeListener(this::changed, this);                      
+        //repositoryService.getAlbumGenreRepository().addChangeListener(this::changed, this);                          
+        //repositoryService.getSongGenreRepository().addChangeListener(this::changed, this);                       
+        //repositoryService.getMusicianGenreRepository().addChangeListener(this::changed, this);                         
+        //repositoryService.getArtistRepository().addDeleteListener(this::changed, this);  
+        //repositoryService.getAlbumRepository().addDeleteListener(this::changed, this);  
+        //repositoryService.getSongRepository().addDeleteListener(this::changed, this);  
+        //repositoryService.getMusicianRepository().addDeleteListener(this::changed, this);                         
+        genreRepository.addChangeListener((observable, oldVal, newVal) -> filter(), this);           
     }
     
     @FXML

@@ -123,6 +123,7 @@ public class ArtistsController extends BaseAwareController implements PagedContr
     }
     
     private void initGenreChoiceBox() {
+        genreChoiceBox.getItems().clear();
         Helper.initResourceChoiceBox(genreChoiceBox); 
            
         Genre emptyGenre = new Genre();
@@ -240,16 +241,17 @@ public class ArtistsController extends BaseAwareController implements PagedContr
         resetSearchLabel.setVisible(false);
     }
     
-    private void initRepositoryListeners() { 
-        artistRepository.clearInsertListeners(this);          
-        artistRepository.clearDeleteListeners(this);           
-        //artistRepository.clearUpdateListeners(this);       
-        //genreRepository.clearChangeListeners(this);  
-        
-        artistRepository.addInsertListener((observable, oldVal, newVal) -> filter(), this);          
-        artistRepository.addDeleteListener((observable, oldVal, newVal) -> filter(), this);           
-        //artistRepository.addUpdateListener(this::updated, this);       
-        //genreRepository.addChangeListener(this::changedGenre, this);          
+    private void initRepositoryListeners() {           
+        artistRepository.clearChangeListeners(this);       
+        genreRepository.clearChangeListeners(this);
+                  
+        artistRepository.addChangeListener((observable, oldVal, newVal) -> filter(), this);       
+        genreRepository.addChangeListener(this::changedGenre, this);
+    }
+    
+    private void changedGenre(ObservableValue observable, Object oldVal, Object newVal) {
+        initGenreChoiceBox();
+        resetFilter();
     }
                   
     @FXML

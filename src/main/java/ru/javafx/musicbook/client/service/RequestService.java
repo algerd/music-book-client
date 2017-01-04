@@ -6,10 +6,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.util.Optional;
 import javafx.embed.swing.SwingFXUtils;
-import javafx.scene.control.Alert;
-import javafx.scene.control.ButtonType;
 import javafx.scene.image.Image;
 import javax.imageio.ImageIO;
 import org.slf4j.Logger;
@@ -133,15 +130,17 @@ public class RequestService {
             logger.error(ex.getMessage());
         }
     }
-    
+    /*
+    @Autowired
+    private ArtistRepository artistRepository;
     public void deleteWithAlert(Resource<? extends Entity> resource) {
         Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
         alert.setTitle("Confirmation");
         alert.setContentText("Do you want to remove the entity ?");
         Optional<ButtonType> result = alert.showAndWait();
         if (result.get() == ButtonType.OK) {
-            delete(resource);
+            artistRepository.delete(resource);
         }
     }
-       
+    */   
 }

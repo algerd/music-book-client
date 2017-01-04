@@ -32,7 +32,7 @@ public class ArtistRepository extends CrudRepositoryImpl<Artist> {
     public void save(Artist artist) {
         requestService.post(REL_PATH, artist);
     }
-    */
+    */   
     public Resource<Artist> saveAndGetResource(Artist artist) {
         Resource<Artist> resource = new Traverson(requestService.post(REL_PATH, artist), MediaTypes.HAL_JSON)//
                 .follow("self")
@@ -49,20 +49,7 @@ public class ArtistRepository extends CrudRepositoryImpl<Artist> {
     public void deleteGenre(Resource<? extends Entity> resource, int idGenre) {
         requestService.deleteAbs(resource.getId().getHref() + "/genres/" + idGenre);
     }
-    
-    public void update(Resource<? extends Entity> resource) {       
-        try {
-            Resource<Artist> oldResource = new Traverson(new URI(resource.getId().getHref()), MediaTypes.HAL_JSON)//
-                    .follow("self")
-                    .withHeaders(sessionManager.createSessionHeaders())
-                    .toObject(new ParameterizedTypeReference<Resource<Artist>>() {});
-            requestService.put(resource);
-            super.setUpdated(new WrapChangedEntity<>(oldResource, (Resource<Artist>)resource));
-        } catch (URISyntaxException ex) {
-            ex.printStackTrace();
-        }       
-    }
-    
+        
     public boolean exist(String search)  throws URISyntaxException {
         Map<String, Object> parameters = new HashMap<>();
         parameters.put("search", search);       

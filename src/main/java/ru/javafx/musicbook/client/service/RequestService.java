@@ -32,10 +32,7 @@ public class RequestService {
     
     @Autowired
     private SessionManager sessionManager;
-    
-    @Value("${spring.data.rest.basePath}")
-    private String basePath;
-    
+       
     public Image getImage(String url) {
         return new Image(url, true);
     }
@@ -49,7 +46,7 @@ public class RequestService {
             byte[] byteArray = baos.toByteArray();         
             baos.close();
 
-            URI uri = new URI(resource.getLink("post_delete_image").getHref());          
+            URI uri = new URI(resource.getLink("post_delete_image").getHref()); 
             HttpHeaders headers = sessionManager.createSessionHeaders(); 
             headers.setContentType(MediaType.IMAGE_JPEG);
             HttpEntity<byte[]> entity = new HttpEntity<>(byteArray, headers);
@@ -75,72 +72,5 @@ public class RequestService {
     public int extractId(String href) {
         return Integer.valueOf(href.substring(href.lastIndexOf("/") + 1));
     }
-    
-    public URI post(String rel, Entity entity) {
-        try { 
-            URI uri = new URI(basePath + rel);           
-            HttpEntity<Entity> request = new HttpEntity<>(entity, sessionManager.createSessionHeaders());
-            RestTemplate restTemplate = new RestTemplate();
-            return restTemplate.exchange(uri, HttpMethod.POST, request, String.class).getHeaders().getLocation();
-        }  
-        catch (URISyntaxException ex) {
-            logger.error(ex.getMessage());
-        }
-        return null;
-    }
-
-    public void postAbs(String absRef) {
-        try {          
-            new RestTemplate().exchange(new URI(absRef), HttpMethod.POST, new HttpEntity(sessionManager.createSessionHeaders()), String.class);
-        }  
-        catch (URISyntaxException ex) {
-            logger.error(ex.getMessage());
-        }
-    }
-    
-    public void deleteAbs(String absRef) {
-        try {          
-            new RestTemplate().exchange(new URI(absRef), HttpMethod.DELETE, new HttpEntity(sessionManager.createSessionHeaders()), String.class);
-        }  
-        catch (URISyntaxException ex) {
-            logger.error(ex.getMessage());
-        }
-    }
-    
-    public void put(Resource<? extends Entity> resource) {    
-        try { 
-            URI uri = new URI(resource.getLink("self").getHref());           
-            HttpEntity request = new HttpEntity(resource.getContent(), sessionManager.createSessionHeaders());
-            RestTemplate restTemplate = new RestTemplate();
-            restTemplate.put(uri, request); 
-        }  
-        catch (URISyntaxException ex) {
-            logger.error(ex.getMessage());
-        }       
-    }
-    
-    public void delete(Resource<? extends Entity> resource) {
-        try {
-            URI uri = new URI(resource.getLink("self").getHref());
-            HttpEntity request = new HttpEntity(sessionManager.createSessionHeaders());
-            RestTemplate restTemplate = new RestTemplate();         
-            restTemplate.exchange(uri, HttpMethod.DELETE, request, Object.class);
-        }  
-        catch (URISyntaxException ex) {
-            logger.error(ex.getMessage());
-        }
-    }
-    /*
-    @Autowired
-    private ArtistRepository artistRepository;
-    public void deleteWithAlert(Resource<? extends Entity> resource) {
-        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
-        alert.setTitle("Confirmation");
-        alert.setContentText("Do you want to remove the entity ?");
-        Optional<ButtonType> result = alert.showAndWait();
-        if (result.get() == ButtonType.OK) {
-            artistRepository.delete(resource);
-        }
-    }
-    */   
+      
 }

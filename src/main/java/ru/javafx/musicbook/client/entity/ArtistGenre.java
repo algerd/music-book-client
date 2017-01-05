@@ -1,6 +1,7 @@
 
 package ru.javafx.musicbook.client.entity;
 
+@RelPath("artist_genres")
 public class ArtistGenre implements Entity {
     
     private int idArtist;

@@ -1,8 +1,10 @@
 
 package ru.javafx.musicbook.client.controller.genre;
 
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.ResourceBundle;
+import java.util.logging.Level;
 import javafx.fxml.FXML;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
@@ -11,6 +13,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import ru.javafx.musicbook.client.controller.BaseDialogController;
+import ru.javafx.musicbook.client.controller.helper.inputImageBox.DialogImageBoxController;
 import ru.javafx.musicbook.client.entity.Genre;
 import ru.javafx.musicbook.client.fxintegrity.FXMLController;
 import ru.javafx.musicbook.client.repository.GenreRepository;
@@ -29,6 +32,8 @@ public class GenreDialogController extends BaseDialogController {
     private GenreRepository genreRepository;
     
     @FXML
+    private DialogImageBoxController includedDialogImageBoxController;
+    @FXML
     private TextField nameTextField;   
     @FXML
     private TextArea commentTextArea;
@@ -37,6 +42,7 @@ public class GenreDialogController extends BaseDialogController {
     public void initialize(URL url, ResourceBundle rb) {        
         Helper.limitTextInput(nameTextField, 255);
         Helper.limitTextInput(commentTextArea, 1000);
+        includedDialogImageBoxController.setStage(dialogStage);
     }
     
     @FXML
@@ -49,8 +55,11 @@ public class GenreDialogController extends BaseDialogController {
                 genreRepository.update(resource);               
             } else {
                 resource = genreRepository.saveAndGetResource(genre); 
-            }                       
-            
+            }              
+            if (includedDialogImageBoxController.isChangedImage()) {
+                includedDialogImageBoxController.saveImage(resource);
+                includedDialogImageBoxController.setChangedImage(false);                              
+            }             
             dialogStage.close();
             edit = false;
         }
@@ -68,11 +77,15 @@ public class GenreDialogController extends BaseDialogController {
         if (nameTextField.getText() == null || nameTextField.getText().trim().equals("")) {
             errorMessage += "Введите название жанра!\n"; 
         } 
-        /*
-        if (!edit && !repositoryService.getArtistRepository().isUniqueColumnValue("name", nameTextField.getText())) {
-            errorMessage += "Такой жанр уже есть!\n";
-        } 
-        */
+        
+        try {
+            if (!genre.getName().equals(nameTextField.getText()) && genreRepository.existByName(nameTextField.getText())) {
+                errorMessage += "Такой жанр уже есть!\n"; 
+            }
+        } catch (URISyntaxException ex) {
+            ex.printStackTrace();
+        }
+        
         if (errorMessage.equals("")) {
             return true;
         } 
@@ -93,6 +106,9 @@ public class GenreDialogController extends BaseDialogController {
         genre = (Genre) resource.getContent();      
         nameTextField.setText(genre.getName());
         commentTextArea.setText(genre.getDescription());
+        if (resource.hasLink("get_image")) {
+            includedDialogImageBoxController.setImage(resource.getLink("get_image").getHref()); 
+        }
     }
 
 }

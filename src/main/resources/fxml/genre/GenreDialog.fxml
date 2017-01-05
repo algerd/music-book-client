@@ -15,6 +15,7 @@
          <children>
             <HBox spacing="20.0">
                <children>
+                  <fx:include fx:id="includedDialogImageBox" source="../helper/inputImageBox/DialogImageBox.fxml" />
                   <AnchorPane minWidth="-Infinity" prefWidth="350.0">
                      <children>
                         <GridPane vgap="2.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">

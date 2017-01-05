@@ -22,11 +22,11 @@ import ru.javafx.musicbook.client.utils.Helper;
 public class ArtistRepository extends CrudRepositoryImpl<Artist> {
 
     public void saveGenre(Resource<? extends Entity> resource, int idGenre) {        
-        requestService.postAbs(resource.getId().getHref() + "/genres/" + idGenre);
+        postAbs(resource.getId().getHref() + "/genres/" + idGenre);
     }   
     
     public void deleteGenre(Resource<? extends Entity> resource, int idGenre) {
-        requestService.deleteAbs(resource.getId().getHref() + "/genres/" + idGenre);
+        deleteAbs(resource.getId().getHref() + "/genres/" + idGenre);
     }
         
     public PagedResources<Resource<Artist>> searchByNameAndRating(Paginator paginator, int minRating, int maxRating, String search) throws URISyntaxException {            
@@ -35,7 +35,7 @@ public class ArtistRepository extends CrudRepositoryImpl<Artist> {
         parameters.put("maxrating", maxRating);
         parameters.put("search", search);
         parameters.putAll(paginator.getParameters());
-        
+
         PagedResources<Resource<Artist>> resource = new Traverson(new URI(basePath), MediaTypes.HAL_JSON)
                 .follow(relPath, "search", "by_name_and_rating")
                 .withTemplateParameters(parameters)

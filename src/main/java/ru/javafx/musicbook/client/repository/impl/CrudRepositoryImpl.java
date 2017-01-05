@@ -8,14 +8,10 @@ import java.util.Map;
 import java.util.Optional;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonType;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.hateoas.MediaTypes;
 import org.springframework.hateoas.Resource;
-import org.springframework.hateoas.Resources;
 import org.springframework.hateoas.client.Traverson;
-import org.springframework.hateoas.mvc.TypeReferences;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
 import org.springframework.web.client.HttpClientErrorException;
@@ -24,9 +20,7 @@ import ru.javafx.musicbook.client.entity.Entity;
 import ru.javafx.musicbook.client.repository.CrudRepository;
 
 public abstract class CrudRepositoryImpl<T extends Entity> extends ChangeRepositoryImpl<T> implements CrudRepository<T> {
-    
-    protected final Logger logger = LoggerFactory.getLogger(getClass());
-    
+     
     public void deleteWithAlert(Resource<? extends Entity> resource) {
         Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
         alert.setTitle("Confirmation");
@@ -56,7 +50,7 @@ public abstract class CrudRepositoryImpl<T extends Entity> extends ChangeReposit
                     .follow("self")
                     .withHeaders(sessionManager.createSessionHeaders())
                     .toObject(new ParameterizedTypeReference<Resource<T>>() {});
-            requestService.put(resource);
+            super.put(resource);
             super.setUpdated(new WrapChangedEntity<>(oldResource, (Resource<T>)resource));
         } catch (URISyntaxException ex) {
             ex.printStackTrace();
@@ -64,7 +58,7 @@ public abstract class CrudRepositoryImpl<T extends Entity> extends ChangeReposit
     }
     
     public Resource<T> saveAndGetResource(T entity) {
-        Resource<T> resource = new Traverson(requestService.post(relPath, entity), MediaTypes.HAL_JSON)//
+        Resource<T> resource = new Traverson(post(relPath, entity), MediaTypes.HAL_JSON)//
                 .follow("self")
                 .withHeaders(sessionManager.createSessionHeaders())
                 .toObject(new ParameterizedTypeReference<Resource<T>>() {});
@@ -93,25 +87,10 @@ public abstract class CrudRepositoryImpl<T extends Entity> extends ChangeReposit
             return false;
         }
         return true;             
+    } 
+       
+    public void save(T entity) {
+        post(relPath, entity);
     }
-    
-    
-    public Resource<T> getResource(Map<String, Object> parameters, String... rels) throws URISyntaxException {
-        return getResource(new URI(basePath), parameters, rels);
-    }
-    
-    public Resource<T> getResource(URI uri, Map<String, Object> parameters, String... rels) {
-        return new Traverson(uri, MediaTypes.HAL_JSON)
-                .follow(rels)
-                .withTemplateParameters(parameters)
-                .withHeaders(sessionManager.createSessionHeaders())    
-                .toObject(new ParameterizedTypeReference<Resource<T>>() {});
-    }
-    
-    /*   
-    public void save(Artist artist) {
-        requestService.post(relPath, artist);
-    }
-    */ 
     
 }

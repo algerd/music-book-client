@@ -17,7 +17,6 @@ import ru.javafx.musicbook.client.controller.paginator.Paginator;
 import ru.javafx.musicbook.client.entity.Entity;
 import ru.javafx.musicbook.client.entity.Genre;
 import ru.javafx.musicbook.client.repository.impl.CrudRepositoryImpl;
-import ru.javafx.musicbook.client.repository.impl.WrapChangedEntity;
 import ru.javafx.musicbook.client.utils.Helper;
 
 @Repository

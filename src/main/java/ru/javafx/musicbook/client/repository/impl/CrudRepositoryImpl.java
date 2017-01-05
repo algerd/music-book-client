@@ -3,6 +3,8 @@ package ru.javafx.musicbook.client.repository.impl;
 
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Optional;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonType;
@@ -11,9 +13,12 @@ import org.slf4j.LoggerFactory;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.hateoas.MediaTypes;
 import org.springframework.hateoas.Resource;
+import org.springframework.hateoas.Resources;
 import org.springframework.hateoas.client.Traverson;
+import org.springframework.hateoas.mvc.TypeReferences;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
+import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 import ru.javafx.musicbook.client.entity.Entity;
 import ru.javafx.musicbook.client.repository.CrudRepository;
@@ -56,6 +61,57 @@ public abstract class CrudRepositoryImpl<T extends Entity> extends ChangeReposit
         } catch (URISyntaxException ex) {
             ex.printStackTrace();
         }  
-    } 
+    }
+    
+    public Resource<T> saveAndGetResource(T entity) {
+        Resource<T> resource = new Traverson(requestService.post(relPath, entity), MediaTypes.HAL_JSON)//
+                .follow("self")
+                .withHeaders(sessionManager.createSessionHeaders())
+                .toObject(new ParameterizedTypeReference<Resource<T>>() {});
+        super.setAdded(new WrapChangedEntity<>(resource, resource));
+        return resource;
+    }
+    /*
+    public Resources<Resource<T>> findAll() throws URISyntaxException {
+        return new Traverson(new URI(basePath), MediaTypes.HAL_JSON)
+                .follow(relPath)
+                .withHeaders(sessionManager.createSessionHeaders())
+                .toObject(new TypeReferences.ResourcesType<Resource<T>>() {});       
+    }
+    */
+    public boolean existByName(String search)  throws URISyntaxException {
+        Map<String, Object> parameters = new HashMap<>();
+        parameters.put("search", search);       
+        try {
+            new Traverson(new URI(basePath), MediaTypes.HAL_JSON)
+                .follow(relPath, "search", "by_name")
+                .withTemplateParameters(parameters)
+                .withHeaders(sessionManager.createSessionHeaders())    
+                .toObject(new ParameterizedTypeReference<Resource<T>>() {});
+        }
+        catch (HttpClientErrorException ex) {
+            return false;
+        }
+        return true;             
+    }
+    
+    
+    public Resource<T> getResource(Map<String, Object> parameters, String... rels) throws URISyntaxException {
+        return getResource(new URI(basePath), parameters, rels);
+    }
+    
+    public Resource<T> getResource(URI uri, Map<String, Object> parameters, String... rels) {
+        return new Traverson(uri, MediaTypes.HAL_JSON)
+                .follow(rels)
+                .withTemplateParameters(parameters)
+                .withHeaders(sessionManager.createSessionHeaders())    
+                .toObject(new ParameterizedTypeReference<Resource<T>>() {});
+    }
+    
+    /*   
+    public void save(Artist artist) {
+        requestService.post(relPath, artist);
+    }
+    */ 
     
 }

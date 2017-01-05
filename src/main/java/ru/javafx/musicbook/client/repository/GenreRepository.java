@@ -23,29 +23,13 @@ import ru.javafx.musicbook.client.utils.Helper;
 @Repository
 public class GenreRepository extends CrudRepositoryImpl<Genre> {
 
-    private static final String REL_PATH = "genres";
-    /*   
-    public void add(Genre genre) {
-        requestService.post(REL_PATH, genre);
-    }
-    */
-
-    public Resource<Genre> saveAndGetResource(Genre genre) {
-        Resource<Genre> resource = new Traverson(requestService.post(REL_PATH, genre), MediaTypes.HAL_JSON)//
-                .follow("self")
-                .withHeaders(sessionManager.createSessionHeaders())
-                .toObject(new ParameterizedTypeReference<Resource<Genre>>() {});
-        super.setAdded(new WrapChangedEntity<>(resource, resource));
-        return resource;
-    }
-    
     public PagedResources<Resource<Genre>> searchByName(Paginator paginator, String search) throws URISyntaxException {    
         Map<String, Object> parameters = new HashMap<>();
         parameters.put("search", search);
         parameters.putAll(paginator.getParameters());
         
         PagedResources<Resource<Genre>> resources = new Traverson(new URI(basePath), MediaTypes.HAL_JSON)
-                .follow(REL_PATH, "search", "by_name")
+                .follow(relPath, "search", "by_name")
                 .withTemplateParameters(parameters)
                 .withHeaders(sessionManager.createSessionHeaders())
                 .toObject(new TypeReferences.PagedResourcesType<Resource<Genre>>() {}); 
@@ -56,7 +40,7 @@ public class GenreRepository extends CrudRepositoryImpl<Genre> {
     
     public Resources<Resource<Genre>> findAll() throws URISyntaxException {
         return new Traverson(new URI(basePath), MediaTypes.HAL_JSON)
-                .follow(REL_PATH)
+                .follow(relPath)
                 .withHeaders(sessionManager.createSessionHeaders())
                 .toObject(new TypeReferences.ResourcesType<Resource<Genre>>() {});       
     }
@@ -66,7 +50,7 @@ public class GenreRepository extends CrudRepositoryImpl<Genre> {
         parameters.put("id_artist", Helper.getId(artistResource));
 
         return new Traverson(new URI(basePath), MediaTypes.HAL_JSON)
-                .follow(REL_PATH, "search", "by_artist")
+                .follow(relPath, "search", "by_artist")
                 .withTemplateParameters(parameters)
                 .withHeaders(sessionManager.createSessionHeaders())
                 .toObject(new ParameterizedTypeReference<Resources<Resource<Genre>>>() {});      

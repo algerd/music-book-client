@@ -5,6 +5,7 @@ import java.util.Objects;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 
+@RelPath("genres")
 public class Genre implements Entity {
 
     private final StringProperty name = new SimpleStringProperty("");

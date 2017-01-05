@@ -7,6 +7,7 @@ import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 
+@RelPath("artists")
 public class Artist implements Entity {
      
     private final StringProperty name = new SimpleStringProperty("");

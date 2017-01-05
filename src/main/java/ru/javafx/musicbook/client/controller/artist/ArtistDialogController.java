@@ -137,7 +137,7 @@ public class ArtistDialogController extends BaseDialogController {
             errorMessage += "Введите имя артиста!\n"; 
         }     
         try {
-            if (!artist.getName().equals(nameTextField.getText()) && artistRepository.exist(nameTextField.getText())) {
+            if (!artist.getName().equals(nameTextField.getText()) && artistRepository.existByName(nameTextField.getText())) {
                 errorMessage += "Такой артист уже есть!\n";
             }
         } catch (URISyntaxException ex) {

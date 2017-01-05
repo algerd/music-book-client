@@ -116,7 +116,7 @@ public class ArtistDialogController extends BaseDialogController {
                 }
             });            
             if (includedDialogImageBoxController.isChangedImage()) {
-                includedDialogImageBoxController.saveImage(resource);
+                artistRepository.saveImage(resource, includedDialogImageBoxController.getImage());
                 includedDialogImageBoxController.setChangedImage(false);                              
             }           
             dialogStage.close();

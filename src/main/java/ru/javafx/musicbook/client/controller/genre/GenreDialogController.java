@@ -57,7 +57,7 @@ public class GenreDialogController extends BaseDialogController {
                 resource = genreRepository.saveAndGetResource(genre); 
             }              
             if (includedDialogImageBoxController.isChangedImage()) {
-                includedDialogImageBoxController.saveImage(resource);
+                genreRepository.saveImage(resource, includedDialogImageBoxController.getImage());
                 includedDialogImageBoxController.setChangedImage(false);                              
             }             
             dialogStage.close();

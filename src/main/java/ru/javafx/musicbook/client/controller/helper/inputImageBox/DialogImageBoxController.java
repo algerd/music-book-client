@@ -19,13 +19,9 @@ import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.text.TextFlow;
 import javafx.stage.Stage;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
-import org.springframework.hateoas.Resource;
 import ru.javafx.musicbook.client.Params;
-import ru.javafx.musicbook.client.entity.Entity;
 import ru.javafx.musicbook.client.fxintegrity.FXMLController;
-import ru.javafx.musicbook.client.service.RequestService;
 import ru.javafx.musicbook.client.utils.ImageUtil;
 
 @FXMLController(value = "/fxml/helper/inputImageBox/DialogImageBox.fxml")
@@ -37,9 +33,6 @@ public class DialogImageBoxController implements Initializable {
     private boolean changedImage = false;       
     private Stage stage;
     private final ContextMenu contextMenu = new ContextMenu();
-    
-    @Autowired
-    private RequestService requestService;
     
     @FXML
     private AnchorPane dialogImageBox;
@@ -110,17 +103,7 @@ public class DialogImageBoxController implements Initializable {
             return false;
         }
     }
-        
-    public File getImageFile() {  
-        /*
-        String nameEntity = entity.getClass().getSimpleName().toLowerCase();
-        String dirImage = Params.DIR_IMAGE_ENTITY + nameEntity +"/"; 
-        File file = new File(dirImage + entity.getId() + "." + imageFormat); 
-        return file; 
-        */
-        return null;
-    }
-    
+      
     public boolean setImage(File file) {
         if (file != null && Files.exists(file.toPath())) {
             imageView.setImage(ImageUtil.readImage(file));
@@ -134,16 +117,11 @@ public class DialogImageBoxController implements Initializable {
         imageView.setImage(new Image(strUrl, true));
         imageTextFlow.setVisible(false);
     }
-
-    public void saveImage(Resource<? extends Entity> resource) {     
-        Image image = imageView.getImage();                     
-        if (image != null) {
-            requestService.postImage(resource, image);
-        } else {
-            requestService.deleteImage(resource);
-        }
-    }
     
+    public Image getImage() {
+        return imageView.getImage();
+    }
+     
     @FXML
     private void showContextMenu(MouseEvent mouseEvent) {
         contextMenu.getItems().clear();

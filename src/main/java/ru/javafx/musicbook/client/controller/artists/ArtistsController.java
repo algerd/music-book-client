@@ -42,9 +42,7 @@ import ru.javafx.musicbook.client.controller.paginator.Sort.Order;
 import ru.javafx.musicbook.client.entity.Genre;
 import ru.javafx.musicbook.client.repository.ArtistRepository;
 import ru.javafx.musicbook.client.repository.GenreRepository;
-import ru.javafx.musicbook.client.repository.impl.WrapChangedEntity;
 import static ru.javafx.musicbook.client.service.ContextMenuItemType.*;
-import ru.javafx.musicbook.client.service.RequestService;
 import ru.javafx.musicbook.client.utils.Helper;
 
 @FXMLController(
@@ -72,8 +70,6 @@ public class ArtistsController extends BaseAwareController implements PagedContr
     private ArtistRepository artistRepository;
     @Autowired
     private GenreRepository genreRepository;   
-    @Autowired
-    private RequestService requestService;
     
     @FXML
     private VBox artistsTableVBox;

@@ -28,7 +28,6 @@ import ru.javafx.musicbook.client.entity.Genre;
 import ru.javafx.musicbook.client.fxintegrity.FXMLController;
 import ru.javafx.musicbook.client.fxintegrity.FXMLControllerLoader;
 import ru.javafx.musicbook.client.repository.GenreRepository;
-import ru.javafx.musicbook.client.service.RequestService;
 import static ru.javafx.musicbook.client.service.ContextMenuItemType.*;
 import ru.javafx.musicbook.client.utils.Helper;
 
@@ -49,8 +48,6 @@ public class GenresController extends BaseAwareController implements PagedContro
     private FXMLControllerLoader fxmlLoader;  
     @Autowired
     private GenreRepository genreRepository;   
-    @Autowired
-    private RequestService requestService;
     
     @FXML
     private VBox genresTableVBox;

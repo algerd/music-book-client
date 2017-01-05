@@ -8,6 +8,7 @@ import java.util.Map;
 import java.util.Optional;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonType;
+import javafx.scene.image.Image;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.hateoas.MediaTypes;
 import org.springframework.hateoas.Resource;
@@ -21,6 +22,16 @@ import ru.javafx.musicbook.client.repository.CrudRepository;
 
 public abstract class CrudRepositoryImpl<T extends Entity> extends ChangeRepositoryImpl<T> implements CrudRepository<T> {
      
+    public void saveImage(Resource<? extends Entity> resource, Image image) {
+        if (image != null) {
+            postImage(resource, image);
+            setAdded(new WrapChangedEntity<>(null, (Resource<T>)resource));
+        } else {
+            deleteImage(resource);
+            setDeleted(new WrapChangedEntity<>(null, (Resource<T>)resource));
+        }        
+    }
+    
     public void deleteWithAlert(Resource<? extends Entity> resource) {
         Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
         alert.setTitle("Confirmation");
@@ -62,7 +73,7 @@ public abstract class CrudRepositoryImpl<T extends Entity> extends ChangeReposit
                 .follow("self")
                 .withHeaders(sessionManager.createSessionHeaders())
                 .toObject(new ParameterizedTypeReference<Resource<T>>() {});
-        super.setAdded(new WrapChangedEntity<>(resource, resource));
+        super.setAdded(new WrapChangedEntity<>(null, resource));
         return resource;
     }
     /*

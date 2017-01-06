@@ -3,11 +3,16 @@ package ru.javafx.musicbook.client.controller.genres;
 
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.ResourceBundle;
+import java.util.logging.Level;
 import java.util.stream.Collectors;
+import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
+import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
@@ -20,13 +25,16 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.hateoas.PagedResources;
 import org.springframework.hateoas.Resource;
+import org.springframework.hateoas.Resources;
 import ru.javafx.musicbook.client.controller.BaseAwareController;
 import ru.javafx.musicbook.client.controller.paginator.PagedController;
 import ru.javafx.musicbook.client.controller.paginator.PaginatorPaneController;
 import ru.javafx.musicbook.client.controller.paginator.Sort;
+import ru.javafx.musicbook.client.entity.Artist;
 import ru.javafx.musicbook.client.entity.Genre;
 import ru.javafx.musicbook.client.fxintegrity.FXMLController;
 import ru.javafx.musicbook.client.fxintegrity.FXMLControllerLoader;
+import ru.javafx.musicbook.client.repository.ArtistRepository;
 import ru.javafx.musicbook.client.repository.GenreRepository;
 import static ru.javafx.musicbook.client.service.ContextMenuItemType.*;
 import ru.javafx.musicbook.client.utils.Helper;
@@ -48,6 +56,8 @@ public class GenresController extends BaseAwareController implements PagedContro
     private FXMLControllerLoader fxmlLoader;  
     @Autowired
     private GenreRepository genreRepository;   
+    @Autowired
+    private ArtistRepository artistRepository;
     
     @FXML
     private VBox genresTableVBox;
@@ -60,6 +70,10 @@ public class GenresController extends BaseAwareController implements PagedContro
     private TableView<Resource<Genre>> genresTable;
     @FXML
     private TableColumn<Resource<Genre>, String> genreColumn;
+    @FXML
+    private TableColumn<Resource<Genre>, Resource<Genre>> artistsAmountColumn;
+    @FXML
+    private TableColumn<Resource<Genre>, Resource<Genre>> artistsAvRatingColumn;
     
     public GenresController() {}
     
@@ -84,8 +98,56 @@ public class GenresController extends BaseAwareController implements PagedContro
     }
     
     private void initGenresTable() {
-        genreColumn.setCellValueFactory(cellData -> cellData.getValue().getContent().nameProperty());
+        genreColumn.setCellValueFactory(cellData -> cellData.getValue().getContent().nameProperty());       
         
+        artistsAmountColumn.setCellValueFactory(cellData -> new SimpleObjectProperty<>(cellData.getValue()));
+        artistsAmountColumn.setCellFactory(col -> {
+            TableCell<Resource<Genre>, Resource<Genre>> cell = new TableCell<Resource<Genre>, Resource<Genre>>() {
+                @Override
+                public void updateItem(Resource<Genre> item, boolean empty) {
+                    super.updateItem(item, empty);
+                    this.setText(null);
+                    if (!empty) {                        
+                        try {                   
+                            this.setText("" + genreRepository.countArtistsByGenre(item));
+                        } catch (URISyntaxException ex) {
+                            ex.printStackTrace();
+                        }
+                    }
+                }
+            };
+			return cell;
+        });
+        
+        artistsAvRatingColumn.setCellValueFactory(cellData -> new SimpleObjectProperty<>(cellData.getValue()));
+        artistsAvRatingColumn.setCellFactory(col -> {
+            TableCell<Resource<Genre>, Resource<Genre>> cell = new TableCell<Resource<Genre>, Resource<Genre>>() {
+                @Override
+                public void updateItem(Resource<Genre> item, boolean empty) {
+                    super.updateItem(item, empty);
+                    this.setText(null);
+                    if (!empty) { 
+                        try {                                             
+                            List<Artist> artists = new ArrayList<>();
+                            artistRepository.findByGenre(item).getContent().parallelStream().forEach(
+                                artistResource -> artists.add(artistResource.getContent())
+                            );        
+                            int averageRating = 0;
+                            for (Artist artist : artists) {
+                                averageRating += artist.getRating();
+                            }
+                            int count = artists.size();
+                            this.setText("" + ((count != 0) ? ((int) (100.0 * averageRating / count + 0.5))/ 100.0 : " - "));
+                            
+                        } catch (URISyntaxException ex) {
+                            ex.printStackTrace();
+                        }
+                    }
+                }
+            };
+			return cell;
+        });
+                
         genresTable.getSelectionModel().selectedItemProperty().addListener(
             (observable, oldValue, newValue) -> selectedItem = genresTable.getSelectionModel().getSelectedItem()
         );
@@ -113,8 +175,7 @@ public class GenresController extends BaseAwareController implements PagedContro
         resetSearchLabel.setVisible(false);
     }
     
-    private void filter() {
-        //logger.info("searchField {}", searchField.getText());        
+    private void filter() {       
         setPageValue();
         paginatorPaneController.initPageComboBox();
     }
@@ -125,25 +186,23 @@ public class GenresController extends BaseAwareController implements PagedContro
         resetSearchLabel.setVisible(false);
     }
     
-    private void initRepositoryListeners() {
-       //repositoryService.getArtistGenreRepository().clearChangeListeners(this);                      
+    private void initRepositoryListeners() {                    
        //repositoryService.getAlbumGenreRepository().clearChangeListeners(this);                          
        //repositoryService.getSongGenreRepository().clearChangeListeners(this);                       
-       //repositoryService.getMusicianGenreRepository().clearChangeListeners(this);                         
-       //repositoryService.getArtistRepository().clearDeleteListeners(this);  
+       //repositoryService.getMusicianGenreRepository().clearChangeListeners(this);                          
        //repositoryService.getAlbumRepository().clearDeleteListeners(this);  
        //repositoryService.getSongRepository().clearDeleteListeners(this);  
-       //repositoryService.getMusicianRepository().clearDeleteListeners(this);                         
+       //repositoryService.getMusicianRepository().clearDeleteListeners(this);
+       artistRepository.clearChangeListeners(this);
        genreRepository.clearChangeListeners(this);     
-        
-        //repositoryService.getArtistGenreRepository().addChangeListener(this::changed, this);                      
+                             
         //repositoryService.getAlbumGenreRepository().addChangeListener(this::changed, this);                          
         //repositoryService.getSongGenreRepository().addChangeListener(this::changed, this);                       
-        //repositoryService.getMusicianGenreRepository().addChangeListener(this::changed, this);                         
-        //repositoryService.getArtistRepository().addDeleteListener(this::changed, this);  
+        //repositoryService.getMusicianGenreRepository().addChangeListener(this::changed, this);                          
         //repositoryService.getAlbumRepository().addDeleteListener(this::changed, this);  
         //repositoryService.getSongRepository().addDeleteListener(this::changed, this);  
-        //repositoryService.getMusicianRepository().addDeleteListener(this::changed, this);                         
+        //repositoryService.getMusicianRepository().addDeleteListener(this::changed, this);
+        artistRepository.addChangeListener((observable, oldVal, newVal) -> filter(), this);
         genreRepository.addChangeListener((observable, oldVal, newVal) -> filter(), this);           
     }
     

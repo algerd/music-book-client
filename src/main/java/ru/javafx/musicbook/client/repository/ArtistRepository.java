@@ -5,9 +5,11 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.HashMap;
 import java.util.Map;
+import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.hateoas.MediaTypes;
 import org.springframework.hateoas.PagedResources;
 import org.springframework.hateoas.Resource;
+import org.springframework.hateoas.Resources;
 import org.springframework.hateoas.client.Traverson;
 import org.springframework.hateoas.mvc.TypeReferences;
 import org.springframework.stereotype.Repository;
@@ -16,17 +18,36 @@ import ru.javafx.musicbook.client.entity.Entity;
 import ru.javafx.musicbook.client.controller.paginator.Paginator;
 import ru.javafx.musicbook.client.entity.Genre;
 import ru.javafx.musicbook.client.repository.impl.CrudRepositoryImpl;
+import ru.javafx.musicbook.client.repository.impl.WrapChangedEntity;
 import ru.javafx.musicbook.client.utils.Helper;
 
 @Repository
 public class ArtistRepository extends CrudRepositoryImpl<Artist> {
 
-    public void saveGenre(Resource<? extends Entity> resource, int idGenre) {        
-        postAbs(resource.getId().getHref() + "/genres/" + idGenre);
+    public void saveGenre(Resource<? extends Entity> resource, int idGenre) {              
+        try {
+            Resource<Artist> oldResource = new Traverson(new URI(resource.getId().getHref()), MediaTypes.HAL_JSON)//
+                        .follow("self")
+                        .withHeaders(sessionManager.createSessionHeaders())
+                        .toObject(new ParameterizedTypeReference<Resource<Artist>>() {});
+            postAbs(resource.getId().getHref() + "/genres/" + idGenre);    
+            super.setUpdated(new WrapChangedEntity<>(oldResource, (Resource<Artist>)resource));
+        } catch (URISyntaxException ex) {
+            ex.printStackTrace();
+        }
     }   
     
     public void deleteGenre(Resource<? extends Entity> resource, int idGenre) {
-        deleteAbs(resource.getId().getHref() + "/genres/" + idGenre);
+        try {
+            Resource<Artist> oldResource = new Traverson(new URI(resource.getId().getHref()), MediaTypes.HAL_JSON)//
+                        .follow("self")
+                        .withHeaders(sessionManager.createSessionHeaders())
+                        .toObject(new ParameterizedTypeReference<Resource<Artist>>() {});
+            deleteAbs(resource.getId().getHref() + "/genres/" + idGenre);    
+            super.setUpdated(new WrapChangedEntity<>(oldResource, (Resource<Artist>)resource));
+        } catch (URISyntaxException ex) {
+            ex.printStackTrace();
+        }
     }
         
     public PagedResources<Resource<Artist>> searchByNameAndRating(Paginator paginator, int minRating, int maxRating, String search) throws URISyntaxException {            
@@ -69,5 +90,15 @@ public class ArtistRepository extends CrudRepositoryImpl<Artist> {
         //logger.info("Content: {}", resource.getContent());
         //logger.info("Metadata: {}", resource.getMetadata());
         return resource;       
+    } 
+    
+    public Resources<Resource<Artist>> findByGenre(Resource<Genre> genreResource) throws URISyntaxException {
+        Map<String, Object> parameters = new HashMap<>();
+        parameters.put("id_genre", Helper.getId(genreResource));
+        return new Traverson(new URI(basePath), MediaTypes.HAL_JSON)
+                .follow(relPath, "search", "by_genre")
+                .withTemplateParameters(parameters)
+                .withHeaders(sessionManager.createSessionHeaders())
+                .toObject(new ParameterizedTypeReference<Resources<Resource<Artist>>>() {});      
     } 
 }

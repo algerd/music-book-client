@@ -31,6 +31,7 @@ import ru.javafx.musicbook.client.entity.Genre;
 import ru.javafx.musicbook.client.fxintegrity.FXMLController;
 import ru.javafx.musicbook.client.repository.ArtistRepository;
 import ru.javafx.musicbook.client.repository.GenreRepository;
+import ru.javafx.musicbook.client.repository.impl.WrapChangedEntity;
 import ru.javafx.musicbook.client.utils.Helper;
 
 @FXMLController(
@@ -38,6 +39,9 @@ import ru.javafx.musicbook.client.utils.Helper;
     title = "Artist Dialog Window")
 @Scope("prototype")
 public class ArtistDialogController extends BaseDialogController {
+   
+    // TODO: перенести в BaseDialogController
+    private Resource<Artist> oldResource;
     
     private final Logger logger = LoggerFactory.getLogger(getClass());
     private Artist artist; 
@@ -95,7 +99,7 @@ public class ArtistDialogController extends BaseDialogController {
             artist.setName(nameTextField.getText().trim());
             artist.setRating(getRating());
             artist.setDescription(commentTextArea.getText().trim());  
-            
+           
             if (edit) {
                 artistRepository.update(resource);               
             } else {
@@ -118,7 +122,12 @@ public class ArtistDialogController extends BaseDialogController {
             if (includedDialogImageBoxController.isChangedImage()) {
                 artistRepository.saveImage(resource, includedDialogImageBoxController.getImage());
                 includedDialogImageBoxController.setChangedImage(false);                              
-            }           
+            }            
+            if (edit) {
+                artistRepository.setUpdated(new WrapChangedEntity<>(oldResource, (Resource<Artist>)resource));
+            } else {
+                artistRepository.setAdded(new WrapChangedEntity<>(null, (Resource<Artist>)resource));
+            } 
             dialogStage.close();
             edit = false;
         }
@@ -161,7 +170,9 @@ public class ArtistDialogController extends BaseDialogController {
     @Override
     protected void edit() { 
         edit = true;
-        artist = (Artist) resource.getContent();       
+        artist = (Artist) resource.getContent();
+        oldResource = new Resource<>(artist.clone(), resource.getLinks());  
+        
         nameTextField.setText(artist.getName());
         ratingSpinner.getValueFactory().setValue(artist.getRating());
         commentTextArea.setText(artist.getDescription());

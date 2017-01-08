@@ -13,7 +13,7 @@ public class Artist implements Entity {
     private final StringProperty name = new SimpleStringProperty("");
     private final IntegerProperty rating = new SimpleIntegerProperty(0);
     private final StringProperty description = new SimpleStringProperty("");
-
+    
     public Artist() {}
    
     public String getName() {
@@ -69,6 +69,15 @@ public class Artist implements Entity {
             return false;
         }
         return true;
+    }
+    
+    @Override
+    public Artist clone() {
+        Artist artist = new Artist();
+        artist.setName(this.getName());
+        artist.setRating(this.getRating());
+        artist.setDescription(this.getDescription());
+        return artist;
     }
 
     @Override

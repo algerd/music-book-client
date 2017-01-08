@@ -11,6 +11,7 @@ public abstract class BaseDialogController extends BaseAwareController implement
     protected Stage dialogStage;
     protected boolean edit;
     protected Resource<? extends Entity> resource;
+    protected Resource<? extends Entity> oldResource;
     
     @Override
     public void setStage(Stage dialogStage) {

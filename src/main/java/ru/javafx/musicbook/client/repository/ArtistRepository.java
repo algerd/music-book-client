@@ -18,38 +18,17 @@ import ru.javafx.musicbook.client.entity.Entity;
 import ru.javafx.musicbook.client.controller.paginator.Paginator;
 import ru.javafx.musicbook.client.entity.Genre;
 import ru.javafx.musicbook.client.repository.impl.CrudRepositoryImpl;
-import ru.javafx.musicbook.client.repository.impl.WrapChangedEntity;
 import ru.javafx.musicbook.client.utils.Helper;
 
 @Repository
 public class ArtistRepository extends CrudRepositoryImpl<Artist> {
 
-    // перенести в artistGenreRepository и повесить апдейт-ченджера(раскомментировать) 
     public void saveGenreInArtist(Resource<? extends Entity> resource, int idGenre) {              
-        try {
-            Resource<Artist> oldResource = new Traverson(new URI(resource.getId().getHref()), MediaTypes.HAL_JSON)//
-                        .follow("self")
-                        .withHeaders(sessionManager.createSessionHeaders())
-                        .toObject(new ParameterizedTypeReference<Resource<Artist>>() {});
-            postAbs(resource.getId().getHref() + "/genres/" + idGenre);    
-            //super.setUpdated(new WrapChangedEntity<>(oldResource, (Resource<Artist>)resource));
-        } catch (URISyntaxException ex) {
-            ex.printStackTrace();
-        }
+        postAbs(resource.getId().getHref() + "/genres/" + idGenre);
     }   
- 
-    // перенести в artistGenreRepository и повесить делит-ченджера(раскомментировать)
+
     public void deleteGenreFromArtist(Resource<? extends Entity> resource, int idGenre) {
-        try {
-            Resource<Artist> oldResource = new Traverson(new URI(resource.getId().getHref()), MediaTypes.HAL_JSON)//
-                        .follow("self")
-                        .withHeaders(sessionManager.createSessionHeaders())
-                        .toObject(new ParameterizedTypeReference<Resource<Artist>>() {});
-            deleteAbs(resource.getId().getHref() + "/genres/" + idGenre);    
-            //super.setUpdated(new WrapChangedEntity<>(oldResource, (Resource<Artist>)resource));
-        } catch (URISyntaxException ex) {
-            ex.printStackTrace();
-        }
+        deleteAbs(resource.getId().getHref() + "/genres/" + idGenre);
     }
         
     public PagedResources<Resource<Artist>> searchByNameAndRating(Paginator paginator, int minRating, int maxRating, String search) throws URISyntaxException {            

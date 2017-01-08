@@ -25,10 +25,8 @@ public abstract class CrudRepositoryImpl<T extends Entity> extends ChangeReposit
     public void saveImage(Resource<? extends Entity> resource, Image image) {
         if (image != null) {
             postImage(resource, image);
-            setAdded(new WrapChangedEntity<>(null, (Resource<T>)resource));
         } else {
             deleteImage(resource);
-            setDeleted(new WrapChangedEntity<>((Resource<T>)resource, null));
         }        
     }
     
@@ -38,34 +36,36 @@ public abstract class CrudRepositoryImpl<T extends Entity> extends ChangeReposit
         alert.setContentText("Do you want to remove the entity ?");
         Optional<ButtonType> result = alert.showAndWait();
         if (result.get() == ButtonType.OK) {
-            delete(resource);
+            try {
+                delete(resource);
+                super.setDeleted(new WrapChangedEntity<>((Resource<T>)resource, null));
+            } catch (URISyntaxException ex) {
+                ex.printStackTrace();
+            }           
         }
     }
    
-    public void delete(Resource<? extends Entity> resource) {
-        try {
-            URI uri = new URI(resource.getLink("self").getHref());
-            HttpEntity request = new HttpEntity(sessionManager.createSessionHeaders());
-            RestTemplate restTemplate = new RestTemplate();         
-            restTemplate.exchange(uri, HttpMethod.DELETE, request, Object.class);
-            super.setDeleted(new WrapChangedEntity<>((Resource<T>)resource, null));
-        }  
-        catch (URISyntaxException ex) {
-            logger.error(ex.getMessage());
-        }
+    public void delete(Resource<? extends Entity> resource) throws URISyntaxException {
+        URI uri = new URI(resource.getLink("self").getHref());
+        HttpEntity request = new HttpEntity(sessionManager.createSessionHeaders());
+        RestTemplate restTemplate = new RestTemplate();         
+        restTemplate.exchange(uri, HttpMethod.DELETE, request, Object.class); 
     }
     
     public void update(Resource<? extends Entity> resource) {
+        super.put(resource);
+        /*
         try {
             Resource<T> oldResource = new Traverson(new URI(resource.getId().getHref()), MediaTypes.HAL_JSON)//
                     .follow("self")
                     .withHeaders(sessionManager.createSessionHeaders())
                     .toObject(new ParameterizedTypeReference<Resource<T>>() {});
             super.put(resource);
-            super.setUpdated(new WrapChangedEntity<>(oldResource, (Resource<T>)resource));
+            //super.setUpdated(new WrapChangedEntity<>(oldResource, (Resource<T>)resource));
         } catch (URISyntaxException ex) {
             ex.printStackTrace();
-        }  
+        } 
+        */
     }
     
     public Resource<T> saveAndGetResource(T entity) {
@@ -73,7 +73,6 @@ public abstract class CrudRepositoryImpl<T extends Entity> extends ChangeReposit
                 .follow("self")
                 .withHeaders(sessionManager.createSessionHeaders())
                 .toObject(new ParameterizedTypeReference<Resource<T>>() {});
-        super.setAdded(new WrapChangedEntity<>(null, resource));
         return resource;
     }
     /*

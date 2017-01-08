@@ -31,7 +31,15 @@ public class Genre implements Entity {
     }
     public StringProperty descriptionProperty() {
         return description;
-    } 
+    }
+    
+    @Override
+    public Genre clone() {
+        Genre genre = new Genre();
+        genre.setName(this.getName());
+        genre.setDescription(this.getDescription());
+        return genre;
+    }
 
     @Override
     public int hashCode() {

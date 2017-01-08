@@ -238,11 +238,11 @@ public class ArtistsController extends BaseAwareController implements PagedContr
     
     private void initRepositoryListeners() {
         //убрать и повесить слушателя на artistGenreRepository
-        //artistRepository.clearChangeListeners(this);       
+        artistRepository.clearChangeListeners(this);       
         genreRepository.clearChangeListeners(this);
        
         //убрать и повесить слушателя на artistGenreRepository
-        //artistRepository.addChangeListener((observable, oldVal, newVal) -> filter(), this); 
+        artistRepository.addChangeListener((observable, oldVal, newVal) -> filter(), this); 
         genreRepository.addChangeListener(this::changedGenre, this);
     }
     

@@ -4,7 +4,6 @@ package ru.javafx.musicbook.client.controller.genre;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.ResourceBundle;
-import java.util.logging.Level;
 import javafx.fxml.FXML;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
@@ -12,11 +11,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
+import org.springframework.hateoas.Resource;
 import ru.javafx.musicbook.client.controller.BaseDialogController;
 import ru.javafx.musicbook.client.controller.helper.inputImageBox.DialogImageBoxController;
 import ru.javafx.musicbook.client.entity.Genre;
 import ru.javafx.musicbook.client.fxintegrity.FXMLController;
 import ru.javafx.musicbook.client.repository.GenreRepository;
+import ru.javafx.musicbook.client.repository.impl.WrapChangedEntity;
 import ru.javafx.musicbook.client.utils.Helper;
 
 @FXMLController(
@@ -24,6 +25,9 @@ import ru.javafx.musicbook.client.utils.Helper;
     title = "Genre Dialog Window")
 @Scope("prototype")
 public class GenreDialogController extends BaseDialogController {
+    
+    // TODO: перенести в BaseDialogController
+    private Resource<Genre> oldResource;
     
     private final Logger logger = LoggerFactory.getLogger(getClass());
     private Genre genre;
@@ -58,7 +62,12 @@ public class GenreDialogController extends BaseDialogController {
             if (includedDialogImageBoxController.isChangedImage()) {
                 genreRepository.saveImage(resource, includedDialogImageBoxController.getImage());
                 includedDialogImageBoxController.setChangedImage(false);                              
-            }             
+            }  
+            if (edit) {
+                genreRepository.setUpdated(new WrapChangedEntity<>(oldResource, (Resource<Genre>)resource));
+            } else {
+                genreRepository.setAdded(new WrapChangedEntity<>(null, (Resource<Genre>)resource));
+            } 
             dialogStage.close();
             edit = false;
         }
@@ -102,7 +111,8 @@ public class GenreDialogController extends BaseDialogController {
     @Override
     protected void edit() { 
         edit = true;
-        genre = (Genre) resource.getContent();      
+        genre = (Genre) resource.getContent(); 
+        oldResource = new Resource<>(genre.clone(), resource.getLinks());
         nameTextField.setText(genre.getName());
         commentTextArea.setText(genre.getDescription());
         if (resource.hasLink("get_image")) {

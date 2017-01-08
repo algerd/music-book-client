@@ -28,7 +28,7 @@ public abstract class CrudRepositoryImpl<T extends Entity> extends ChangeReposit
             setAdded(new WrapChangedEntity<>(null, (Resource<T>)resource));
         } else {
             deleteImage(resource);
-            setDeleted(new WrapChangedEntity<>(null, (Resource<T>)resource));
+            setDeleted(new WrapChangedEntity<>((Resource<T>)resource, null));
         }        
     }
     
@@ -86,10 +86,10 @@ public abstract class CrudRepositoryImpl<T extends Entity> extends ChangeReposit
     */
     public boolean existByName(String search)  throws URISyntaxException {
         Map<String, Object> parameters = new HashMap<>();
-        parameters.put("search", search);       
+        parameters.put("search", search);         
         try {
             new Traverson(new URI(basePath), MediaTypes.HAL_JSON)
-                .follow(relPath, "search", "by_name")
+                .follow(relPath, "search", "exist_by_name")
                 .withTemplateParameters(parameters)
                 .withHeaders(sessionManager.createSessionHeaders())    
                 .toObject(new ParameterizedTypeReference<Resource<T>>() {});
@@ -99,9 +99,9 @@ public abstract class CrudRepositoryImpl<T extends Entity> extends ChangeReposit
         }
         return true;             
     } 
-       
+    /*   
     public void save(T entity) {
         post(relPath, entity);
     }
-    
+    */
 }

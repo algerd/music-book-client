@@ -168,8 +168,7 @@ public class ArtistsController extends BaseAwareController implements PagedContr
         initFilters();
         paginatorPaneController = (PaginatorPaneController) fxmlLoader.load(PaginatorPaneController.class);
         artistsTableVBox.getChildren().add(paginatorPaneController.getView());
-        paginatorPaneController.getPaginator().setSize(5);
-        //paginatorPaneController.getPaginator().setSort(new Sort(new Order(Direction.ASC, "rating")));
+        paginatorPaneController.getPaginator().setSize(5);    
         paginatorPaneController.getPaginator().setSort(getSort());
         paginatorPaneController.initPaginator(this);
     }
@@ -237,11 +236,13 @@ public class ArtistsController extends BaseAwareController implements PagedContr
         resetSearchLabel.setVisible(false);
     }
     
-    private void initRepositoryListeners() {           
-        artistRepository.clearChangeListeners(this);       
+    private void initRepositoryListeners() {
+        //убрать и повесить слушателя на artistGenreRepository
+        //artistRepository.clearChangeListeners(this);       
         genreRepository.clearChangeListeners(this);
-                  
-        artistRepository.addChangeListener((observable, oldVal, newVal) -> filter(), this);       
+       
+        //убрать и повесить слушателя на artistGenreRepository
+        //artistRepository.addChangeListener((observable, oldVal, newVal) -> filter(), this); 
         genreRepository.addChangeListener(this::changedGenre, this);
     }
     

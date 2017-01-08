@@ -38,14 +38,12 @@ public class GenreRepository extends CrudRepositoryImpl<Genre> {
     public PagedResources<Resource<Genre>> searchByName(Paginator paginator, String search) throws URISyntaxException {    
         Map<String, Object> parameters = new HashMap<>();
         parameters.put("search", search);
-        parameters.putAll(paginator.getParameters());
-        
+        parameters.putAll(paginator.getParameters());        
         PagedResources<Resource<Genre>> resources = new Traverson(new URI(basePath), MediaTypes.HAL_JSON)
                 .follow(relPath, "search", "by_name")
                 .withTemplateParameters(parameters)
                 .withHeaders(sessionManager.createSessionHeaders())
-                .toObject(new TypeReferences.PagedResourcesType<Resource<Genre>>() {}); 
-        
+                .toObject(new TypeReferences.PagedResourcesType<Resource<Genre>>() {});       
         paginator.setTotalElements((int) resources.getMetadata().getTotalElements());
         return resources;       
     }
@@ -60,7 +58,6 @@ public class GenreRepository extends CrudRepositoryImpl<Genre> {
     public Resources<Resource<Genre>> findByArtist(Resource<? extends Entity> artistResource) throws URISyntaxException {
         Map<String, Object> parameters = new HashMap<>();
         parameters.put("id_artist", Helper.getId(artistResource));
-
         return new Traverson(new URI(basePath), MediaTypes.HAL_JSON)
                 .follow(relPath, "search", "by_artist")
                 .withTemplateParameters(parameters)

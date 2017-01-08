@@ -50,7 +50,6 @@ public class GenreDialogController extends BaseDialogController {
         if (isInputValid()) { 
             genre.setName(nameTextField.getText().trim());
             genre.setDescription(commentTextArea.getText().trim());           
-
             if (edit) {
                 genreRepository.update(resource);               
             } else {

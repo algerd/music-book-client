@@ -108,11 +108,11 @@ public class ArtistDialogController extends BaseDialogController {
                 int idGenre = Integer.valueOf(href.substring(href.lastIndexOf("/") + 1));
                 //удалить невыбранные жанры, если они есть у артиста
                 if (!flag.getValue() && genres.contains(resourceGenre.getContent())) {
-                    artistRepository.deleteGenre(resource, idGenre);
+                    artistRepository.deleteGenreFromArtist(resource, idGenre);
                 }
                 //добавить выбранные жанры, если их ещё нет
                 if (flag.getValue() && !genres.contains(resourceGenre.getContent())) { 
-                    artistRepository.saveGenre(resource, idGenre);
+                    artistRepository.saveGenreInArtist(resource, idGenre);
                 }
             });            
             if (includedDialogImageBoxController.isChangedImage()) {

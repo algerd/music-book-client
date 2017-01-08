@@ -24,27 +24,29 @@ import ru.javafx.musicbook.client.utils.Helper;
 @Repository
 public class ArtistRepository extends CrudRepositoryImpl<Artist> {
 
-    public void saveGenre(Resource<? extends Entity> resource, int idGenre) {              
+    // перенести в artistGenreRepository и повесить апдейт-ченджера(раскомментировать) 
+    public void saveGenreInArtist(Resource<? extends Entity> resource, int idGenre) {              
         try {
             Resource<Artist> oldResource = new Traverson(new URI(resource.getId().getHref()), MediaTypes.HAL_JSON)//
                         .follow("self")
                         .withHeaders(sessionManager.createSessionHeaders())
                         .toObject(new ParameterizedTypeReference<Resource<Artist>>() {});
             postAbs(resource.getId().getHref() + "/genres/" + idGenre);    
-            super.setUpdated(new WrapChangedEntity<>(oldResource, (Resource<Artist>)resource));
+            //super.setUpdated(new WrapChangedEntity<>(oldResource, (Resource<Artist>)resource));
         } catch (URISyntaxException ex) {
             ex.printStackTrace();
         }
     }   
-    
-    public void deleteGenre(Resource<? extends Entity> resource, int idGenre) {
+ 
+    // перенести в artistGenreRepository и повесить делит-ченджера(раскомментировать)
+    public void deleteGenreFromArtist(Resource<? extends Entity> resource, int idGenre) {
         try {
             Resource<Artist> oldResource = new Traverson(new URI(resource.getId().getHref()), MediaTypes.HAL_JSON)//
                         .follow("self")
                         .withHeaders(sessionManager.createSessionHeaders())
                         .toObject(new ParameterizedTypeReference<Resource<Artist>>() {});
             deleteAbs(resource.getId().getHref() + "/genres/" + idGenre);    
-            super.setUpdated(new WrapChangedEntity<>(oldResource, (Resource<Artist>)resource));
+            //super.setUpdated(new WrapChangedEntity<>(oldResource, (Resource<Artist>)resource));
         } catch (URISyntaxException ex) {
             ex.printStackTrace();
         }
@@ -56,16 +58,12 @@ public class ArtistRepository extends CrudRepositoryImpl<Artist> {
         parameters.put("maxrating", maxRating);
         parameters.put("search", search);
         parameters.putAll(paginator.getParameters());
-
         PagedResources<Resource<Artist>> resource = new Traverson(new URI(basePath), MediaTypes.HAL_JSON)
                 .follow(relPath, "search", "by_name_and_rating")
                 .withTemplateParameters(parameters)
                 .withHeaders(sessionManager.createSessionHeaders())
-                .toObject(new TypeReferences.PagedResourcesType<Resource<Artist>>() {}); 
-        
+                .toObject(new TypeReferences.PagedResourcesType<Resource<Artist>>() {});        
         paginator.setTotalElements((int) resource.getMetadata().getTotalElements());
-        //logger.info("Content: {}", resource.getContent());
-        //logger.info("Metadata: {}", resource.getMetadata());
         return resource;       
     }
     
@@ -78,17 +76,13 @@ public class ArtistRepository extends CrudRepositoryImpl<Artist> {
         parameters.put("maxrating", maxRating);
         parameters.put("search", search);
         parameters.put("id_genre", Helper.getId(resourceGenre));        
-        parameters.putAll(paginator.getParameters());
-                  
+        parameters.putAll(paginator.getParameters());                  
         PagedResources<Resource<Artist>> resource = new Traverson(new URI(basePath), MediaTypes.HAL_JSON)
                 .follow(relPath, "search", "by_genre_and_rating_and_name")
                 .withTemplateParameters(parameters)
                 .withHeaders(sessionManager.createSessionHeaders())
-                .toObject(new TypeReferences.PagedResourcesType<Resource<Artist>>() {}); 
-        
+                .toObject(new TypeReferences.PagedResourcesType<Resource<Artist>>() {});        
         paginator.setTotalElements((int) resource.getMetadata().getTotalElements());
-        //logger.info("Content: {}", resource.getContent());
-        //logger.info("Metadata: {}", resource.getMetadata());
         return resource;       
     } 
     

@@ -17,8 +17,6 @@ import javafx.scene.control.Spinner;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.AnchorPane;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.hateoas.Resource;
@@ -40,7 +38,6 @@ import ru.javafx.musicbook.client.utils.Helper;
 @Scope("prototype")
 public class ArtistDialogController extends BaseDialogController<Artist> {
       
-    private final Logger logger = LoggerFactory.getLogger(getClass());
     private Artist artist; 
     private final IntegerProperty rating = new SimpleIntegerProperty();
     private final List<Genre> genres = new ArrayList<>();
@@ -86,7 +83,8 @@ public class ArtistDialogController extends BaseDialogController<Artist> {
             );
             includedChoiceCheckBoxController.addItems(map);
         } catch (URISyntaxException ex) {
-            ex.printStackTrace();
+            logger.error(ex.getMessage());
+            //ex.printStackTrace();
         }       
     }
          
@@ -118,7 +116,8 @@ public class ArtistDialogController extends BaseDialogController<Artist> {
                             artistRepository.saveGenreInArtist(resource, idGenre);
                         }
                     } catch (URISyntaxException ex) {
-                        ex.printStackTrace();
+                        logger.error(ex.getMessage());
+                        //ex.printStackTrace();
                     }                   
                 });            
                 if (includedDialogImageBoxController.isChangedImage()) {
@@ -133,7 +132,8 @@ public class ArtistDialogController extends BaseDialogController<Artist> {
                 dialogStage.close();
                 edit = false;
             } catch (URISyntaxException ex) {
-                ex.printStackTrace();
+                logger.error(ex.getMessage());
+                //ex.printStackTrace();
             }
         }
     }
@@ -155,7 +155,8 @@ public class ArtistDialogController extends BaseDialogController<Artist> {
                 errorMessage += "Такой артист уже есть!\n";
             }
         } catch (URISyntaxException ex) {
-            ex.printStackTrace();
+            logger.error(ex.getMessage());
+            //ex.printStackTrace();
         }        
         if (errorMessage.equals("")) {
             return true;

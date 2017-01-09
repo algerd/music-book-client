@@ -7,6 +7,7 @@ import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 
+@RelPath("albums")
 public class Album implements Entity {
 
     //private int id_artist = 1; // id = 1 "Unknown" artist
@@ -67,6 +68,17 @@ public class Album implements Entity {
     public StringProperty descriptionProperty() {
         return description;
     }
+    
+    @Override
+    public Album clone() {
+        Album album = new Album();
+        album.setName(getName());
+        album.setYear(getYear());
+        album.setTime(getTime());
+        album.setRating(getRating());
+        album.setDescription(getDescription());
+        return album;
+    }
  
     @Override
     public int hashCode() {
@@ -87,10 +99,7 @@ public class Album implements Entity {
             return false;
         }
         final Album other = (Album) obj;
-        if (!Objects.equals(this.name, other.name)) {
-            return false;
-        }
-        return true;
+        return Objects.equals(this.name, other.name);
     }
 
     @Override

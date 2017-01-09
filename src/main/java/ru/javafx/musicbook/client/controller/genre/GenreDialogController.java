@@ -7,8 +7,6 @@ import java.util.ResourceBundle;
 import javafx.fxml.FXML;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.hateoas.Resource;
@@ -26,7 +24,6 @@ import ru.javafx.musicbook.client.utils.Helper;
 @Scope("prototype")
 public class GenreDialogController extends BaseDialogController<Genre> {
 
-    private final Logger logger = LoggerFactory.getLogger(getClass());
     private Genre genre;
     
     @Autowired
@@ -67,7 +64,8 @@ public class GenreDialogController extends BaseDialogController<Genre> {
                     genreRepository.setAdded(new WrapChangedEntity<>(null, resource));
                 } 
             } catch (URISyntaxException ex) {
-                ex.printStackTrace();
+                logger.error(ex.getMessage());
+                //ex.printStackTrace();
             }    
             dialogStage.close();
             edit = false;
@@ -92,7 +90,8 @@ public class GenreDialogController extends BaseDialogController<Genre> {
                 errorMessage += "Такой жанр уже есть!\n"; 
             }
         } catch (URISyntaxException ex) {
-            ex.printStackTrace();
+            logger.error(ex.getMessage());
+            //ex.printStackTrace();
         }
         
         if (errorMessage.equals("")) {

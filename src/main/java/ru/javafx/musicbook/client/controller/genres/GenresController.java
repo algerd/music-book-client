@@ -18,8 +18,6 @@ import javafx.scene.control.TextField;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.VBox;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.hateoas.PagedResources;
@@ -43,8 +41,6 @@ import ru.javafx.musicbook.client.utils.Helper;
 @Scope("prototype")
 public class GenresController extends BaseAwareController implements PagedController {
 
-    private final Logger logger = LoggerFactory.getLogger(getClass());
-    
     private Resource<Genre> selectedItem;
     private PagedResources<Resource<Genre>> resources; 
     private PaginatorPaneController paginatorPaneController;
@@ -109,7 +105,8 @@ public class GenresController extends BaseAwareController implements PagedContro
                         try {                   
                             this.setText("" + genreRepository.countArtistsByGenre(item));
                         } catch (URISyntaxException ex) {
-                            ex.printStackTrace();
+                            logger.error(ex.getMessage());
+                            //ex.printStackTrace();
                         }
                     }
                 }
@@ -137,7 +134,8 @@ public class GenresController extends BaseAwareController implements PagedContro
                             int count = artists.size();
                             this.setText("" + ((count != 0) ? ((int) (100.0 * averageRating / count + 0.5))/ 100.0 : " - "));                            
                         } catch (URISyntaxException ex) {
-                            ex.printStackTrace();
+                            logger.error(ex.getMessage());
+                            //ex.printStackTrace();
                         }
                     }
                 }

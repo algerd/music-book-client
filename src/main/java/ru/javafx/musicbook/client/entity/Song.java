@@ -7,6 +7,7 @@ import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 
+@RelPath("songs")
 public class Song implements Entity {
 
     //private int id_album = 1; // id = 1 "Unknown" album
@@ -78,6 +79,18 @@ public class Song implements Entity {
     public StringProperty descriptionProperty() {
         return description;
     }
+    
+    @Override
+    public Song clone() {
+        Song song = new Song();
+        song.setName(getName());
+        song.setTrack(getTrack());
+        song.setLyric(getLyric());
+        song.setTime(getTime());
+        song.setRating(getRating());
+        song.setDescription(getDescription());
+        return song;
+    }
 
     @Override
     public int hashCode() {
@@ -98,10 +111,7 @@ public class Song implements Entity {
             return false;
         }
         final Song other = (Song) obj;
-        if (!Objects.equals(this.name, other.name)) {
-            return false;
-        }
-        return true;
+        return Objects.equals(this.name, other.name);
     }
 
     @Override

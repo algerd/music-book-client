@@ -16,7 +16,7 @@ import ru.javafx.musicbook.client.controller.BaseDialogController;
 import ru.javafx.musicbook.client.controller.helper.inputImageBox.DialogImageBoxController;
 import ru.javafx.musicbook.client.entity.Genre;
 import ru.javafx.musicbook.client.fxintegrity.FXMLController;
-import ru.javafx.musicbook.client.repository.impl.GenreRepositoryImpl;
+import ru.javafx.musicbook.client.repository.GenreRepository;
 import ru.javafx.musicbook.client.repository.impl.WrapChangedEntity;
 import ru.javafx.musicbook.client.utils.Helper;
 
@@ -24,16 +24,13 @@ import ru.javafx.musicbook.client.utils.Helper;
     value = "/fxml/genre/GenreDialog.fxml",    
     title = "Genre Dialog Window")
 @Scope("prototype")
-public class GenreDialogController extends BaseDialogController {
-    
-    // TODO: перенести в BaseDialogController
-    private Resource<Genre> oldResource;
-    
+public class GenreDialogController extends BaseDialogController<Genre> {
+
     private final Logger logger = LoggerFactory.getLogger(getClass());
     private Genre genre;
     
     @Autowired
-    private GenreRepositoryImpl genreRepository;
+    private GenreRepository genreRepository;
     
     @FXML
     private DialogImageBoxController includedDialogImageBoxController;
@@ -65,9 +62,9 @@ public class GenreDialogController extends BaseDialogController {
                     includedDialogImageBoxController.setChangedImage(false);                              
                 }  
                 if (edit) {
-                    genreRepository.setUpdated(new WrapChangedEntity<>(oldResource, (Resource<Genre>)resource));
+                    genreRepository.setUpdated(new WrapChangedEntity<>(oldResource, resource));
                 } else {
-                    genreRepository.setAdded(new WrapChangedEntity<>(null, (Resource<Genre>)resource));
+                    genreRepository.setAdded(new WrapChangedEntity<>(null, resource));
                 } 
             } catch (URISyntaxException ex) {
                 ex.printStackTrace();
@@ -115,7 +112,7 @@ public class GenreDialogController extends BaseDialogController {
     @Override
     protected void edit() { 
         edit = true;
-        genre = (Genre) resource.getContent(); 
+        genre = resource.getContent(); 
         oldResource = new Resource<>(genre.clone(), resource.getLinks());
         nameTextField.setText(genre.getName());
         commentTextArea.setText(genre.getDescription());

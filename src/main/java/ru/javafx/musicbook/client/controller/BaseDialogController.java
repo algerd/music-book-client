@@ -6,12 +6,12 @@ import javafx.stage.Stage;
 import org.springframework.hateoas.Resource;
 import ru.javafx.musicbook.client.entity.Entity;
 
-public abstract class BaseDialogController extends BaseAwareController implements DialogController {
+public abstract class BaseDialogController<T extends Entity> extends BaseAwareController implements DialogController<T> {
      
     protected Stage dialogStage;
     protected boolean edit;
-    protected Resource<? extends Entity> resource;
-    protected Resource<? extends Entity> oldResource;
+    protected Resource<T> resource;
+    protected Resource<T> oldResource;
     
     @Override
     public void setStage(Stage dialogStage) {
@@ -19,7 +19,7 @@ public abstract class BaseDialogController extends BaseAwareController implement
     }
     
     @Override
-    public void setResource(Resource<? extends Entity> resource) { 
+    public void setResource(Resource<T> resource) { 
         this.resource = resource;
         if (resource != null) {           
             dialogStage.setTitle("Edit"); 

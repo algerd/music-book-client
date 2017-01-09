@@ -159,6 +159,7 @@ public abstract class ChangeRepositoryImpl<T extends Entity> extends BaseReposit
         return updated.get();
     }
    
+    @Override
     public void setUpdated(WrapChangedEntity<Resource<T>> value) {
         updated.set(value);
     }
@@ -172,6 +173,7 @@ public abstract class ChangeRepositoryImpl<T extends Entity> extends BaseReposit
         return deleted.get();
     }
    
+    @Override
     public void setDeleted(WrapChangedEntity<Resource<T>> value) {
         deleted.set(value);
     }
@@ -185,6 +187,7 @@ public abstract class ChangeRepositoryImpl<T extends Entity> extends BaseReposit
         return added.get();
     }
   
+    @Override
     public void setAdded(WrapChangedEntity<Resource<T>> value) {
         added.set(value);
     }

@@ -53,7 +53,7 @@ public abstract class CrudRepositoryImpl<T extends Entity> extends ChangeReposit
     }
     
     @Override
-    public void update(Resource<? extends Entity> resource) throws URISyntaxException {    
+    public void update(Resource<T> resource) throws URISyntaxException {    
         URI uri = new URI(resource.getLink("self").getHref());           
         HttpEntity request = new HttpEntity(resource.getContent(), sessionManager.createSessionHeaders());
         RestTemplate restTemplate = new RestTemplate();
@@ -61,7 +61,7 @@ public abstract class CrudRepositoryImpl<T extends Entity> extends ChangeReposit
     }
     
     @Override
-    public void delete(Resource<? extends Entity> resource) throws URISyntaxException {
+    public void delete(Resource<T> resource) throws URISyntaxException {
         URI uri = new URI(resource.getLink("self").getHref());
         HttpEntity request = new HttpEntity(sessionManager.createSessionHeaders());
         RestTemplate restTemplate = new RestTemplate();         
@@ -81,7 +81,7 @@ public abstract class CrudRepositoryImpl<T extends Entity> extends ChangeReposit
         Optional<ButtonType> result = alert.showAndWait();
         if (result.get() == ButtonType.OK) {
             try {
-                delete(resource);
+                delete((Resource<T>)resource);
                 super.setDeleted(new WrapChangedEntity<>((Resource<T>)resource, null));
             } catch (URISyntaxException ex) {
                 logger.error(ex.getMessage());
@@ -109,7 +109,7 @@ public abstract class CrudRepositoryImpl<T extends Entity> extends ChangeReposit
     
     
     @Override
-    public void saveImage(Resource<? extends Entity> resource, Image image) {
+    public void saveImage(Resource<T> resource, Image image) {
         if (image != null) {
             postImage(resource, image);
         } else {
@@ -118,7 +118,7 @@ public abstract class CrudRepositoryImpl<T extends Entity> extends ChangeReposit
     }
    
     @Override
-    public HttpStatus postImage(Resource<? extends Entity> resource, Image image) {       
+    public HttpStatus postImage(Resource<T> resource, Image image) {       
         try (ByteArrayOutputStream baos = new ByteArrayOutputStream()) {
             BufferedImage bImage = SwingFXUtils.fromFXImage(image, null);
             byte[] byteArray;
@@ -140,7 +140,7 @@ public abstract class CrudRepositoryImpl<T extends Entity> extends ChangeReposit
     }  
     
     @Override
-    public void deleteImage(Resource<? extends Entity> resource) {
+    public void deleteImage(Resource<T> resource) {
         try {  
             URI uri = new URI(resource.getLink("post_delete_image").getHref());
             new RestTemplate().exchange(uri, HttpMethod.DELETE, new HttpEntity(sessionManager.createSessionHeaders()), String.class);

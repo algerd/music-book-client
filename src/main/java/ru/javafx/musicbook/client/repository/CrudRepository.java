@@ -15,9 +15,9 @@ public interface CrudRepository<T extends Entity> extends ChangeRepository<T> {
     
     Resource<T> saveAndGetResource(T entity) throws URISyntaxException;
     
-    void update(Resource<? extends Entity> resource) throws URISyntaxException;
+    void update(Resource<T> resource) throws URISyntaxException;
     
-    void delete(Resource<? extends Entity> resource) throws URISyntaxException;
+    void delete(Resource<T> resource) throws URISyntaxException;
     
     HttpStatus delete(String absRef) throws URISyntaxException;
     
@@ -25,10 +25,10 @@ public interface CrudRepository<T extends Entity> extends ChangeRepository<T> {
     
     boolean existByName(String search)  throws URISyntaxException;
     
-    void saveImage(Resource<? extends Entity> resource, Image image);
+    void saveImage(Resource<T> resource, Image image);
     
-    HttpStatus postImage(Resource<? extends Entity> resource, Image image);
+    HttpStatus postImage(Resource<T> resource, Image image);
     
-    void deleteImage(Resource<? extends Entity> resource);
+    void deleteImage(Resource<T> resource);
     
 }

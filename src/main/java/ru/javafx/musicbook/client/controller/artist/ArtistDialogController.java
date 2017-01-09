@@ -8,7 +8,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.ResourceBundle;
-import java.util.logging.Level;
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleIntegerProperty;
@@ -30,8 +29,8 @@ import ru.javafx.musicbook.client.controller.helper.inputImageBox.DialogImageBox
 import ru.javafx.musicbook.client.entity.Artist;
 import ru.javafx.musicbook.client.entity.Genre;
 import ru.javafx.musicbook.client.fxintegrity.FXMLController;
-import ru.javafx.musicbook.client.repository.impl.ArtistRepositoryImpl;
-import ru.javafx.musicbook.client.repository.impl.GenreRepositoryImpl;
+import ru.javafx.musicbook.client.repository.ArtistRepository;
+import ru.javafx.musicbook.client.repository.GenreRepository;
 import ru.javafx.musicbook.client.repository.impl.WrapChangedEntity;
 import ru.javafx.musicbook.client.utils.Helper;
 
@@ -39,20 +38,17 @@ import ru.javafx.musicbook.client.utils.Helper;
     value = "/fxml/artist/ArtistDialog.fxml",    
     title = "Artist Dialog Window")
 @Scope("prototype")
-public class ArtistDialogController extends BaseDialogController {
-   
-    // TODO: перенести в BaseDialogController
-    private Resource<Artist> oldResource;
-    
+public class ArtistDialogController extends BaseDialogController<Artist> {
+      
     private final Logger logger = LoggerFactory.getLogger(getClass());
     private Artist artist; 
     private final IntegerProperty rating = new SimpleIntegerProperty();
     private final List<Genre> genres = new ArrayList<>();
     
     @Autowired
-    private ArtistRepositoryImpl artistRepository;
+    private ArtistRepository artistRepository;
     @Autowired
-    private GenreRepositoryImpl genreRepository;  
+    private GenreRepository genreRepository;  
     
     @FXML
     private DialogImageBoxController includedDialogImageBoxController;
@@ -130,9 +126,9 @@ public class ArtistDialogController extends BaseDialogController {
                     includedDialogImageBoxController.setChangedImage(false);                              
                 }            
                 if (edit) {
-                    artistRepository.setUpdated(new WrapChangedEntity<>(oldResource, (Resource<Artist>)resource));
+                    artistRepository.setUpdated(new WrapChangedEntity<>(oldResource, resource));
                 } else {
-                    artistRepository.setAdded(new WrapChangedEntity<>(null, (Resource<Artist>)resource));
+                    artistRepository.setAdded(new WrapChangedEntity<>(null, resource));
                 } 
                 dialogStage.close();
                 edit = false;
@@ -179,7 +175,7 @@ public class ArtistDialogController extends BaseDialogController {
     @Override
     protected void edit() { 
         edit = true;
-        artist = (Artist) resource.getContent();
+        artist = resource.getContent();
         oldResource = new Resource<>(artist.clone(), resource.getLinks());  
         
         nameTextField.setText(artist.getName());

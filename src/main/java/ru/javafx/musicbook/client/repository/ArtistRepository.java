@@ -7,15 +7,14 @@ import org.springframework.hateoas.Resource;
 import org.springframework.hateoas.Resources;
 import ru.javafx.musicbook.client.controller.paginator.Paginator;
 import ru.javafx.musicbook.client.entity.Artist;
-import ru.javafx.musicbook.client.entity.Entity;
 import ru.javafx.musicbook.client.entity.Genre;
 
 
 public interface ArtistRepository extends CrudRepository<Artist> {
     
-    void saveGenreInArtist(Resource<? extends Entity> resource, int idGenre) throws URISyntaxException;
+    void saveGenreInArtist(Resource<Artist> resource, int idGenre) throws URISyntaxException;
     
-    void deleteGenreFromArtist(Resource<? extends Entity> resource, int idGenre) throws URISyntaxException;
+    void deleteGenreFromArtist(Resource<Artist> resource, int idGenre) throws URISyntaxException;
     
     PagedResources<Resource<Artist>> searchByNameAndRating(Paginator paginator, int minRating, int maxRating, String search) throws URISyntaxException;
     

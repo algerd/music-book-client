@@ -33,4 +33,8 @@ public interface ChangeRepository<T extends Entity> {
     void removeUpdateListener(ChangeListener<? super WrapChangedEntity<Resource<T>>> listener);
     void removeDeleteListener(ChangeListener<? super WrapChangedEntity<Resource<T>>> listener);
     
+    void setAdded(WrapChangedEntity<Resource<T>> value);
+    void setUpdated(WrapChangedEntity<Resource<T>> value);
+    void setDeleted(WrapChangedEntity<Resource<T>> value);
+    
 }

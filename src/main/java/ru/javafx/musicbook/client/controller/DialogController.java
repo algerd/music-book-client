@@ -4,10 +4,10 @@ import javafx.stage.Stage;
 import org.springframework.hateoas.Resource;
 import ru.javafx.musicbook.client.entity.Entity;
 
-public interface DialogController {
+public interface DialogController<T extends Entity> {
     
     void setStage(Stage stage);
     
-    void setResource(Resource<? extends Entity> resource);
+    void setResource(Resource<T> resource);
          
 }

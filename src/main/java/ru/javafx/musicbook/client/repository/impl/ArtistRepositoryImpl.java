@@ -14,7 +14,6 @@ import org.springframework.hateoas.client.Traverson;
 import org.springframework.hateoas.mvc.TypeReferences;
 import org.springframework.stereotype.Repository;
 import ru.javafx.musicbook.client.entity.Artist;
-import ru.javafx.musicbook.client.entity.Entity;
 import ru.javafx.musicbook.client.controller.paginator.Paginator;
 import ru.javafx.musicbook.client.entity.Genre;
 import ru.javafx.musicbook.client.repository.ArtistRepository;
@@ -24,12 +23,12 @@ import ru.javafx.musicbook.client.utils.Helper;
 public class ArtistRepositoryImpl extends CrudRepositoryImpl<Artist> implements ArtistRepository {
 
     @Override
-    public void saveGenreInArtist(Resource<? extends Entity> resource, int idGenre) throws URISyntaxException {              
+    public void saveGenreInArtist(Resource<Artist> resource, int idGenre) throws URISyntaxException {              
         save(resource.getId().getHref() + "/genres/" + idGenre);
     }   
 
     @Override
-    public void deleteGenreFromArtist(Resource<? extends Entity> resource, int idGenre) throws URISyntaxException {
+    public void deleteGenreFromArtist(Resource<Artist> resource, int idGenre) throws URISyntaxException {
         delete(resource.getId().getHref() + "/genres/" + idGenre);
     }
         

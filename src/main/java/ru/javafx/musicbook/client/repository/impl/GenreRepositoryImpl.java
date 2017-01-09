@@ -15,8 +15,8 @@ import org.springframework.hateoas.client.Traverson;
 import org.springframework.hateoas.mvc.TypeReferences;
 import org.springframework.stereotype.Repository;
 import ru.javafx.musicbook.client.controller.paginator.Paginator;
+import ru.javafx.musicbook.client.entity.Artist;
 import ru.javafx.musicbook.client.entity.ArtistGenre;
-import ru.javafx.musicbook.client.entity.Entity;
 import ru.javafx.musicbook.client.entity.Genre;
 import ru.javafx.musicbook.client.repository.GenreRepository;
 import ru.javafx.musicbook.client.utils.Helper;
@@ -59,7 +59,7 @@ public class GenreRepositoryImpl extends CrudRepositoryImpl<Genre> implements Ge
     }
     
     @Override
-    public Resources<Resource<Genre>> findByArtist(Resource<? extends Entity> artistResource) throws URISyntaxException {
+    public Resources<Resource<Genre>> findByArtist(Resource<Artist> artistResource) throws URISyntaxException {
         Map<String, Object> parameters = new HashMap<>();
         parameters.put("id_artist", Helper.getId(artistResource));
         return new Traverson(new URI(basePath), MediaTypes.HAL_JSON)

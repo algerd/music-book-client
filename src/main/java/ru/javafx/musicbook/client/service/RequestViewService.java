@@ -16,6 +16,7 @@ import ru.javafx.musicbook.client.fxintegrity.BaseFxmlController;
 import ru.javafx.musicbook.client.fxintegrity.FXMLControllerLoader;
 import ru.javafx.musicbook.client.entity.Entity;
 
+@SuppressWarnings("unchecked")
 @Service
 public class RequestViewService {
     

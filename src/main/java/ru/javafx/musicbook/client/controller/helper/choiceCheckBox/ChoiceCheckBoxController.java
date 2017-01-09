@@ -38,6 +38,7 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.hateoas.Resource;
 import ru.javafx.musicbook.client.fxintegrity.FXMLController;
 
+@SuppressWarnings("unchecked")
 @FXMLController(value = "/fxml/helper/choiceCheckBox/ChoiceCheckBox.fxml")
 @Scope("prototype")
 public class ChoiceCheckBoxController<T> implements Initializable {

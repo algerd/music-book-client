@@ -12,6 +12,7 @@ import ru.javafx.musicbook.client.entity.Entity;
 import ru.javafx.musicbook.client.entity.RelPath;
 import ru.javafx.musicbook.client.repository.BaseRepository;
 
+@SuppressWarnings("unchecked")
 public abstract class BaseRepositoryImpl<T extends Entity> implements BaseRepository<T> {
     
     protected final Logger logger = LoggerFactory.getLogger(getClass());

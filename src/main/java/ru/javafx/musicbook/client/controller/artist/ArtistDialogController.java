@@ -8,6 +8,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.ResourceBundle;
+import java.util.logging.Level;
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleIntegerProperty;
@@ -99,37 +100,45 @@ public class ArtistDialogController extends BaseDialogController {
             artist.setName(nameTextField.getText().trim());
             artist.setRating(getRating());
             artist.setDescription(commentTextArea.getText().trim());  
-           
-            if (edit) {
-                artistRepository.update(resource);               
-            } else {
-                resource = artistRepository.saveAndGetResource(artist); 
-            }       
-            // Извлечь жанры из списка и сохранить их в связке связанные с артистом
-            includedChoiceCheckBoxController.getItemMap().keySet().parallelStream().forEach(resourceGenre -> {
-                ObservableValue<Boolean> flag = includedChoiceCheckBoxController.getItemMap().get(resourceGenre); 
-                String href = resourceGenre.getId().getHref();
-                int idGenre = Integer.valueOf(href.substring(href.lastIndexOf("/") + 1));
-                //удалить невыбранные жанры, если они есть у артиста
-                if (!flag.getValue() && genres.contains(resourceGenre.getContent())) {
-                    artistRepository.deleteGenreFromArtist(resource, idGenre);
-                }
-                //добавить выбранные жанры, если их ещё нет
-                if (flag.getValue() && !genres.contains(resourceGenre.getContent())) { 
-                    artistRepository.saveGenreInArtist(resource, idGenre);
-                }
-            });            
-            if (includedDialogImageBoxController.isChangedImage()) {
-                artistRepository.saveImage(resource, includedDialogImageBoxController.getImage());
-                includedDialogImageBoxController.setChangedImage(false);                              
-            }            
-            if (edit) {
-                artistRepository.setUpdated(new WrapChangedEntity<>(oldResource, (Resource<Artist>)resource));
-            } else {
-                artistRepository.setAdded(new WrapChangedEntity<>(null, (Resource<Artist>)resource));
-            } 
-            dialogStage.close();
-            edit = false;
+            
+            try { 
+                if (edit) {                             
+                    artistRepository.update(resource);               
+                } else {
+                    resource = artistRepository.saveAndGetResource(artist); 
+                }       
+                // Извлечь жанры из списка и сохранить их в связке связанные с артистом
+                includedChoiceCheckBoxController.getItemMap().keySet().parallelStream().forEach(resourceGenre -> {
+                    ObservableValue<Boolean> flag = includedChoiceCheckBoxController.getItemMap().get(resourceGenre); 
+                    String href = resourceGenre.getId().getHref();
+                    int idGenre = Integer.valueOf(href.substring(href.lastIndexOf("/") + 1));
+                    //удалить невыбранные жанры, если они есть у артиста
+                    try {
+                        if (!flag.getValue() && genres.contains(resourceGenre.getContent())) {
+                                artistRepository.deleteGenreFromArtist(resource, idGenre);
+                        }
+                        //добавить выбранные жанры, если их ещё нет
+                        if (flag.getValue() && !genres.contains(resourceGenre.getContent())) { 
+                            artistRepository.saveGenreInArtist(resource, idGenre);
+                        }
+                    } catch (URISyntaxException ex) {
+                        ex.printStackTrace();
+                    }                   
+                });            
+                if (includedDialogImageBoxController.isChangedImage()) {
+                    artistRepository.saveImage(resource, includedDialogImageBoxController.getImage());
+                    includedDialogImageBoxController.setChangedImage(false);                              
+                }            
+                if (edit) {
+                    artistRepository.setUpdated(new WrapChangedEntity<>(oldResource, (Resource<Artist>)resource));
+                } else {
+                    artistRepository.setAdded(new WrapChangedEntity<>(null, (Resource<Artist>)resource));
+                } 
+                dialogStage.close();
+                edit = false;
+            } catch (URISyntaxException ex) {
+                ex.printStackTrace();
+            }
         }
     }
     

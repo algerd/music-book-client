@@ -23,12 +23,12 @@ import ru.javafx.musicbook.client.utils.Helper;
 @Repository
 public class ArtistRepository extends CrudRepositoryImpl<Artist> {
 
-    public void saveGenreInArtist(Resource<? extends Entity> resource, int idGenre) {              
-        postAbs(resource.getId().getHref() + "/genres/" + idGenre);
+    public void saveGenreInArtist(Resource<? extends Entity> resource, int idGenre) throws URISyntaxException {              
+        save(resource.getId().getHref() + "/genres/" + idGenre);
     }   
 
-    public void deleteGenreFromArtist(Resource<? extends Entity> resource, int idGenre) {
-        deleteAbs(resource.getId().getHref() + "/genres/" + idGenre);
+    public void deleteGenreFromArtist(Resource<? extends Entity> resource, int idGenre) throws URISyntaxException {
+        delete(resource.getId().getHref() + "/genres/" + idGenre);
     }
         
     public PagedResources<Resource<Artist>> searchByNameAndRating(Paginator paginator, int minRating, int maxRating, String search) throws URISyntaxException {            

@@ -1,35 +1,79 @@
 
 package ru.javafx.musicbook.client.repository.impl;
 
+import java.awt.image.BufferedImage;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
+import javafx.embed.swing.SwingFXUtils;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonType;
 import javafx.scene.image.Image;
+import javax.imageio.ImageIO;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.hateoas.MediaTypes;
 import org.springframework.hateoas.Resource;
 import org.springframework.hateoas.client.Traverson;
 import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 import ru.javafx.musicbook.client.entity.Entity;
 import ru.javafx.musicbook.client.repository.CrudRepository;
 
 public abstract class CrudRepositoryImpl<T extends Entity> extends ChangeRepositoryImpl<T> implements CrudRepository<T> {
-     
-    public void saveImage(Resource<? extends Entity> resource, Image image) {
-        if (image != null) {
-            postImage(resource, image);
-        } else {
-            deleteImage(resource);
-        }        
+    
+    @Override
+    public URI save(String rel, Entity entity) throws URISyntaxException {
+        URI uri = new URI(basePath + rel);           
+        HttpEntity<Entity> request = new HttpEntity<>(entity, sessionManager.createSessionHeaders());
+        RestTemplate restTemplate = new RestTemplate();
+        return restTemplate.exchange(uri, HttpMethod.POST, request, String.class).getHeaders().getLocation();
     }
     
+    @Override
+    public HttpStatus save(String absRef) throws URISyntaxException {          
+        return new RestTemplate().exchange(new URI(absRef), HttpMethod.POST, new HttpEntity(sessionManager.createSessionHeaders()), String.class).getStatusCode();
+    }
+    
+    @Override
+    public Resource<T> saveAndGetResource(T entity) throws URISyntaxException {
+        Resource<T> resource = new Traverson(save(relPath, entity), MediaTypes.HAL_JSON)//
+                .follow("self")
+                .withHeaders(sessionManager.createSessionHeaders())
+                .toObject(new ParameterizedTypeReference<Resource<T>>() {});
+        return resource;
+    }
+    
+    @Override
+    public void update(Resource<? extends Entity> resource) throws URISyntaxException {    
+        URI uri = new URI(resource.getLink("self").getHref());           
+        HttpEntity request = new HttpEntity(resource.getContent(), sessionManager.createSessionHeaders());
+        RestTemplate restTemplate = new RestTemplate();
+        restTemplate.put(uri, request);       
+    }
+    
+    @Override
+    public void delete(Resource<? extends Entity> resource) throws URISyntaxException {
+        URI uri = new URI(resource.getLink("self").getHref());
+        HttpEntity request = new HttpEntity(sessionManager.createSessionHeaders());
+        RestTemplate restTemplate = new RestTemplate();         
+        restTemplate.exchange(uri, HttpMethod.DELETE, request, Object.class); 
+    }
+    
+    @Override
+    public HttpStatus delete(String absRef) throws URISyntaxException {        
+        return new RestTemplate().exchange(new URI(absRef), HttpMethod.DELETE, new HttpEntity(sessionManager.createSessionHeaders()), String.class).getStatusCode();
+    }
+    
+    @Override
     public void deleteWithAlert(Resource<? extends Entity> resource) {
         Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
         alert.setTitle("Confirmation");
@@ -40,50 +84,14 @@ public abstract class CrudRepositoryImpl<T extends Entity> extends ChangeReposit
                 delete(resource);
                 super.setDeleted(new WrapChangedEntity<>((Resource<T>)resource, null));
             } catch (URISyntaxException ex) {
-                ex.printStackTrace();
+                logger.error(ex.getMessage());
+                //ex.printStackTrace();
             }           
         }
     }
-   
-    public void delete(Resource<? extends Entity> resource) throws URISyntaxException {
-        URI uri = new URI(resource.getLink("self").getHref());
-        HttpEntity request = new HttpEntity(sessionManager.createSessionHeaders());
-        RestTemplate restTemplate = new RestTemplate();         
-        restTemplate.exchange(uri, HttpMethod.DELETE, request, Object.class); 
-    }
     
-    public void update(Resource<? extends Entity> resource) {
-        super.put(resource);
-        /*
-        try {
-            Resource<T> oldResource = new Traverson(new URI(resource.getId().getHref()), MediaTypes.HAL_JSON)//
-                    .follow("self")
-                    .withHeaders(sessionManager.createSessionHeaders())
-                    .toObject(new ParameterizedTypeReference<Resource<T>>() {});
-            super.put(resource);
-            //super.setUpdated(new WrapChangedEntity<>(oldResource, (Resource<T>)resource));
-        } catch (URISyntaxException ex) {
-            ex.printStackTrace();
-        } 
-        */
-    }
-    
-    public Resource<T> saveAndGetResource(T entity) {
-        Resource<T> resource = new Traverson(post(relPath, entity), MediaTypes.HAL_JSON)//
-                .follow("self")
-                .withHeaders(sessionManager.createSessionHeaders())
-                .toObject(new ParameterizedTypeReference<Resource<T>>() {});
-        return resource;
-    }
-    /*
-    public Resources<Resource<T>> findAll() throws URISyntaxException {
-        return new Traverson(new URI(basePath), MediaTypes.HAL_JSON)
-                .follow(relPath)
-                .withHeaders(sessionManager.createSessionHeaders())
-                .toObject(new TypeReferences.ResourcesType<Resource<T>>() {});       
-    }
-    */
-    public boolean existByName(String search)  throws URISyntaxException {
+    @Override
+    public boolean existByName(String search) throws URISyntaxException {
         Map<String, Object> parameters = new HashMap<>();
         parameters.put("search", search);         
         try {
@@ -98,9 +106,74 @@ public abstract class CrudRepositoryImpl<T extends Entity> extends ChangeReposit
         }
         return true;             
     } 
+    
+    
+    @Override
+    public void saveImage(Resource<? extends Entity> resource, Image image) {
+        if (image != null) {
+            postImage(resource, image);
+        } else {
+            deleteImage(resource);
+        }        
+    }
+   
+    @Override
+    public HttpStatus postImage(Resource<? extends Entity> resource, Image image) {       
+        try (ByteArrayOutputStream baos = new ByteArrayOutputStream()) {
+            BufferedImage bImage = SwingFXUtils.fromFXImage(image, null);
+            byte[] byteArray;
+            ImageIO.write(bImage, "jpg", baos);
+            baos.flush();
+            byteArray = baos.toByteArray();
+
+            URI uri = new URI(resource.getLink("post_delete_image").getHref()); 
+            HttpHeaders headers = sessionManager.createSessionHeaders(); 
+            headers.setContentType(MediaType.IMAGE_JPEG);
+            HttpEntity<byte[]> entity = new HttpEntity<>(byteArray, headers);
+            RestTemplate restTemplate = new RestTemplate();
+            return restTemplate.exchange(uri, HttpMethod.POST, entity , String.class).getStatusCode();                     
+        } catch (IOException | URISyntaxException ex) {
+            logger.error(ex.getMessage());
+            //ex.printStackTrace(); 
+        }
+        return null;
+    }  
+    
+    @Override
+    public void deleteImage(Resource<? extends Entity> resource) {
+        try {  
+            URI uri = new URI(resource.getLink("post_delete_image").getHref());
+            new RestTemplate().exchange(uri, HttpMethod.DELETE, new HttpEntity(sessionManager.createSessionHeaders()), String.class);
+        } catch (URISyntaxException ex) {
+            logger.error(ex.getMessage());
+            //ex.printStackTrace(); 
+        }      
+    }
+    /*
+    public void update(Resource<? extends Entity> resource) {      
+        try {
+            Resource<T> oldResource = new Traverson(new URI(resource.getId().getHref()), MediaTypes.HAL_JSON)//
+                    .follow("self")
+                    .withHeaders(sessionManager.createSessionHeaders())
+                    .toObject(new ParameterizedTypeReference<Resource<T>>() {});
+            super.update(resource);
+            //super.setUpdated(new WrapChangedEntity<>(oldResource, (Resource<T>)resource));
+        } catch (URISyntaxException ex) {
+            ex.printStackTrace();
+        } 
+    }
+    */
+    /*
+    public Resources<Resource<T>> findAll() throws URISyntaxException {
+        return new Traverson(new URI(basePath), MediaTypes.HAL_JSON)
+                .follow(relPath)
+                .withHeaders(sessionManager.createSessionHeaders())
+                .toObject(new TypeReferences.ResourcesType<Resource<T>>() {});       
+    }
+    */
     /*   
     public void save(T entity) {
-        post(relPath, entity);
+        save(relPath, entity);
     }
     */
 }

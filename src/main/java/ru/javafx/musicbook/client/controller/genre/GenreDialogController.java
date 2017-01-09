@@ -53,21 +53,25 @@ public class GenreDialogController extends BaseDialogController {
     private void handleOkButton() {
         if (isInputValid()) { 
             genre.setName(nameTextField.getText().trim());
-            genre.setDescription(commentTextArea.getText().trim());           
-            if (edit) {
-                genreRepository.update(resource);               
-            } else {
-                resource = genreRepository.saveAndGetResource(genre); 
-            }              
-            if (includedDialogImageBoxController.isChangedImage()) {
-                genreRepository.saveImage(resource, includedDialogImageBoxController.getImage());
-                includedDialogImageBoxController.setChangedImage(false);                              
-            }  
-            if (edit) {
-                genreRepository.setUpdated(new WrapChangedEntity<>(oldResource, (Resource<Genre>)resource));
-            } else {
-                genreRepository.setAdded(new WrapChangedEntity<>(null, (Resource<Genre>)resource));
-            } 
+            genre.setDescription(commentTextArea.getText().trim());  
+            try { 
+                if (edit) {
+                    genreRepository.update(resource);               
+                } else {
+                    resource = genreRepository.saveAndGetResource(genre); 
+                }              
+                if (includedDialogImageBoxController.isChangedImage()) {
+                    genreRepository.saveImage(resource, includedDialogImageBoxController.getImage());
+                    includedDialogImageBoxController.setChangedImage(false);                              
+                }  
+                if (edit) {
+                    genreRepository.setUpdated(new WrapChangedEntity<>(oldResource, (Resource<Genre>)resource));
+                } else {
+                    genreRepository.setAdded(new WrapChangedEntity<>(null, (Resource<Genre>)resource));
+                } 
+            } catch (URISyntaxException ex) {
+                ex.printStackTrace();
+            }    
             dialogStage.close();
             edit = false;
         }

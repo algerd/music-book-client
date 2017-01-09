@@ -21,8 +21,8 @@ import ru.javafx.musicbook.client.service.ContextMenuService;
 import ru.javafx.musicbook.client.service.RequestViewService;
 import static ru.javafx.musicbook.client.service.ContextMenuItemType.*;
 import ru.javafx.musicbook.client.entity.Entity;
-import ru.javafx.musicbook.client.repository.ArtistRepository;
-import ru.javafx.musicbook.client.repository.GenreRepository;
+import ru.javafx.musicbook.client.repository.impl.ArtistRepositoryImpl;
+import ru.javafx.musicbook.client.repository.impl.GenreRepositoryImpl;
 
 @Service
 public class ContextMenuServiceImpl implements ContextMenuService { 
@@ -30,9 +30,9 @@ public class ContextMenuServiceImpl implements ContextMenuService {
     private final Logger logger = LoggerFactory.getLogger(getClass());
     
     @Autowired
-    private ArtistRepository artistRepository;
+    private ArtistRepositoryImpl artistRepository;
     @Autowired
-    private GenreRepository genreRepository;
+    private GenreRepositoryImpl genreRepository;
     
     @Autowired
     private RequestViewService requestViewService;

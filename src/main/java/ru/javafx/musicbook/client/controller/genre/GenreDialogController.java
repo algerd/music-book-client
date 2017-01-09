@@ -16,7 +16,7 @@ import ru.javafx.musicbook.client.controller.BaseDialogController;
 import ru.javafx.musicbook.client.controller.helper.inputImageBox.DialogImageBoxController;
 import ru.javafx.musicbook.client.entity.Genre;
 import ru.javafx.musicbook.client.fxintegrity.FXMLController;
-import ru.javafx.musicbook.client.repository.GenreRepository;
+import ru.javafx.musicbook.client.repository.impl.GenreRepositoryImpl;
 import ru.javafx.musicbook.client.repository.impl.WrapChangedEntity;
 import ru.javafx.musicbook.client.utils.Helper;
 
@@ -33,7 +33,7 @@ public class GenreDialogController extends BaseDialogController {
     private Genre genre;
     
     @Autowired
-    private GenreRepository genreRepository;
+    private GenreRepositoryImpl genreRepository;
     
     @FXML
     private DialogImageBoxController includedDialogImageBoxController;

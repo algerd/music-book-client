@@ -32,8 +32,8 @@ import ru.javafx.musicbook.client.entity.Artist;
 import ru.javafx.musicbook.client.entity.Genre;
 import ru.javafx.musicbook.client.fxintegrity.FXMLController;
 import ru.javafx.musicbook.client.fxintegrity.FXMLControllerLoader;
-import ru.javafx.musicbook.client.repository.ArtistRepository;
-import ru.javafx.musicbook.client.repository.GenreRepository;
+import ru.javafx.musicbook.client.repository.impl.ArtistRepositoryImpl;
+import ru.javafx.musicbook.client.repository.impl.GenreRepositoryImpl;
 import static ru.javafx.musicbook.client.service.ContextMenuItemType.*;
 import ru.javafx.musicbook.client.utils.Helper;
 
@@ -53,9 +53,9 @@ public class GenresController extends BaseAwareController implements PagedContro
     @Autowired
     private FXMLControllerLoader fxmlLoader;  
     @Autowired
-    private GenreRepository genreRepository;   
+    private GenreRepositoryImpl genreRepository;   
     @Autowired
-    private ArtistRepository artistRepository;
+    private ArtistRepositoryImpl artistRepository;
     
     @FXML
     private VBox genresTableVBox;

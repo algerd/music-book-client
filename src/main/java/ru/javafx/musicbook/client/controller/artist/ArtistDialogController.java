@@ -30,8 +30,8 @@ import ru.javafx.musicbook.client.controller.helper.inputImageBox.DialogImageBox
 import ru.javafx.musicbook.client.entity.Artist;
 import ru.javafx.musicbook.client.entity.Genre;
 import ru.javafx.musicbook.client.fxintegrity.FXMLController;
-import ru.javafx.musicbook.client.repository.ArtistRepository;
-import ru.javafx.musicbook.client.repository.GenreRepository;
+import ru.javafx.musicbook.client.repository.impl.ArtistRepositoryImpl;
+import ru.javafx.musicbook.client.repository.impl.GenreRepositoryImpl;
 import ru.javafx.musicbook.client.repository.impl.WrapChangedEntity;
 import ru.javafx.musicbook.client.utils.Helper;
 
@@ -50,9 +50,9 @@ public class ArtistDialogController extends BaseDialogController {
     private final List<Genre> genres = new ArrayList<>();
     
     @Autowired
-    private ArtistRepository artistRepository;
+    private ArtistRepositoryImpl artistRepository;
     @Autowired
-    private GenreRepository genreRepository;  
+    private GenreRepositoryImpl genreRepository;  
     
     @FXML
     private DialogImageBoxController includedDialogImageBoxController;

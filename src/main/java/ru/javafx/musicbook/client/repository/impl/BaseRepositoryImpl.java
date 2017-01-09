@@ -1,27 +1,12 @@
 
 package ru.javafx.musicbook.client.repository.impl;
 
-import java.awt.image.BufferedImage;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
-import java.net.URI;
-import java.net.URISyntaxException;
-import javafx.embed.swing.SwingFXUtils;
-import javafx.scene.image.Image;
-import javax.imageio.ImageIO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.hateoas.Resource;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
-import org.springframework.web.client.RestTemplate;
 import ru.javafx.musicbook.client.SessionManager;
 import ru.javafx.musicbook.client.entity.Entity;
 import ru.javafx.musicbook.client.entity.RelPath;
@@ -32,7 +17,7 @@ public abstract class BaseRepositoryImpl<T extends Entity> implements BaseReposi
     protected final Logger logger = LoggerFactory.getLogger(getClass());
     
     protected String relPath;   
-    private Class<T> entityType;
+    protected Class<T> entityType;
     
     @Autowired
     protected SessionManager sessionManager;

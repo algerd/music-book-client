@@ -79,12 +79,10 @@ public class GenreDialogController extends BaseDialogController<Genre> {
            
     @Override
     protected boolean isInputValid() {
-        String errorMessage = "";
-        
+        String errorMessage = "";       
         if (nameTextField.getText() == null || nameTextField.getText().trim().equals("")) {
             errorMessage += "Введите название жанра!\n"; 
-        } 
-        
+        }        
         try {
             if (!genre.getName().equals(nameTextField.getText()) && genreRepository.existByName(nameTextField.getText())) {
                 errorMessage += "Такой жанр уже есть!\n"; 
@@ -92,8 +90,7 @@ public class GenreDialogController extends BaseDialogController<Genre> {
         } catch (URISyntaxException ex) {
             logger.error(ex.getMessage());
             //ex.printStackTrace();
-        }
-        
+        }     
         if (errorMessage.equals("")) {
             return true;
         } 

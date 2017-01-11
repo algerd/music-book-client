@@ -7,6 +7,7 @@ import javafx.scene.layout.AnchorPane;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import ru.javafx.musicbook.client.controller.albums.AlbumsController;
 import ru.javafx.musicbook.client.controller.artists.ArtistsController;
 import ru.javafx.musicbook.client.controller.genres.GenresController;
 import ru.javafx.musicbook.client.fxintegrity.BaseFxmlController;
@@ -35,6 +36,11 @@ public class TopBarController extends BaseFxmlController {
     @FXML
     private void showArtists() {
         requestViewService.show(ArtistsController.class);
+    }
+    
+    @FXML
+    private void showAlbums() {
+        requestViewService.show(AlbumsController.class);
     }
     
     @FXML

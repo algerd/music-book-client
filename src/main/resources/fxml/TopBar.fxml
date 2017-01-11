@@ -11,6 +11,7 @@
         <HBox spacing="5.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
             <children>
                 <Button mnemonicParsing="false" onAction="#showArtists" text="Artists" />
+                <Button mnemonicParsing="false" onAction="#showAlbums" text="Albums" />
                 <Button mnemonicParsing="false" onAction="#showGenres" text="Genres" />
             </children>
             <opaqueInsets>

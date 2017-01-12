@@ -5,7 +5,9 @@ import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.ResourceBundle;
 import java.util.stream.Collectors;
 import javafx.beans.property.IntegerProperty;
@@ -133,20 +135,31 @@ public class ArtistsController extends BaseAwareController implements PagedContr
             ex.printStackTrace();
         }
     }
-    
+ 
     @Override
-    public void setPageValue() {  
+    public void setPageValue() {   
         clearSelectionTable();
         artistsTable.getItems().clear();
-        try {         
-            resources = artistRepository.searchByGenreAndRatingAndName(paginatorPaneController.getPaginator(), getMinRating(), getMaxRating(), searchString, resorceGenre);
+        try {           
+            Map<String, Object> parameters = new HashMap<>();
+            parameters.put("minrating", getMinRating());
+            parameters.put("maxrating", getMaxRating());
+            parameters.put("search", searchString);                   
+            parameters.putAll(paginatorPaneController.getPaginator().getParameters());
+            if (resorceGenre == null || resorceGenre.getContent().getName().equals("All genres")) {
+                resources = artistRepository.searchByNameAndRating(parameters);
+            } else {
+                parameters.put("id_genre", Helper.getId(resorceGenre));
+                resources = artistRepository.searchByGenreAndRatingAndName(parameters);
+            }          
+            paginatorPaneController.getPaginator().setTotalElements((int) resources.getMetadata().getTotalElements());           
             artistsTable.setItems(FXCollections.observableArrayList(resources.getContent().parallelStream().collect(Collectors.toList())));           
             Helper.setHeightTable(artistsTable, paginatorPaneController.getPaginator().getSize());        
         } catch (URISyntaxException ex) {
             logger.error(ex.getMessage());
         }      
     }
-    
+       
     private void initArtistsTable() { 
         rankColumn.setCellValueFactory(
             cellData -> new SimpleIntegerProperty(artistsTable.getItems().indexOf(cellData.getValue()) + 1).asObject()

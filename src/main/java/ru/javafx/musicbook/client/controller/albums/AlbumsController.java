@@ -119,6 +119,7 @@ public class AlbumsController extends BaseAwareController implements PagedContro
     
     @Override
     public void setPageValue() { 
+        /*
         clearSelectionTable();
         albumsTable.getItems().clear();
         try {         
@@ -127,7 +128,8 @@ public class AlbumsController extends BaseAwareController implements PagedContro
             Helper.setHeightTable(albumsTable, paginatorPaneController.getPaginator().getSize());        
         } catch (URISyntaxException ex) {
             logger.error(ex.getMessage());
-        }  
+        } 
+        */
     }
     
     private void clearSelectionTable() {

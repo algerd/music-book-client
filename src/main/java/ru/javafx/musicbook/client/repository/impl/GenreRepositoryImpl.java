@@ -15,6 +15,7 @@ import org.springframework.hateoas.client.Traverson;
 import org.springframework.hateoas.mvc.TypeReferences;
 import org.springframework.stereotype.Repository;
 import ru.javafx.musicbook.client.controller.paginator.Paginator;
+import ru.javafx.musicbook.client.entity.Album;
 import ru.javafx.musicbook.client.entity.Artist;
 import ru.javafx.musicbook.client.entity.ArtistGenre;
 import ru.javafx.musicbook.client.entity.Genre;
@@ -59,14 +60,25 @@ public class GenreRepositoryImpl extends CrudRepositoryImpl<Genre> implements Ge
     }
     
     @Override
-    public Resources<Resource<Genre>> findByArtist(Resource<Artist> artistResource) throws URISyntaxException {
+    public Resources<Resource<Genre>> findByArtist(Resource<Artist> resource) throws URISyntaxException {
         Map<String, Object> parameters = new HashMap<>();
-        parameters.put("id_artist", Helper.getId(artistResource));
+        parameters.put("id_artist", Helper.getId(resource));
         return new Traverson(new URI(basePath), MediaTypes.HAL_JSON)
                 .follow(relPath, "search", "by_artist")
                 .withTemplateParameters(parameters)
                 .withHeaders(sessionManager.createSessionHeaders())
                 .toObject(new ParameterizedTypeReference<Resources<Resource<Genre>>>() {});      
     } 
+    
+    @Override
+    public Resources<Resource<Genre>> findByAlbum(Resource<Album> resource) throws URISyntaxException {
+        Map<String, Object> parameters = new HashMap<>();
+        parameters.put("id_album", Helper.getId(resource));
+        return new Traverson(new URI(basePath), MediaTypes.HAL_JSON)
+                .follow(relPath, "search", "by_album")
+                .withTemplateParameters(parameters)
+                .withHeaders(sessionManager.createSessionHeaders())
+                .toObject(new ParameterizedTypeReference<Resources<Resource<Genre>>>() {});
+    }
 
 }

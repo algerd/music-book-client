@@ -59,4 +59,12 @@ public class ArtistRepositoryImpl extends CrudRepositoryImpl<Artist> implements 
                 .withHeaders(sessionManager.createSessionHeaders())
                 .toObject(new ParameterizedTypeReference<Resources<Resource<Artist>>>() {});      
     } 
+    
+    @Override
+    public Resources<Resource<Artist>> findAll() throws URISyntaxException {
+        return new Traverson(new URI(basePath), MediaTypes.HAL_JSON)
+                .follow(relPath)
+                .withHeaders(sessionManager.createSessionHeaders())
+                .toObject(new TypeReferences.ResourcesType<Resource<Artist>>() {});       
+    }
 }

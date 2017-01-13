@@ -12,6 +12,8 @@ import ru.javafx.musicbook.client.entity.Genre;
 
 public interface ArtistRepository extends CrudRepository<Artist> {
     
+    Resources<Resource<Artist>> findAll() throws URISyntaxException;
+    
     void saveGenreInArtist(Resource<Artist> resource, int idGenre) throws URISyntaxException;
     
     void deleteGenreFromArtist(Resource<Artist> resource, int idGenre) throws URISyntaxException;

@@ -8,6 +8,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.ResourceBundle;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import java.util.stream.Collectors;
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleIntegerProperty;
@@ -18,6 +21,7 @@ import javafx.scene.control.Spinner;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.AnchorPane;
+import javafx.util.StringConverter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.hateoas.Resource;
@@ -83,21 +87,39 @@ public class AlbumDialogController extends BaseDialogController<Album> {
         Helper.initIntegerSpinner(secundSpinner, 0, 59, 0, true, secund);     
         Helper.limitTextInput(nameField, 255);
         Helper.limitTextInput(commentTextArea, 1000);
-        
+        initArtistChoiceCheckBox();
         includedDialogImageBoxController.setStage(dialogStage);
         includedChoiceCheckBoxController.setMainPane(view);
         includedChoiceCheckBoxController.getChoiceCheckBox().setPrefWidth(250.0);
+    }
+    
+    private void initArtistChoiceCheckBox() {       
+        artistField.setConverter(new StringConverter<Resource<Artist>>() {
+            @Override
+            public String toString(Resource<Artist> res) {
+                return res == null? null : res.getContent().getName();
+            }
+            @Override
+            public Resource<Artist> fromString(String string) {
+                return null;
+            }
+        });
+        try { 
+            //TODO: sort by name
+            artistField.getItems().addAll(artistRepository.findAll().getContent().parallelStream().collect(Collectors.toList()));
+        } catch (URISyntaxException ex) {
+            logger.error(ex.getMessage());
+            //ex.printStackTrace();
+        }
     }
     
     private void initGenreChoiceCheckBox() {
         Map<Resource<Genre>, ObservableValue<Boolean>> map = new HashMap<>();
         try {         
             if (edit) {
-                /*
                 genreRepository.findByAlbum(resource).getContent().parallelStream().forEach(
                     genreResource -> genres.add(genreResource.getContent())
                 );
-                */
             }   
             genreRepository.findAll().getContent().parallelStream().forEach(
                 genre -> map.put(genre, new SimpleBooleanProperty(genres.contains(genre.getContent())))             
@@ -115,14 +137,16 @@ public class AlbumDialogController extends BaseDialogController<Album> {
         if (nameField.getText() == null || nameField.getText().trim().equals("")) {
             errorMessage += "Введите название альбома!\n"; 
         }
+        /*
         try {
-            if (!album.getName().equals(nameField.getText()) && artistRepository.existByName(nameField.getText())) {
+            if (!album.getName().equals(nameField.getText()) && artistRepository.containsAlbum(nameField.getText())) {
                 errorMessage += "Такой альбом уже есть!\n";
             }
         } catch (URISyntaxException ex) {
             logger.error(ex.getMessage());
             //ex.printStackTrace();
-        }        
+        } 
+        */
         if (errorMessage.equals("")) {
             return true;
         } 

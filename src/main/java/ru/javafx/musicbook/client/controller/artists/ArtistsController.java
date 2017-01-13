@@ -83,6 +83,8 @@ public class ArtistsController extends BaseAwareController implements PagedContr
     @FXML
     private Label resetSearchLabel; 
     @FXML
+    private ChoiceBox<String> searchChoiceBox;
+    @FXML
     private ChoiceBox<String> sortChoiceBox;
     @FXML
     private ChoiceBox<String> orderChoiceBox;   
@@ -140,12 +142,12 @@ public class ArtistsController extends BaseAwareController implements PagedContr
     public void setPageValue() {   
         clearSelectionTable();
         artistsTable.getItems().clear();
-        try {           
-            Map<String, Object> parameters = new HashMap<>();
-            parameters.put("minrating", getMinRating());
-            parameters.put("maxrating", getMaxRating());
-            parameters.put("search", searchString);                   
-            parameters.putAll(paginatorPaneController.getPaginator().getParameters());
+        Map<String, Object> parameters = new HashMap<>();
+        parameters.put("minrating", getMinRating());
+        parameters.put("maxrating", getMaxRating());
+        parameters.put("search", searchString);                   
+        parameters.putAll(paginatorPaneController.getPaginator().getParameters());
+        try {                       
             if (resorceGenre == null || resorceGenre.getContent().getName().equals("All genres")) {
                 resources = artistRepository.searchByNameAndRating(parameters);
             } else {
@@ -198,9 +200,7 @@ public class ArtistsController extends BaseAwareController implements PagedContr
     }
     
     private void initFilterListeners() {        
-        minRating.addListener((ObservableValue, oldValue, newValue)-> {
-            filter();
-        });
+        minRating.addListener((ObservableValue, oldValue, newValue)-> filter());
         maxRating.addListener((ObservableValue, oldValue, newValue)-> filter());       
         searchField.textProperty().addListener((ObservableValue, oldValue, newValue)-> {           
             resetSearchLabel.setVisible(newValue.length() > 0);
@@ -234,7 +234,8 @@ public class ArtistsController extends BaseAwareController implements PagedContr
         resetSearchField();
         sortChoiceBox.getSelectionModel().selectFirst();
         orderChoiceBox.getSelectionModel().selectFirst();
-        genreChoiceBox.getSelectionModel().selectFirst();    
+        genreChoiceBox.getSelectionModel().selectFirst(); 
+        searchChoiceBox.getSelectionModel().selectFirst();
         initFilters();
         paginatorPaneController.initPageComboBox();
     } 

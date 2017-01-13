@@ -111,7 +111,25 @@ public class AlbumDialogController extends BaseDialogController<Album> {
     
     @Override
     protected boolean isInputValid() {
-        return true;
+        String errorMessage = "";
+        if (nameField.getText() == null || nameField.getText().trim().equals("")) {
+            errorMessage += "Введите название альбома!\n"; 
+        }
+        try {
+            if (!album.getName().equals(nameField.getText()) && artistRepository.existByName(nameField.getText())) {
+                errorMessage += "Такой альбом уже есть!\n";
+            }
+        } catch (URISyntaxException ex) {
+            logger.error(ex.getMessage());
+            //ex.printStackTrace();
+        }        
+        if (errorMessage.equals("")) {
+            return true;
+        } 
+        else {
+            errorMessage(errorMessage);
+            return false;
+        }
     }
     
     @Override
@@ -154,7 +172,16 @@ public class AlbumDialogController extends BaseDialogController<Album> {
     @FXML
     @Override
     protected void handleOkButton() {
-        
+        if (isInputValid()) {
+            //Artist artist = artistField.getValue();                         
+            //album.setId_artist(artist.getId());
+            album.setName(nameField.getText().trim());             
+            album.setTime(getMinute() + ":" + ((getSecund() < 10) ? "0" : "") + getSecund());                     
+            album.setDescription(commentTextArea.getText().trim());             
+            album.setYear(getYear());
+            album.setRating(getRating());  
+            
+        }
     }
     
     public int getYear() {

@@ -43,6 +43,11 @@ import ru.javafx.musicbook.client.fxintegrity.FXMLController;
 import ru.javafx.musicbook.client.fxintegrity.FXMLControllerLoader;
 import ru.javafx.musicbook.client.repository.AlbumRepository;
 import ru.javafx.musicbook.client.repository.GenreRepository;
+import ru.javafx.musicbook.client.service.ContextMenuItemType;
+import static ru.javafx.musicbook.client.service.ContextMenuItemType.ADD_ALBUM;
+import static ru.javafx.musicbook.client.service.ContextMenuItemType.ADD_ARTIST;
+import static ru.javafx.musicbook.client.service.ContextMenuItemType.DELETE_ALBUM;
+import static ru.javafx.musicbook.client.service.ContextMenuItemType.EDIT_ALBUM;
 import ru.javafx.musicbook.client.utils.Helper;
 
 @FXMLController(
@@ -334,6 +339,14 @@ public class AlbumsController extends BaseAwareController implements PagedContro
             }           
         }
         else if (mouseEvent.getButton() == MouseButton.SECONDARY) { 
+            contextMenuService.add(ADD_ALBUM, null);
+            // запретить удаление и редактирование записи с id = 1 (Unknown album)
+            if (selectedItem != null && Helper.getId(selectedItem) != 1) {
+                contextMenuService.add(EDIT_ALBUM, selectedItem);
+                contextMenuService.add(DELETE_ALBUM, selectedItem);                       
+            }           
+            contextMenuService.show(view, mouseEvent);  
+            
             /*
             AlbumEntity album = new AlbumEntity();
             album.setId_artist(1);   
@@ -353,6 +366,9 @@ public class AlbumsController extends BaseAwareController implements PagedContro
         clearSelectionTable();
         contextMenuService.clear();
 		if (mouseEvent.getButton() == MouseButton.SECONDARY) {
+            contextMenuService.add(ADD_ALBUM, null);
+            contextMenuService.show(view, mouseEvent);
+           
             /*
             AlbumEntity album = new AlbumEntity();
             album.setId_artist(1);   

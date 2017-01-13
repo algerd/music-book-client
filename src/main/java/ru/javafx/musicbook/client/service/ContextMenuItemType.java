@@ -12,12 +12,12 @@ public enum ContextMenuItemType {
         
         ADD_GENRE(new MenuItem("Add Genre")),
         EDIT_GENRE(new MenuItem("Edit Genre")),
-        DELETE_GENRE(new MenuItem("Delete Genre"));
-        /*
+        DELETE_GENRE(new MenuItem("Delete Genre")),
+        
         ADD_ALBUM(new MenuItem("Add Album")),
         EDIT_ALBUM(new MenuItem("Edit Album")),
-        DELETE_ALBUM(new MenuItem("Delete Album")),
-        
+        DELETE_ALBUM(new MenuItem("Delete Album"));
+        /*
         ADD_SONG(new MenuItem("Add Song")),
         EDIT_SONG(new MenuItem("Edit Song")),
         DELETE_SONG(new MenuItem("Delete Song")),       

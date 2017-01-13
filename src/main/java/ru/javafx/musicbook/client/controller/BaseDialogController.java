@@ -25,6 +25,14 @@ public abstract class BaseDialogController<T extends Entity> extends BaseAwareCo
     @Override
     public void setResource(Resource<T> resource) { 
         this.resource = resource;
+        if (resource == null || !resource.hasLink("self")) {
+            dialogStage.setTitle("Add");
+            add();
+        } else {
+            dialogStage.setTitle("Edit"); 
+            edit();
+        }      
+        /*
         if (resource != null) {           
             dialogStage.setTitle("Edit"); 
             edit();
@@ -33,6 +41,7 @@ public abstract class BaseDialogController<T extends Entity> extends BaseAwareCo
             dialogStage.setTitle("Add");
             add();
         }
+        */
     }
     
     protected void errorMessage(String errorMessage) {

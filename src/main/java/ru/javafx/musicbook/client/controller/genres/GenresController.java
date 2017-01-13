@@ -218,10 +218,10 @@ public class GenresController extends BaseAwareController implements PagedContro
         }
         else if (mouseEvent.getButton() == MouseButton.SECONDARY) { 
             contextMenuService.add(ADD_GENRE, null);
-            //if (selectedItem != null && selectedItem.getId() > 1) {
+            if (selectedItem != null && Helper.getId(selectedItem) > 1) {
                 contextMenuService.add(EDIT_GENRE, selectedItem);
                 contextMenuService.add(DELETE_GENRE, selectedItem);                       
-            //}
+            }
             contextMenuService.show(view, mouseEvent);       
         }
     }

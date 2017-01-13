@@ -278,10 +278,10 @@ public class ArtistsController extends BaseAwareController implements PagedContr
         else if (mouseEvent.getButton() == MouseButton.SECONDARY) { 
             contextMenuService.add(ADD_ARTIST, null);
             // запретить удаление и редактирование записи с id = 1 (Unknown artist)
-            //if (selectedItem != null && selectedItem.getId() != 1) {
+            if (selectedItem != null && Helper.getId(selectedItem) != 1) {
                 contextMenuService.add(EDIT_ARTIST, selectedItem);
                 contextMenuService.add(DELETE_ARTIST, selectedItem);                       
-            //}
+            }
             contextMenuService.show(view, mouseEvent);         
         }    
     }

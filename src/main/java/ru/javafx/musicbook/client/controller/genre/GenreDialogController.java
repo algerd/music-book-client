@@ -44,7 +44,8 @@ public class GenreDialogController extends BaseDialogController<Genre> {
     }
     
     @FXML
-    private void handleOkButton() {
+    @Override
+    protected void handleOkButton() {
         if (isInputValid()) { 
             genre.setName(nameTextField.getText().trim());
             genre.setDescription(commentTextArea.getText().trim());  
@@ -70,11 +71,6 @@ public class GenreDialogController extends BaseDialogController<Genre> {
             dialogStage.close();
             edit = false;
         }
-    }
-    
-    @FXML
-    private void handleCancelButton() {
-        dialogStage.close();
     }
            
     @Override

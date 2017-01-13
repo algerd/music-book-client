@@ -1,6 +1,7 @@
 
 package ru.javafx.musicbook.client.controller;
 
+import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
 import javafx.stage.Stage;
 import org.slf4j.Logger;
@@ -43,10 +44,17 @@ public abstract class BaseDialogController<T extends Entity> extends BaseAwareCo
         alert.showAndWait();  
     }
     
+    @FXML
+    protected void handleCancelButton() {
+        dialogStage.close();
+    }    
+    
     protected abstract void add();
     
     protected abstract void edit();
     
     protected abstract boolean isInputValid();
     
+    protected abstract void handleOkButton();
+       
 }

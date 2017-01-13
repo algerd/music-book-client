@@ -89,7 +89,8 @@ public class ArtistDialogController extends BaseDialogController<Artist> {
     }
          
     @FXML
-    private void handleOkButton() {
+    @Override
+    protected void handleOkButton() {
         if (isInputValid()) { 
             artist.setName(nameTextField.getText().trim());
             artist.setRating(getRating());
@@ -137,12 +138,7 @@ public class ArtistDialogController extends BaseDialogController<Artist> {
             }
         }
     }
-    
-    @FXML
-    private void handleCancelButton() {
-        dialogStage.close();
-    }
-           
+       
     @Override
     protected boolean isInputValid() {
         String errorMessage = "";

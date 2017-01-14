@@ -13,4 +13,7 @@ public interface AlbumRepository extends CrudRepository<Album> {
 
     PagedResources<Resource<Album>> searchByNameAndRatingAndYearAndGenre(Map<String, Object> parameters) throws URISyntaxException;
     
+    void saveGenreInAlbum(Resource<Album> resource, int idGenre) throws URISyntaxException;
+    
+    void deleteGenreFromAlbum(Resource<Album> resource, int idGenre) throws URISyntaxException;
 }

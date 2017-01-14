@@ -192,13 +192,42 @@ public class AlbumDialogController extends BaseDialogController<Album> {
     @Override
     protected void handleOkButton() {
         if (isInputValid()) {
-            //Artist artist = artistField.getValue();                         
-            //album.setId_artist(artist.getId());
             album.setName(nameField.getText().trim());             
             album.setTime(getMinute() + ":" + ((getSecund() < 10) ? "0" : "") + getSecund());                     
             album.setDescription(commentTextArea.getText().trim());             
             album.setYear(getYear());
             album.setRating(getRating());  
+            
+            try {
+                if (edit) {                             
+                    albumRepository.update(resource);               
+                } else {
+                    resource = albumRepository.saveAndGetResource(album); 
+                } 
+                // Извлечь жанры из списка и сохранить их в связке связанные с артистом
+                includedChoiceCheckBoxController.getItemMap().keySet().parallelStream().forEach(resourceGenre -> {
+                    ObservableValue<Boolean> flag = includedChoiceCheckBoxController.getItemMap().get(resourceGenre); 
+                    String href = resourceGenre.getId().getHref();
+                    int idGenre = Integer.valueOf(href.substring(href.lastIndexOf("/") + 1));
+                    //удалить невыбранные жанры, если они есть у артиста
+                    try {
+                        if (!flag.getValue() && genres.contains(resourceGenre.getContent())) {
+                                albumRepository.deleteGenreFromAlbum(resource, idGenre);
+                        }
+                        //добавить выбранные жанры, если их ещё нет
+                        if (flag.getValue() && !genres.contains(resourceGenre.getContent())) { 
+                            albumRepository.saveGenreInAlbum(resource, idGenre);
+                        }
+                    } catch (URISyntaxException ex) {
+                        logger.error(ex.getMessage());
+                        //ex.printStackTrace();
+                    }                   
+                });
+                
+            } catch (URISyntaxException ex) {
+                //logger.error(ex.getMessage());
+                ex.printStackTrace();
+            }
             
         }
     }

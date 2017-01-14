@@ -32,4 +32,15 @@ public class AlbumRepositoryImpl extends CrudRepositoryImpl<Album> implements Al
                 .withHeaders(sessionManager.createSessionHeaders())
                 .toObject(new TypeReferences.PagedResourcesType<Resource<Album>>() {});              
     } 
+       
+    @Override
+    public void saveGenreInAlbum(Resource<Album> resource, int idGenre) throws URISyntaxException {              
+        save(resource.getId().getHref() + "/genres/" + idGenre);
+    }   
+
+    @Override
+    public void deleteGenreFromAlbum(Resource<Album> resource, int idGenre) throws URISyntaxException {
+        delete(resource.getId().getHref() + "/genres/" + idGenre);
+    }
+    
 }

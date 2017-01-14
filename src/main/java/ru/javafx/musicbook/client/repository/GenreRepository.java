@@ -15,8 +15,8 @@ public interface GenreRepository extends CrudRepository<Genre> {
     long countArtistsByGenre(Resource<Genre> genreResource) throws URISyntaxException;
     
     PagedResources<Resource<Genre>> searchByName(Paginator paginator, String search) throws URISyntaxException;
-    
-    Resources<Resource<Genre>> findAll() throws URISyntaxException;
+
+    Resources<Resource<Genre>> findAllNames() throws URISyntaxException;
     
     Resources<Resource<Genre>> findByArtist(Resource<Artist> resource) throws URISyntaxException;
     

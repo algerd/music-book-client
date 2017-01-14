@@ -4,7 +4,6 @@ package ru.javafx.musicbook.client.controller.artists;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -129,12 +128,11 @@ public class ArtistsController extends BaseAwareController implements PagedContr
         List <Resource<Genre>> genreResources = new ArrayList<>();
         genreResources.add(resorceGenre);
         try {
-            genreResources.addAll(genreRepository.findAll().getContent().parallelStream().collect(Collectors.toList()));         
-            genreResources.sort(Comparator.comparing(genreResource -> genreResource.getContent().getName()));
+            genreResources.addAll(genreRepository.findAllNames().getContent().parallelStream().collect(Collectors.toList()));         
             genreChoiceBox.getItems().addAll(genreResources);
             genreChoiceBox.getSelectionModel().selectFirst();
         } catch (URISyntaxException ex) {
-            ex.printStackTrace();
+            logger.error(ex.getMessage());
         }
     }
  

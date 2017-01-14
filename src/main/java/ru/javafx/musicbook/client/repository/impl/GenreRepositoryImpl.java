@@ -50,12 +50,16 @@ public class GenreRepositoryImpl extends CrudRepositoryImpl<Genre> implements Ge
         paginator.setTotalElements((int) resources.getMetadata().getTotalElements());
         return resources;       
     }
-    
+   
     @Override
-    public Resources<Resource<Genre>> findAll() throws URISyntaxException {
+    public Resources<Resource<Genre>> findAllNames() throws URISyntaxException {
+        Map<String, Object> parameters = new HashMap<>();
+        parameters.put("projection", "get_name"); 
+        parameters.put("sort", "name,asc"); 
         return new Traverson(new URI(basePath), MediaTypes.HAL_JSON)
                 .follow(relPath)
                 .withHeaders(sessionManager.createSessionHeaders())
+                .withTemplateParameters(parameters)
                 .toObject(new TypeReferences.ResourcesType<Resource<Genre>>() {});       
     }
     

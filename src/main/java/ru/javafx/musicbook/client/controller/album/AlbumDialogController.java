@@ -8,8 +8,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.ResourceBundle;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import java.util.stream.Collectors;
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleBooleanProperty;
@@ -105,11 +103,9 @@ public class AlbumDialogController extends BaseDialogController<Album> {
             }
         });
         try { 
-            //TODO: sort by name
-            artistField.getItems().addAll(artistRepository.findAll().getContent().parallelStream().collect(Collectors.toList()));
+            artistField.getItems().addAll(artistRepository.findAllNames().getContent().parallelStream().collect(Collectors.toList()));        
         } catch (URISyntaxException ex) {
             logger.error(ex.getMessage());
-            //ex.printStackTrace();
         }
     }
     
@@ -121,13 +117,12 @@ public class AlbumDialogController extends BaseDialogController<Album> {
                     genreResource -> genres.add(genreResource.getContent())
                 );
             }   
-            genreRepository.findAll().getContent().parallelStream().forEach(
+            genreRepository.findAllNames().getContent().parallelStream().forEach(
                 genre -> map.put(genre, new SimpleBooleanProperty(genres.contains(genre.getContent())))             
             );
             includedChoiceCheckBoxController.addItems(map);
         } catch (URISyntaxException ex) {
             logger.error(ex.getMessage());
-            //ex.printStackTrace();
         }       
     }
     

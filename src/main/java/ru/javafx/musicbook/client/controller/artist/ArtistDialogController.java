@@ -78,13 +78,12 @@ public class ArtistDialogController extends BaseDialogController<Artist> {
                     genreResource -> genres.add(genreResource.getContent())
                 );                     
             }   
-            genreRepository.findAll().getContent().parallelStream().forEach(
+            genreRepository.findAllNames().getContent().parallelStream().forEach(
                 genre -> map.put(genre, new SimpleBooleanProperty(genres.contains(genre.getContent())))             
             );
             includedChoiceCheckBoxController.addItems(map);
         } catch (URISyntaxException ex) {
             logger.error(ex.getMessage());
-            //ex.printStackTrace();
         }       
     }
          

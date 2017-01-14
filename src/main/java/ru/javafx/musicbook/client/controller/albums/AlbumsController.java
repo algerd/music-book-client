@@ -4,7 +4,6 @@ package ru.javafx.musicbook.client.controller.albums;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -37,15 +36,12 @@ import ru.javafx.musicbook.client.controller.paginator.PagedController;
 import ru.javafx.musicbook.client.controller.paginator.PaginatorPaneController;
 import ru.javafx.musicbook.client.controller.paginator.Sort;
 import ru.javafx.musicbook.client.entity.Album;
-import ru.javafx.musicbook.client.entity.Artist;
 import ru.javafx.musicbook.client.entity.Genre;
 import ru.javafx.musicbook.client.fxintegrity.FXMLController;
 import ru.javafx.musicbook.client.fxintegrity.FXMLControllerLoader;
 import ru.javafx.musicbook.client.repository.AlbumRepository;
 import ru.javafx.musicbook.client.repository.GenreRepository;
-import ru.javafx.musicbook.client.service.ContextMenuItemType;
 import static ru.javafx.musicbook.client.service.ContextMenuItemType.ADD_ALBUM;
-import static ru.javafx.musicbook.client.service.ContextMenuItemType.ADD_ARTIST;
 import static ru.javafx.musicbook.client.service.ContextMenuItemType.DELETE_ALBUM;
 import static ru.javafx.musicbook.client.service.ContextMenuItemType.EDIT_ALBUM;
 import ru.javafx.musicbook.client.utils.Helper;
@@ -215,12 +211,11 @@ public class AlbumsController extends BaseAwareController implements PagedContro
         List <Resource<Genre>> genreResources = new ArrayList<>();
         genreResources.add(resorceGenre);
         try {
-            genreResources.addAll(genreRepository.findAll().getContent().parallelStream().collect(Collectors.toList()));         
-            genreResources.sort(Comparator.comparing(genreResource -> genreResource.getContent().getName()));
+            genreResources.addAll(genreRepository.findAllNames().getContent().parallelStream().collect(Collectors.toList()));         
             genreChoiceBox.getItems().addAll(genreResources);
             genreChoiceBox.getSelectionModel().selectFirst();
         } catch (URISyntaxException ex) {
-            ex.printStackTrace();
+            logger.error(ex.getMessage());
         }
     }
     

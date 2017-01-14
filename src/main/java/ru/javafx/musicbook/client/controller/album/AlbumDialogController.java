@@ -34,6 +34,7 @@ import ru.javafx.musicbook.client.fxintegrity.FXMLController;
 import ru.javafx.musicbook.client.repository.AlbumRepository;
 import ru.javafx.musicbook.client.repository.ArtistRepository;
 import ru.javafx.musicbook.client.repository.GenreRepository;
+import ru.javafx.musicbook.client.repository.impl.WrapChangedEntity;
 import ru.javafx.musicbook.client.utils.Helper;
 
 @FXMLController(
@@ -202,6 +203,25 @@ public class AlbumDialogController extends BaseDialogController<Album> {
                 if (edit) {                             
                     albumRepository.update(resource);               
                 } else {
+                    /* 
+                    Через 2 запроса, но в духе Data Spring Rest:
+                    1. Создать и сохранить альбом с id_artist = 1 (Default: Unknown Artist)
+                    2. Добавить альбом артисту
+                    
+                    Через 1 запрос:
+                    - передавать альбом и id_artist в post-метод контроллера, который
+                    затем будет вызывать:
+                        - или кастомный метод сохранения альбома в бд с прямым sql
+                        - или находить из бд по id_artist артиста, добавит его объекту алббома,
+                        а потом сохранит этот объект в бд средствами data-spring
+                    
+                    Через n(n = count ref keys) запросов способ более гибкий, потому что при наличии множества reference keys
+                    добавление ключей объекту(или объекта референс-объектам) производится вызовом соответствующих
+                    запросов с передачей им объекта. При этом не надо создавать отдельный метод в контроллере,
+                    который будет принимать объект и все его ключи и обрабатывать их с соханением. Минус: возрастает
+                    число запросов в n=count_ref_keys раз, но ради гибкости этим можно пренебречь.
+                    Главная проблема: создание дефолтных реф-ключей для создания объекта с дефолтными ключами. 
+                    */                             
                     resource = albumRepository.saveAndGetResource(album); 
                 } 
                 // Извлечь жанры из списка и сохранить их в связке связанные с артистом
@@ -221,9 +241,19 @@ public class AlbumDialogController extends BaseDialogController<Album> {
                     } catch (URISyntaxException ex) {
                         logger.error(ex.getMessage());
                         //ex.printStackTrace();
-                    }                   
-                });
-                
+                    }                     
+                });               
+                if (includedDialogImageBoxController.isChangedImage()) {
+                    albumRepository.saveImage(resource, includedDialogImageBoxController.getImage());
+                    includedDialogImageBoxController.setChangedImage(false);                              
+                }               
+                if (edit) {
+                    albumRepository.setUpdated(new WrapChangedEntity<>(oldResource, resource));
+                } else {
+                    albumRepository.setAdded(new WrapChangedEntity<>(null, resource));
+                }                
+                dialogStage.close();
+                edit = false;
             } catch (URISyntaxException ex) {
                 //logger.error(ex.getMessage());
                 ex.printStackTrace();

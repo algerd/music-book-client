@@ -82,8 +82,6 @@ public class ArtistsController extends BaseAwareController implements PagedContr
     @FXML
     private Label resetSearchLabel; 
     @FXML
-    private ChoiceBox<String> searchChoiceBox;
-    @FXML
     private ChoiceBox<String> sortChoiceBox;
     @FXML
     private ChoiceBox<String> orderChoiceBox;   
@@ -233,7 +231,6 @@ public class ArtistsController extends BaseAwareController implements PagedContr
         sortChoiceBox.getSelectionModel().selectFirst();
         orderChoiceBox.getSelectionModel().selectFirst();
         genreChoiceBox.getSelectionModel().selectFirst(); 
-        searchChoiceBox.getSelectionModel().selectFirst();
         initFilters();
         paginatorPaneController.initPageComboBox();
     } 

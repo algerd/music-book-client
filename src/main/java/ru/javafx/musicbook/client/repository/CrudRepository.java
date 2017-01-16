@@ -31,4 +31,6 @@ public interface CrudRepository<T extends Entity> extends ChangeRepository<T> {
     
     void deleteImage(Resource<T> resource);
     
+    //Resource<T> getResource(String link) throws URISyntaxException;
+    
 }

@@ -188,7 +188,7 @@ public class AlbumDialogController extends BaseDialogController<Album> {
         album = resource.getContent();
         oldResource = new Resource<>(album.clone(), resource.getLinks());      
         try {
-            Resource<Artist> artistResource = artistRepository.getResource(resource.getLink("artist").getHref());
+            Resource<Artist> artistResource = artistRepository.getResource(resource.getLink("artist").getHref());    
             selectArtist(artistResource);
         } catch (URISyntaxException ex) {
             logger.error(ex.getMessage());

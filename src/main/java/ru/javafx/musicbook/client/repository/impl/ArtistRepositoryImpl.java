@@ -80,4 +80,5 @@ public class ArtistRepositoryImpl extends CrudRepositoryImpl<Artist> implements 
                 .toObject(new ParameterizedTypeReference<Resource<Artist>>() {});
         return resource;
     }
+    
 }

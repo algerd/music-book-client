@@ -6,7 +6,6 @@ import java.net.URISyntaxException;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
-import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.hateoas.MediaTypes;
 import org.springframework.hateoas.PagedResources;
 import org.springframework.hateoas.Resource;
@@ -21,6 +20,7 @@ import ru.javafx.musicbook.client.entity.ArtistGenre;
 import ru.javafx.musicbook.client.entity.Genre;
 import ru.javafx.musicbook.client.repository.GenreRepository;
 import ru.javafx.musicbook.client.utils.Helper;
+import org.springframework.core.ParameterizedTypeReference;
 
 @Repository
 public class GenreRepositoryImpl extends CrudRepositoryImpl<Genre> implements GenreRepository {
@@ -83,6 +83,14 @@ public class GenreRepositoryImpl extends CrudRepositoryImpl<Genre> implements Ge
                 .withTemplateParameters(parameters)
                 .withHeaders(sessionManager.createSessionHeaders())
                 .toObject(new ParameterizedTypeReference<Resources<Resource<Genre>>>() {});
+    }
+    
+    @Override
+    public Resource<Genre> saveAndGetResource(Genre entity) throws URISyntaxException {
+        return new Traverson(save(relPath, entity), MediaTypes.HAL_JSON)//
+                .follow("self")
+                .withHeaders(sessionManager.createSessionHeaders())
+                .toObject(new ParameterizedTypeReference<Resource<Genre>>() {});
     }
 
 }

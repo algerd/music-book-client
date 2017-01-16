@@ -12,9 +12,7 @@ public interface CrudRepository<T extends Entity> extends ChangeRepository<T> {
     URI save(String rel, T entity) throws URISyntaxException;
     
     HttpStatus save(String absRef) throws URISyntaxException;
-    
-    Resource<T> saveAndGetResource(T entity) throws URISyntaxException;
-    
+        
     void update(Resource<T> resource) throws URISyntaxException;
     
     void delete(Resource<T> resource) throws URISyntaxException;
@@ -30,6 +28,8 @@ public interface CrudRepository<T extends Entity> extends ChangeRepository<T> {
     HttpStatus postImage(Resource<T> resource, Image image);
     
     void deleteImage(Resource<T> resource);
+    
+    //Resource<T> saveAndGetResource(T entity) throws URISyntaxException;
     
     //Resource<T> getResource(String link) throws URISyntaxException;
     

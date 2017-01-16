@@ -189,6 +189,9 @@ public class AlbumDialogController extends BaseDialogController<Album> {
         oldResource = new Resource<>(album.clone(), resource.getLinks());      
         try {
             Resource<Artist> artistResource = artistRepository.getResource(resource.getLink("artist").getHref());    
+            
+            logger.info("{}", artistResource);
+            
             selectArtist(artistResource);
         } catch (URISyntaxException ex) {
             logger.error(ex.getMessage());
@@ -228,6 +231,7 @@ public class AlbumDialogController extends BaseDialogController<Album> {
                     albumRepository.update(resource);                  
                 } else {                     
                     resource = albumRepository.saveAndGetResource(album); 
+                    //logger.info("saveAndGetResource {}", resource);
                 } 
                 // Извлечь жанры из списка и сохранить их в связке связанные с артистом
                 includedChoiceCheckBoxController.getItemMap().keySet().parallelStream().forEach(resourceGenre -> {

@@ -4,6 +4,7 @@ package ru.javafx.musicbook.client.repository.impl;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Map;
+import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.hateoas.MediaTypes;
 import org.springframework.hateoas.PagedResources;
 import org.springframework.hateoas.Resource;
@@ -41,6 +42,14 @@ public class AlbumRepositoryImpl extends CrudRepositoryImpl<Album> implements Al
     @Override
     public void deleteGenreFromAlbum(Resource<Album> resource, int idGenre) throws URISyntaxException {
         delete(resource.getId().getHref() + "/genres/" + idGenre);
+    }
+    
+    @Override
+    public Resource<Album> saveAndGetResource(Album entity) throws URISyntaxException {
+        return new Traverson(save(relPath, entity), MediaTypes.HAL_JSON)//
+                .follow("self")
+                .withHeaders(sessionManager.createSessionHeaders())
+                .toObject(new ParameterizedTypeReference<Resource<Album>>() {});
     }
     
 }

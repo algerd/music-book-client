@@ -43,25 +43,7 @@ public abstract class CrudRepositoryImpl<T extends Entity> extends ChangeReposit
     public HttpStatus save(String absRef) throws URISyntaxException {          
         return new RestTemplate().exchange(new URI(absRef), HttpMethod.POST, new HttpEntity(sessionManager.createSessionHeaders()), String.class).getStatusCode();
     }
-    
-    @Override
-    public Resource<T> saveAndGetResource(T entity) throws URISyntaxException {
-        Resource<T> resource = new Traverson(save(relPath, entity), MediaTypes.HAL_JSON)//
-                .follow("self")
-                .withHeaders(sessionManager.createSessionHeaders())
-                .toObject(new ParameterizedTypeReference<Resource<T>>() {});
-        return resource;
-    }
-    /*
-    @Override
-    public Resource<T> getResource(String link) throws URISyntaxException {
-        Resource<T> resource = new Traverson(new URI(link), MediaTypes.HAL_JSON)//
-                .follow("self")
-                .withHeaders(sessionManager.createSessionHeaders())
-                .toObject(new ParameterizedTypeReference<Resource<T>>() {});
-        return resource;
-    }
-    */
+     
     @Override
     public void update(Resource<T> resource) throws URISyntaxException {    
         URI uri = new URI(resource.getLink("self").getHref());           
@@ -159,6 +141,25 @@ public abstract class CrudRepositoryImpl<T extends Entity> extends ChangeReposit
             //ex.printStackTrace(); 
         }      
     }
+    /*
+    @Override
+    public Resource<T> saveAndGetResource(T entity) throws URISyntaxException {
+        Resource<T> resource = new Traverson(save(relPath, entity), MediaTypes.HAL_JSON)//
+                .follow("self")
+                .withHeaders(sessionManager.createSessionHeaders())
+                .toObject(new ParameterizedTypeReference<Resource<T>>() {});
+        return resource;
+    }
+    */
+    /*
+    @Override
+    public Resource<T> getResource(String link) throws URISyntaxException {
+        return new Traverson(new URI(link), MediaTypes.HAL_JSON)//
+                .follow("self")
+                .withHeaders(sessionManager.createSessionHeaders())
+                .toObject(new ParameterizedTypeReference<Resource<T>>() {});
+    }
+    */
     /*
     public void update(Resource<? extends Entity> resource) {      
         try {

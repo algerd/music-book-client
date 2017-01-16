@@ -73,12 +73,19 @@ public class ArtistRepositoryImpl extends CrudRepositoryImpl<Artist> implements 
     }
     
     @Override
-    public Resource<Artist> getResource(String link) throws URISyntaxException {
-        Resource<Artist> resource = new Traverson(new URI(link), MediaTypes.HAL_JSON)//
+    public Resource<Artist> saveAndGetResource(Artist entity) throws URISyntaxException {
+        return new Traverson(save(relPath, entity), MediaTypes.HAL_JSON)//
                 .follow("self")
                 .withHeaders(sessionManager.createSessionHeaders())
                 .toObject(new ParameterizedTypeReference<Resource<Artist>>() {});
-        return resource;
+    }
+    
+    @Override
+    public Resource<Artist> getResource(String link) throws URISyntaxException {
+        return new Traverson(new URI(link), MediaTypes.HAL_JSON)//
+                .follow("self")
+                .withHeaders(sessionManager.createSessionHeaders())
+                .toObject(new ParameterizedTypeReference<Resource<Artist>>() {});       
     }
     
 }

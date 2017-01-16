@@ -9,7 +9,7 @@ import ru.javafx.musicbook.client.entity.Entity;
 
 public interface CrudRepository<T extends Entity> extends ChangeRepository<T> {
     
-    URI save(String rel, Entity entity) throws URISyntaxException;
+    URI save(String rel, T entity) throws URISyntaxException;
     
     HttpStatus save(String absRef) throws URISyntaxException;
     

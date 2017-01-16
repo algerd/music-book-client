@@ -32,7 +32,7 @@ import ru.javafx.musicbook.client.repository.CrudRepository;
 public abstract class CrudRepositoryImpl<T extends Entity> extends ChangeRepositoryImpl<T> implements CrudRepository<T> {
     
     @Override
-    public URI save(String rel, Entity entity) throws URISyntaxException {
+    public URI save(String rel, T entity) throws URISyntaxException {
         URI uri = new URI(basePath + rel);           
         HttpEntity<Entity> request = new HttpEntity<>(entity, sessionManager.createSessionHeaders());
         RestTemplate restTemplate = new RestTemplate();

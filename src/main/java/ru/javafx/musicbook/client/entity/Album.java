@@ -17,6 +17,16 @@ public class Album implements Entity {
     private final IntegerProperty rating = new SimpleIntegerProperty(0);
     private final StringProperty description = new SimpleStringProperty(""); 
     
+    // Default: Unknown artist with id = 1
+    private String artist = "http://localhost:8080/api/artists/1";
+
+    public String getArtist() {
+        return artist;
+    }
+    public void setArtist(String artist) {
+        this.artist = artist;
+    }  
+    
     public Album() {}
     
     public String getName() {

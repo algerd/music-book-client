@@ -24,4 +24,5 @@ public interface ArtistRepository extends CrudRepository<Artist> {
 
     PagedResources<Resource<Artist>> searchByGenreAndRatingAndName(Map<String, Object> parameters) throws URISyntaxException;
     
+    Resource<Artist> getResource(String link) throws URISyntaxException;
 }

@@ -71,4 +71,13 @@ public class ArtistRepositoryImpl extends CrudRepositoryImpl<Artist> implements 
                 .withTemplateParameters(parameters)
                 .toObject(new TypeReferences.ResourcesType<Resource<Artist>>() {});       
     }
+    
+    @Override
+    public Resource<Artist> getResource(String link) throws URISyntaxException {
+        Resource<Artist> resource = new Traverson(new URI(link), MediaTypes.HAL_JSON)//
+                .follow("self")
+                .withHeaders(sessionManager.createSessionHeaders())
+                .toObject(new ParameterizedTypeReference<Resource<Artist>>() {});
+        return resource;
+    }
 }

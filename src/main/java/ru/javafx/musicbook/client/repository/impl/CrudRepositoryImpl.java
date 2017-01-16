@@ -52,7 +52,16 @@ public abstract class CrudRepositoryImpl<T extends Entity> extends ChangeReposit
                 .toObject(new ParameterizedTypeReference<Resource<T>>() {});
         return resource;
     }
-    
+    /*
+    @Override
+    public Resource<T> getResource(String link) throws URISyntaxException {
+        Resource<T> resource = new Traverson(new URI(link), MediaTypes.HAL_JSON)//
+                .follow("self")
+                .withHeaders(sessionManager.createSessionHeaders())
+                .toObject(new ParameterizedTypeReference<Resource<T>>() {});
+        return resource;
+    }
+    */
     @Override
     public void update(Resource<T> resource) throws URISyntaxException {    
         URI uri = new URI(resource.getLink("self").getHref());           

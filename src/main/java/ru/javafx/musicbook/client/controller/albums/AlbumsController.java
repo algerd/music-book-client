@@ -341,18 +341,6 @@ public class AlbumsController extends BaseAwareController implements PagedContro
                 contextMenuService.add(DELETE_ALBUM, selectedItem);                       
             }           
             contextMenuService.show(view, mouseEvent);  
-            
-            /*
-            AlbumEntity album = new AlbumEntity();
-            album.setId_artist(1);   
-            contextMenuService.add(ADD_ALBUM, album);  
-            // запретить удаление и редактирование записи с id = 1 (Unknown album)
-            if (selectedItem != null && selectedItem.getId() != 1) {
-                contextMenuService.add(EDIT_ALBUM, selectedItem);
-                contextMenuService.add(DELETE_ALBUM, selectedItem);                       
-            }
-            contextMenuService.show(view, mouseEvent); 
-            */
         }
     }
     

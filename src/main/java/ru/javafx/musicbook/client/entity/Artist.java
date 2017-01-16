@@ -65,7 +65,7 @@ public class Artist implements Entity {
             return false;
         }
         final Artist other = (Artist) obj;
-        return Objects.equals(this.name, other.name);
+        return Objects.equals(getName(), other.getName());
     }
     
     @Override

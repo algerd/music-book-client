@@ -8,6 +8,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.ResourceBundle;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import java.util.stream.Collectors;
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleBooleanProperty;
@@ -154,21 +156,43 @@ public class AlbumDialogController extends BaseDialogController<Album> {
     
     @Override
     protected void add() {
-        if (resource == null) {
-            album = new Album();
-        } else {
-            album = resource.getContent();
-            oldResource = new Resource<>(album.clone(), resource.getLinks());
+        try {
+            Resource<Artist> artistResource;
+            if (resource == null) {
+                album = new Album();
+                artistResource = artistRepository.getResource(album.getArtist());           
+            } else {
+                album = resource.getContent();
+                oldResource = new Resource<>(album.clone(), resource.getLinks());               
+                artistResource = artistRepository.getResource(resource.getLink("artist").getHref());                                                                                     
+            }
+            selectArtist(artistResource);
+        } catch (URISyntaxException ex) {
+            ex.printStackTrace();
         }
         initGenreChoiceCheckBox();
+    }
+    
+    private void selectArtist(Resource<Artist> artistResource) {
+        artistField.getItems().forEach(res -> {             
+            if (res.getContent().getName().equals(artistResource.getContent().getName())) {
+                artistField.getSelectionModel().select(res);
+                return;
+            }              
+        });
     }
        
     @Override
     protected void edit() { 
         edit = true;
         album = resource.getContent();
-        oldResource = new Resource<>(album.clone(), resource.getLinks());  
-        
+        oldResource = new Resource<>(album.clone(), resource.getLinks());      
+        try {
+            Resource<Artist> artistResource = artistRepository.getResource(resource.getLink("artist").getHref());
+            selectArtist(artistResource);
+        } catch (URISyntaxException ex) {
+            logger.error(ex.getMessage());
+        }        
         nameField.setText(album.getName());
         yearField.getValueFactory().setValue(album.getYear());
         ratingField.getValueFactory().setValue(album.getRating());
@@ -197,31 +221,12 @@ public class AlbumDialogController extends BaseDialogController<Album> {
             album.setTime(getMinute() + ":" + ((getSecund() < 10) ? "0" : "") + getSecund());                     
             album.setDescription(commentTextArea.getText().trim());             
             album.setYear(getYear());
-            album.setRating(getRating());  
-            
+            album.setRating(getRating());   
+            album.setArtist(artistField.getValue().getLink("self").getHref());
             try {
                 if (edit) {                             
-                    albumRepository.update(resource);               
-                } else {
-                    /* 
-                    Через 2 запроса, но в духе Data Spring Rest:
-                    1. Создать и сохранить альбом с id_artist = 1 (Default: Unknown Artist)
-                    2. Добавить альбом артисту
-                    
-                    Через 1 запрос:
-                    - передавать альбом и id_artist в post-метод контроллера, который
-                    затем будет вызывать:
-                        - или кастомный метод сохранения альбома в бд с прямым sql
-                        - или находить из бд по id_artist артиста, добавит его объекту алббома,
-                        а потом сохранит этот объект в бд средствами data-spring
-                    
-                    Через n(n = count ref keys) запросов способ более гибкий, потому что при наличии множества reference keys
-                    добавление ключей объекту(или объекта референс-объектам) производится вызовом соответствующих
-                    запросов с передачей им объекта. При этом не надо создавать отдельный метод в контроллере,
-                    который будет принимать объект и все его ключи и обрабатывать их с соханением. Минус: возрастает
-                    число запросов в n=count_ref_keys раз, но ради гибкости этим можно пренебречь.
-                    Главная проблема: создание дефолтных реф-ключей для создания объекта с дефолтными ключами. 
-                    */                             
+                    albumRepository.update(resource);                  
+                } else {                     
                     resource = albumRepository.saveAndGetResource(album); 
                 } 
                 // Извлечь жанры из списка и сохранить их в связке связанные с артистом
@@ -232,7 +237,7 @@ public class AlbumDialogController extends BaseDialogController<Album> {
                     //удалить невыбранные жанры, если они есть у артиста
                     try {
                         if (!flag.getValue() && genres.contains(resourceGenre.getContent())) {
-                                albumRepository.deleteGenreFromAlbum(resource, idGenre);
+                            albumRepository.deleteGenreFromAlbum(resource, idGenre);
                         }
                         //добавить выбранные жанры, если их ещё нет
                         if (flag.getValue() && !genres.contains(resourceGenre.getContent())) { 

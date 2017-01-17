@@ -16,6 +16,7 @@ import ru.javafx.musicbook.client.repository.AlbumRepository;
 
 @Repository
 public class AlbumRepositoryImpl extends CrudRepositoryImpl<Album> implements AlbumRepository {
+    
     @Override
     public PagedResources<Resource<Album>> searchByNameAndRatingAndYear(Map<String, Object> parameters) throws URISyntaxException {            
         return new Traverson(new URI(basePath), MediaTypes.HAL_JSON)

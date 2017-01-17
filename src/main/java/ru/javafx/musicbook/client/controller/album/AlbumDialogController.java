@@ -8,8 +8,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.ResourceBundle;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import java.util.stream.Collectors;
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleBooleanProperty;
@@ -30,9 +28,11 @@ import ru.javafx.musicbook.client.controller.BaseDialogController;
 import ru.javafx.musicbook.client.controller.helper.choiceCheckBox.ChoiceCheckBoxController;
 import ru.javafx.musicbook.client.controller.helper.inputImageBox.DialogImageBoxController;
 import ru.javafx.musicbook.client.entity.Album;
+import ru.javafx.musicbook.client.entity.AlbumGenre;
 import ru.javafx.musicbook.client.entity.Artist;
 import ru.javafx.musicbook.client.entity.Genre;
 import ru.javafx.musicbook.client.fxintegrity.FXMLController;
+import ru.javafx.musicbook.client.repository.AlbumGenreRepository;
 import ru.javafx.musicbook.client.repository.AlbumRepository;
 import ru.javafx.musicbook.client.repository.ArtistRepository;
 import ru.javafx.musicbook.client.repository.GenreRepository;
@@ -58,6 +58,8 @@ public class AlbumDialogController extends BaseDialogController<Album> {
     private AlbumRepository albumRepository;
     @Autowired
     private GenreRepository genreRepository;
+    @Autowired
+    private AlbumGenreRepository albumGenreRepository;
         
     @FXML
     private DialogImageBoxController includedDialogImageBoxController;
@@ -168,7 +170,7 @@ public class AlbumDialogController extends BaseDialogController<Album> {
             }
             selectArtist(artistResource);
         } catch (URISyntaxException ex) {
-            ex.printStackTrace();
+            logger.error(ex.getMessage());
         }
         initGenreChoiceCheckBox();
     }
@@ -189,9 +191,6 @@ public class AlbumDialogController extends BaseDialogController<Album> {
         oldResource = new Resource<>(album.clone(), resource.getLinks());      
         try {
             Resource<Artist> artistResource = artistRepository.getResource(resource.getLink("artist").getHref());    
-            
-            logger.info("{}", artistResource);
-            
             selectArtist(artistResource);
         } catch (URISyntaxException ex) {
             logger.error(ex.getMessage());
@@ -225,31 +224,32 @@ public class AlbumDialogController extends BaseDialogController<Album> {
             album.setDescription(commentTextArea.getText().trim());             
             album.setYear(getYear());
             album.setRating(getRating());   
-            album.setArtist(artistField.getValue().getLink("self").getHref());
+            album.setArtist(artistField.getValue().getId().getHref());
             try {
                 if (edit) {                             
                     albumRepository.update(resource);                  
                 } else {                     
                     resource = albumRepository.saveAndGetResource(album); 
-                    //logger.info("saveAndGetResource {}", resource);
                 } 
                 // Извлечь жанры из списка и сохранить их в связке связанные с артистом
                 includedChoiceCheckBoxController.getItemMap().keySet().parallelStream().forEach(resourceGenre -> {
-                    ObservableValue<Boolean> flag = includedChoiceCheckBoxController.getItemMap().get(resourceGenre); 
-                    String href = resourceGenre.getId().getHref();
-                    int idGenre = Integer.valueOf(href.substring(href.lastIndexOf("/") + 1));
-                    //удалить невыбранные жанры, если они есть у артиста
+                    ObservableValue<Boolean> flag = includedChoiceCheckBoxController.getItemMap().get(resourceGenre);                                       
                     try {
+                        //удалить невыбранные жанры, если они есть у артиста
                         if (!flag.getValue() && genres.contains(resourceGenre.getContent())) {
-                            albumRepository.deleteGenreFromAlbum(resource, idGenre);
+                            Resource<AlbumGenre> albumGenreResource = albumGenreRepository.findByAlbumAndGenre(resource, resourceGenre);                                                     
+                            albumGenreRepository.delete(albumGenreResource);
+                            logger.info("Deleted AlbumGenre: {}", albumGenreResource);
                         }
                         //добавить выбранные жанры, если их ещё нет
                         if (flag.getValue() && !genres.contains(resourceGenre.getContent())) { 
-                            albumRepository.saveGenreInAlbum(resource, idGenre);
+                            AlbumGenre albumGenre = new AlbumGenre();
+                            albumGenre.setAlbum(resource.getId().getHref());
+                            albumGenre.setGenre(resourceGenre.getId().getHref());
+                            albumGenreRepository.save(albumGenre);
                         }
                     } catch (URISyntaxException ex) {
                         logger.error(ex.getMessage());
-                        //ex.printStackTrace();
                     }                     
                 });               
                 if (includedDialogImageBoxController.isChangedImage()) {
@@ -264,8 +264,7 @@ public class AlbumDialogController extends BaseDialogController<Album> {
                 dialogStage.close();
                 edit = false;
             } catch (URISyntaxException ex) {
-                //logger.error(ex.getMessage());
-                ex.printStackTrace();
+                logger.error(ex.getMessage());
             }
             
         }

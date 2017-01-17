@@ -40,6 +40,11 @@ public abstract class CrudRepositoryImpl<T extends Entity> extends ChangeReposit
     }
     
     @Override
+    public URI save(T entity) throws URISyntaxException {
+        return save(relPath, entity);
+    }
+    
+    @Override
     public HttpStatus save(String absRef) throws URISyntaxException {          
         return new RestTemplate().exchange(new URI(absRef), HttpMethod.POST, new HttpEntity(sessionManager.createSessionHeaders()), String.class).getStatusCode();
     }
@@ -141,6 +146,7 @@ public abstract class CrudRepositoryImpl<T extends Entity> extends ChangeReposit
             //ex.printStackTrace(); 
         }      
     }
+        
     /*
     @Override
     public Resource<T> saveAndGetResource(T entity) throws URISyntaxException {

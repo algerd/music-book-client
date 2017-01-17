@@ -117,6 +117,7 @@ public class AlbumsController extends BaseAwareController implements PagedContro
         initGenreChoiceBox();
         initAlbumsTable();
         initRepositoryListeners();
+        initRepositoryListeners();
         initFilterListeners();
         initSearchChoiceBox();
     }
@@ -270,20 +271,14 @@ public class AlbumsController extends BaseAwareController implements PagedContro
         });  
     }
     
-    private void initRepositoryListeners() {
-        /*
-        repositoryService.getAlbumRepository().clearInsertListeners(this);          
-        repositoryService.getAlbumRepository().clearDeleteListeners(this);           
-        repositoryService.getAlbumRepository().clearUpdateListeners(this);       
-        repositoryService.getArtistRepository().clearChangeListeners(this);               
-        repositoryService.getGenreRepository().clearChangeListeners(this);                
-        
-        repositoryService.getAlbumRepository().addInsertListener(this::addedAlbum, this);          
-        repositoryService.getAlbumRepository().addDeleteListener(this::deletedAlbum, this);           
-        repositoryService.getAlbumRepository().addUpdateListener(this::updatedAlbum, this);       
-        repositoryService.getArtistRepository().addChangeListener(this::changedArtist, this);               
-        repositoryService.getGenreRepository().addChangeListener(this::changedGenre, this); 
-        */
+    private void initRepositoryListeners() {    
+        //repositoryService.getArtistRepository().clearChangeListeners(this);               
+        albumRepository.clearChangeListeners(this);
+        genreRepository.clearChangeListeners(this);
+       
+        //repositoryService.getArtistRepository().addChangeListener(this::changedArtist, this);               
+        albumRepository.addChangeListener((observable, oldVal, newVal) -> filter(), this);
+        genreRepository.addChangeListener(this::changedGenre, this);
     }
     
     private void changedGenre(ObservableValue observable, Object oldVal, Object newVal) {
@@ -351,13 +346,6 @@ public class AlbumsController extends BaseAwareController implements PagedContro
 		if (mouseEvent.getButton() == MouseButton.SECONDARY) {
             contextMenuService.add(ADD_ALBUM, null);
             contextMenuService.show(view, mouseEvent);
-           
-            /*
-            AlbumEntity album = new AlbumEntity();
-            album.setId_artist(1);   
-            contextMenuService.add(ADD_ALBUM, album);
-            contextMenuService.show(view, mouseEvent);
-            */
         } 
     }
     

@@ -226,20 +226,16 @@ public class AlbumDialogController extends BaseDialogController<Album> {
             album.setRating(getRating());   
             album.setArtist(artistField.getValue().getId().getHref());
             try {
-                if (edit) {                             
-                    albumRepository.update(resource);                  
-                } else {                     
-                    resource = albumRepository.saveAndGetResource(album); 
-                } 
+                resource = edit ? albumRepository.update(resource) : albumRepository.saveAndGetResource(album);
+
                 // Извлечь жанры из списка и сохранить их в связке связанные с артистом
                 includedChoiceCheckBoxController.getItemMap().keySet().parallelStream().forEach(resourceGenre -> {
                     ObservableValue<Boolean> flag = includedChoiceCheckBoxController.getItemMap().get(resourceGenre);                                       
                     try {
-                        //удалить невыбранные жанры, если они есть у артиста
+                        //удалить невыбранные жанры, если они есть у альбома
                         if (!flag.getValue() && genres.contains(resourceGenre.getContent())) {
                             Resource<AlbumGenre> albumGenreResource = albumGenreRepository.findByAlbumAndGenre(resource, resourceGenre);                                                     
                             albumGenreRepository.delete(albumGenreResource);
-                            logger.info("Deleted AlbumGenre: {}", albumGenreResource);
                         }
                         //добавить выбранные жанры, если их ещё нет
                         if (flag.getValue() && !genres.contains(resourceGenre.getContent())) { 

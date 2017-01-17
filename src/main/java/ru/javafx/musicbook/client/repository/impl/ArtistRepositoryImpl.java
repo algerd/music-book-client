@@ -20,16 +20,6 @@ import ru.javafx.musicbook.client.utils.Helper;
 
 @Repository
 public class ArtistRepositoryImpl extends CrudRepositoryImpl<Artist> implements ArtistRepository {
-
-    @Override
-    public void saveGenreInArtist(Resource<Artist> resource, int idGenre) throws URISyntaxException {              
-        save(resource.getId().getHref() + "/genres/" + idGenre);
-    }   
-
-    @Override
-    public void deleteGenreFromArtist(Resource<Artist> resource, int idGenre) throws URISyntaxException {
-        delete(resource.getId().getHref() + "/genres/" + idGenre);
-    }
     
     @Override
     public PagedResources<Resource<Artist>> searchByNameAndRating(Map<String, Object> parameters) throws URISyntaxException {            

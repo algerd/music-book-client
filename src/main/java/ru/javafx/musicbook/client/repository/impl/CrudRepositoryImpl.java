@@ -50,11 +50,12 @@ public abstract class CrudRepositoryImpl<T extends Entity> extends ChangeReposit
     }
      
     @Override
-    public void update(Resource<T> resource) throws URISyntaxException {    
+    public Resource<T> update(Resource<T> resource) throws URISyntaxException {    
         URI uri = new URI(resource.getLink("self").getHref());           
         HttpEntity request = new HttpEntity(resource.getContent(), sessionManager.createSessionHeaders());
         RestTemplate restTemplate = new RestTemplate();
-        restTemplate.put(uri, request);       
+        restTemplate.put(uri, request); 
+        return resource;
     }
     
     @Override

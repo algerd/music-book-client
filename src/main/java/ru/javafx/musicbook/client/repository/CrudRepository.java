@@ -15,7 +15,7 @@ public interface CrudRepository<T extends Entity> extends ChangeRepository<T> {
     
     HttpStatus save(String absRef) throws URISyntaxException;
         
-    void update(Resource<T> resource) throws URISyntaxException;
+    Resource<T> update(Resource<T> resource) throws URISyntaxException;
     
     void delete(Resource<T> resource) throws URISyntaxException;
     

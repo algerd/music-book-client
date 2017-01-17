@@ -49,12 +49,8 @@ public class GenreDialogController extends BaseDialogController<Genre> {
         if (isInputValid()) { 
             genre.setName(nameTextField.getText().trim());
             genre.setDescription(commentTextArea.getText().trim());  
-            try { 
-                if (edit) {
-                    genreRepository.update(resource);               
-                } else {
-                    resource = genreRepository.saveAndGetResource(genre); 
-                }              
+            try {  
+                resource = edit ? genreRepository.update(resource) : genreRepository.saveAndGetResource(genre);                
                 if (includedDialogImageBoxController.isChangedImage()) {
                     genreRepository.saveImage(resource, includedDialogImageBoxController.getImage());
                     includedDialogImageBoxController.setChangedImage(false);                              

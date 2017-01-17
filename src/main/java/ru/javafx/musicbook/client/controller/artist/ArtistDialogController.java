@@ -25,8 +25,10 @@ import ru.javafx.musicbook.client.controller.BaseDialogController;
 import ru.javafx.musicbook.client.controller.helper.choiceCheckBox.ChoiceCheckBoxController;
 import ru.javafx.musicbook.client.controller.helper.inputImageBox.DialogImageBoxController;
 import ru.javafx.musicbook.client.entity.Artist;
+import ru.javafx.musicbook.client.entity.ArtistGenre;
 import ru.javafx.musicbook.client.entity.Genre;
 import ru.javafx.musicbook.client.fxintegrity.FXMLController;
+import ru.javafx.musicbook.client.repository.ArtistGenreRepository;
 import ru.javafx.musicbook.client.repository.ArtistRepository;
 import ru.javafx.musicbook.client.repository.GenreRepository;
 import ru.javafx.musicbook.client.repository.impl.WrapChangedEntity;
@@ -46,6 +48,8 @@ public class ArtistDialogController extends BaseDialogController<Artist> {
     private ArtistRepository artistRepository;
     @Autowired
     private GenreRepository genreRepository;  
+    @Autowired
+    private ArtistGenreRepository artistGenreRepository;
     
     @FXML
     private DialogImageBoxController includedDialogImageBoxController;
@@ -93,32 +97,29 @@ public class ArtistDialogController extends BaseDialogController<Artist> {
         if (isInputValid()) { 
             artist.setName(nameTextField.getText().trim());
             artist.setRating(getRating());
-            artist.setDescription(commentTextArea.getText().trim());  
-            
+            artist.setDescription(commentTextArea.getText().trim());             
             try { 
-                if (edit) {                             
-                    artistRepository.update(resource);               
-                } else {
-                    resource = artistRepository.saveAndGetResource(artist); 
-                }       
+                resource = edit ? artistRepository.update(resource) : artistRepository.saveAndGetResource(artist);
+                        
                 // Извлечь жанры из списка и сохранить их в связке связанные с артистом
                 includedChoiceCheckBoxController.getItemMap().keySet().parallelStream().forEach(resourceGenre -> {
                     ObservableValue<Boolean> flag = includedChoiceCheckBoxController.getItemMap().get(resourceGenre); 
-                    String href = resourceGenre.getId().getHref();
-                    int idGenre = Integer.valueOf(href.substring(href.lastIndexOf("/") + 1));
-                    //удалить невыбранные жанры, если они есть у артиста
                     try {
+                        //удалить невыбранные жанры, если они есть у артиста
                         if (!flag.getValue() && genres.contains(resourceGenre.getContent())) {
-                                artistRepository.deleteGenreFromArtist(resource, idGenre);
+                            Resource<ArtistGenre> artistGenreResource = artistGenreRepository.findByArtistAndGenre(resource, resourceGenre);                                                     
+                            artistGenreRepository.delete(artistGenreResource);
                         }
                         //добавить выбранные жанры, если их ещё нет
                         if (flag.getValue() && !genres.contains(resourceGenre.getContent())) { 
-                            artistRepository.saveGenreInArtist(resource, idGenre);
+                            ArtistGenre artistGenre = new ArtistGenre();
+                            artistGenre.setArtist(resource.getId().getHref());
+                            artistGenre.setGenre(resourceGenre.getId().getHref());
+                            artistGenreRepository.save(artistGenre);
                         }
                     } catch (URISyntaxException ex) {
                         logger.error(ex.getMessage());
-                        //ex.printStackTrace();
-                    }                   
+                    }   
                 });            
                 if (includedDialogImageBoxController.isChangedImage()) {
                     artistRepository.saveImage(resource, includedDialogImageBoxController.getImage());
@@ -133,7 +134,6 @@ public class ArtistDialogController extends BaseDialogController<Artist> {
                 edit = false;
             } catch (URISyntaxException ex) {
                 logger.error(ex.getMessage());
-                //ex.printStackTrace();
             }
         }
     }

@@ -36,10 +36,12 @@ import ru.javafx.musicbook.client.controller.paginator.PagedController;
 import ru.javafx.musicbook.client.controller.paginator.PaginatorPaneController;
 import ru.javafx.musicbook.client.controller.paginator.Sort;
 import ru.javafx.musicbook.client.entity.Album;
+import ru.javafx.musicbook.client.entity.Artist;
 import ru.javafx.musicbook.client.entity.Genre;
 import ru.javafx.musicbook.client.fxintegrity.FXMLController;
 import ru.javafx.musicbook.client.fxintegrity.FXMLControllerLoader;
 import ru.javafx.musicbook.client.repository.AlbumRepository;
+import ru.javafx.musicbook.client.repository.ArtistRepository;
 import ru.javafx.musicbook.client.repository.GenreRepository;
 import static ru.javafx.musicbook.client.service.ContextMenuItemType.ADD_ALBUM;
 import static ru.javafx.musicbook.client.service.ContextMenuItemType.DELETE_ALBUM;
@@ -66,7 +68,9 @@ public class AlbumsController extends BaseAwareController implements PagedContro
     private final IntegerProperty maxYear = new SimpleIntegerProperty();
     
     @Autowired
-    private FXMLControllerLoader fxmlLoader;  
+    private FXMLControllerLoader fxmlLoader; 
+    @Autowired
+    private ArtistRepository artistRepository;
     @Autowired
     private AlbumRepository albumRepository;
     @Autowired
@@ -138,9 +142,12 @@ public class AlbumsController extends BaseAwareController implements PagedContro
                 public void updateItem(Resource<Album> item, boolean empty) {
                     super.updateItem(item, empty);
                     this.setText(null);
-                    if (!empty) {
-                        //ArtistEntity artist = repositoryService.getArtistRepository().selectById(item.getId_artist());                 
-                        //this.setText(artist.getName());                                          
+                    if (!empty) {                       
+                        try {  
+                            this.setText(artistRepository.getResource(item.getLink("artist").getHref()).getContent().getName());
+                        } catch (URISyntaxException ex) {
+                            logger.error(ex.getMessage());
+                        }                                          
                     }
                 }
             };

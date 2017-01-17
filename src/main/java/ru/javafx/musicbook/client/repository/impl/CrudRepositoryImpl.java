@@ -18,6 +18,7 @@ import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.hateoas.MediaTypes;
 import org.springframework.hateoas.Resource;
 import org.springframework.hateoas.client.Traverson;
+import org.springframework.hateoas.client.Traverson.TraversalBuilder;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -147,6 +148,13 @@ public abstract class CrudRepositoryImpl<T extends Entity> extends ChangeReposit
             //ex.printStackTrace(); 
         }      
     }
+    
+    @Override
+    public TraversalBuilder createTraversalBuilder(String link) throws URISyntaxException {
+        return new Traverson(new URI(link), MediaTypes.HAL_JSON)//
+                .follow("self")
+                .withHeaders(sessionManager.createSessionHeaders());
+    }
         
     /*
     @Override
@@ -160,13 +168,14 @@ public abstract class CrudRepositoryImpl<T extends Entity> extends ChangeReposit
     */
     /*
     @Override
-    public Resource<T> getResource(String link) throws URISyntaxException {
-        return new Traverson(new URI(link), MediaTypes.HAL_JSON)//
+    public Resource<T> getResource(String link) throws URISyntaxException {       
+        Resource<T> resource = new Traverson(new URI(link), MediaTypes.HAL_JSON)//
                 .follow("self")
                 .withHeaders(sessionManager.createSessionHeaders())
                 .toObject(new ParameterizedTypeReference<Resource<T>>() {});
+        return resource;
     }
-    */
+    */  
     /*
     public void update(Resource<? extends Entity> resource) {      
         try {

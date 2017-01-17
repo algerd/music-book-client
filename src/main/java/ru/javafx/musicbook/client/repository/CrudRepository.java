@@ -4,6 +4,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import javafx.scene.image.Image;
 import org.springframework.hateoas.Resource;
+import org.springframework.hateoas.client.Traverson;
 import org.springframework.http.HttpStatus;
 import ru.javafx.musicbook.client.entity.Entity;
 
@@ -30,6 +31,9 @@ public interface CrudRepository<T extends Entity> extends ChangeRepository<T> {
     HttpStatus postImage(Resource<T> resource, Image image);
     
     void deleteImage(Resource<T> resource);
+    
+    
+    Traverson.TraversalBuilder createTraversalBuilder(String link) throws URISyntaxException;
     
     //Resource<T> saveAndGetResource(T entity) throws URISyntaxException;
     

@@ -32,6 +32,8 @@ import ru.javafx.musicbook.client.repository.CrudRepository;
 @SuppressWarnings("unchecked")
 public abstract class CrudRepositoryImpl<T extends Entity> extends ChangeRepositoryImpl<T> implements CrudRepository<T> {
     
+    protected ParameterizedTypeReference<Resource<T>> parameterizedTypeReference;
+    
     @Override
     public URI save(String rel, T entity) throws URISyntaxException {
         URI uri = new URI(basePath + rel);           
@@ -145,17 +147,17 @@ public abstract class CrudRepositoryImpl<T extends Entity> extends ChangeReposit
             new RestTemplate().exchange(uri, HttpMethod.DELETE, new HttpEntity(sessionManager.createSessionHeaders()), String.class);
         } catch (URISyntaxException ex) {
             logger.error(ex.getMessage());
-            //ex.printStackTrace(); 
         }      
     }
     
     @Override
-    public TraversalBuilder createTraversalBuilder(String link) throws URISyntaxException {
+    public Resource<T> getResource(String link) throws URISyntaxException {       
         return new Traverson(new URI(link), MediaTypes.HAL_JSON)//
                 .follow("self")
-                .withHeaders(sessionManager.createSessionHeaders());
+                .withHeaders(sessionManager.createSessionHeaders())
+                .toObject(parameterizedTypeReference);
     }
-        
+   
     /*
     @Override
     public Resource<T> saveAndGetResource(T entity) throws URISyntaxException {
@@ -165,17 +167,7 @@ public abstract class CrudRepositoryImpl<T extends Entity> extends ChangeReposit
                 .toObject(new ParameterizedTypeReference<Resource<T>>() {});
         return resource;
     }
-    */
-    /*
-    @Override
-    public Resource<T> getResource(String link) throws URISyntaxException {       
-        Resource<T> resource = new Traverson(new URI(link), MediaTypes.HAL_JSON)//
-                .follow("self")
-                .withHeaders(sessionManager.createSessionHeaders())
-                .toObject(new ParameterizedTypeReference<Resource<T>>() {});
-        return resource;
-    }
-    */  
+    */    
     /*
     public void update(Resource<? extends Entity> resource) {      
         try {

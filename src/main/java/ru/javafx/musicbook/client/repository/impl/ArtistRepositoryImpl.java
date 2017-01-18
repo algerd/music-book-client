@@ -21,6 +21,10 @@ import ru.javafx.musicbook.client.utils.Helper;
 @Repository
 public class ArtistRepositoryImpl extends CrudRepositoryImpl<Artist> implements ArtistRepository {
     
+    public ArtistRepositoryImpl() {
+        parameterizedTypeReference = new ParameterizedTypeReference<Resource<Artist>>() {};
+    }
+    
     @Override
     public PagedResources<Resource<Artist>> searchByNameAndRating(Map<String, Object> parameters) throws URISyntaxException {            
         return new Traverson(new URI(basePath), MediaTypes.HAL_JSON)
@@ -69,20 +73,5 @@ public class ArtistRepositoryImpl extends CrudRepositoryImpl<Artist> implements 
                 .withHeaders(sessionManager.createSessionHeaders())
                 .toObject(new ParameterizedTypeReference<Resource<Artist>>() {});
     }
-    /*
-    @Override
-    public Resource<Artist> getResource(String link) throws URISyntaxException {       
-        return new Traverson(new URI(link), MediaTypes.HAL_JSON)//
-                .follow("self")
-                .withHeaders(sessionManager.createSessionHeaders())
-                .toObject(new ParameterizedTypeReference<Resource<Artist>>() {});       
-    }
-    */
-    
-    
-    @Override
-    public Resource<Artist> getResource(String link) throws URISyntaxException {       
-        return createTraversalBuilder(link).toObject(new ParameterizedTypeReference<Resource<Artist>>() {});       
-    }
-    
+
 }

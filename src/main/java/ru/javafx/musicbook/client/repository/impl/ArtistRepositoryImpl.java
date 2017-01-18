@@ -22,7 +22,8 @@ import ru.javafx.musicbook.client.utils.Helper;
 public class ArtistRepositoryImpl extends CrudRepositoryImpl<Artist> implements ArtistRepository {
     
     public ArtistRepositoryImpl() {
-        parameterizedTypeReference = new ParameterizedTypeReference<Resource<Artist>>() {};
+        resourceParameterizedType = new ParameterizedTypeReference<Resource<Artist>>() {};
+        resourcesParameterizedType = new ParameterizedTypeReference<Resources<Resource<Artist>>>() {}; 
     }
     
     @Override
@@ -47,11 +48,7 @@ public class ArtistRepositoryImpl extends CrudRepositoryImpl<Artist> implements 
     public Resources<Resource<Artist>> findByGenre(Resource<Genre> genreResource) throws URISyntaxException {
         Map<String, Object> parameters = new HashMap<>();
         parameters.put("id_genre", Helper.getId(genreResource));
-        return new Traverson(new URI(basePath), MediaTypes.HAL_JSON)
-                .follow(relPath, "search", "by_genre")
-                .withTemplateParameters(parameters)
-                .withHeaders(sessionManager.createSessionHeaders())
-                .toObject(new ParameterizedTypeReference<Resources<Resource<Artist>>>() {});      
+        return getParameterizedResources(parameters, new String[]{relPath, "search", "by_genre"});       
     } 
   
     @Override
@@ -59,11 +56,7 @@ public class ArtistRepositoryImpl extends CrudRepositoryImpl<Artist> implements 
         Map<String, Object> parameters = new HashMap<>();
         parameters.put("projection", "get_name"); 
         parameters.put("sort", "name,asc"); 
-        return new Traverson(new URI(basePath), MediaTypes.HAL_JSON)
-                .follow(relPath)
-                .withHeaders(sessionManager.createSessionHeaders())
-                .withTemplateParameters(parameters)
-                .toObject(new TypeReferences.ResourcesType<Resource<Artist>>() {});       
+        return getParameterizedResources(parameters);
     }
 
 }

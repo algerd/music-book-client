@@ -17,6 +17,7 @@ import javax.imageio.ImageIO;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.hateoas.MediaTypes;
 import org.springframework.hateoas.Resource;
+import org.springframework.hateoas.Resources;
 import org.springframework.hateoas.client.Traverson;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -31,7 +32,8 @@ import ru.javafx.musicbook.client.repository.CrudRepository;
 @SuppressWarnings("unchecked")
 public abstract class CrudRepositoryImpl<T extends Entity> extends ChangeRepositoryImpl<T> implements CrudRepository<T> {
     
-    protected ParameterizedTypeReference<Resource<T>> parameterizedTypeReference;
+    protected ParameterizedTypeReference<Resource<T>> resourceParameterizedType;
+    protected ParameterizedTypeReference<Resources<Resource<T>>> resourcesParameterizedType;  
     
     @Override
     public URI save(String rel, T entity) throws URISyntaxException {
@@ -148,48 +150,68 @@ public abstract class CrudRepositoryImpl<T extends Entity> extends ChangeReposit
             logger.error(ex.getMessage());
         }      
     }
-    
-    @Override
-    public Resource<T> getResource(String link) throws URISyntaxException {       
-        return new Traverson(new URI(link), MediaTypes.HAL_JSON)//
-                .follow("self")
-                .withHeaders(sessionManager.createSessionHeaders())
-                .toObject(parameterizedTypeReference);
-    }
-   
+       
     @Override
     public Resource<T> saveAndGetResource(T entity) throws URISyntaxException {
         return new Traverson(save(relPath, entity), MediaTypes.HAL_JSON)//
                 .follow("self")
                 .withHeaders(sessionManager.createSessionHeaders())
-                .toObject(parameterizedTypeReference);
+                .toObject(resourceParameterizedType);
     }
-      
-    /*
-    public void update(Resource<? extends Entity> resource) {      
-        try {
-            Resource<T> oldResource = new Traverson(new URI(resource.getId().getHref()), MediaTypes.HAL_JSON)//
-                    .follow("self")
-                    .withHeaders(sessionManager.createSessionHeaders())
-                    .toObject(new ParameterizedTypeReference<Resource<T>>() {});
-            super.update(resource);
-            //super.setUpdated(new WrapChangedEntity<>(oldResource, (Resource<T>)resource));
-        } catch (URISyntaxException ex) {
-            ex.printStackTrace();
-        } 
-    }
-    */
-    /*
-    public Resources<Resource<T>> findAll() throws URISyntaxException {
-        return new Traverson(new URI(basePath), MediaTypes.HAL_JSON)
-                .follow(relPath)
+       
+    ///////////////////////////////////////////////////////
+    @Override
+    public Resource<T> getResource(String path) throws URISyntaxException {       
+        return new Traverson(new URI(path), MediaTypes.HAL_JSON)//
+                .follow("self")
                 .withHeaders(sessionManager.createSessionHeaders())
-                .toObject(new TypeReferences.ResourcesType<Resource<T>>() {});       
+                .toObject(resourceParameterizedType);
     }
-    */
-    /*   
-    public void save(T entity) {
-        save(relPath, entity);
+    
+    @Override
+    public Resources<Resource<T>> getResources() throws URISyntaxException {
+        return getResources(basePath, relPath);
+    }   
+    @Override
+    public Resources<Resource<T>> getResources(String[] rels) throws URISyntaxException {
+        return getResources(basePath, rels);
+    }    
+    @Override
+    public Resources<Resource<T>> getResources(String path, String... rels) throws URISyntaxException {
+        return new Traverson(new URI(path), MediaTypes.HAL_JSON)
+                .follow(rels)
+                .withHeaders(sessionManager.createSessionHeaders())
+                .toObject(resourcesParameterizedType);       
     }
-    */
+    
+    @Override
+    public Resource<T> getParameterizedResource(Map<String, Object> parameters, String... rels) throws URISyntaxException {
+        return getParameterizedResource(basePath, parameters, rels);
+    } 
+    @Override
+    public Resource<T> getParameterizedResource(String path, Map<String, Object> parameters, String... rels) throws URISyntaxException {
+        return new Traverson(new URI(path), MediaTypes.HAL_JSON)
+                .follow(rels)
+                .withTemplateParameters(parameters)
+                .withHeaders(sessionManager.createSessionHeaders())
+                .toObject(resourceParameterizedType);  
+    } 
+        
+    @Override
+    public Resources<Resource<T>> getParameterizedResources(Map<String, Object> parameters) throws URISyntaxException {
+        return getParameterizedResources(basePath, parameters, relPath);
+    }    
+    @Override
+    public Resources<Resource<T>> getParameterizedResources(Map<String, Object> parameters, String... rels) throws URISyntaxException {
+        return getParameterizedResources(basePath, parameters, rels);
+    }    
+    @Override
+    public Resources<Resource<T>> getParameterizedResources(String path, Map<String, Object> parameters, String... rels) throws URISyntaxException {
+        return new Traverson(new URI(path), MediaTypes.HAL_JSON)
+                .follow(rels)
+                .withHeaders(sessionManager.createSessionHeaders())
+                .withTemplateParameters(parameters)
+                .toObject(resourcesParameterizedType);       
+    }
+        
 }

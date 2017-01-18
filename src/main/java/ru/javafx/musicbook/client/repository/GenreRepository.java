@@ -12,8 +12,6 @@ import ru.javafx.musicbook.client.entity.Genre;
 
 public interface GenreRepository extends CrudRepository<Genre> {
     
-    long countArtistsByGenre(Resource<Genre> genreResource) throws URISyntaxException;
-    
     PagedResources<Resource<Genre>> searchByName(Paginator paginator, String search) throws URISyntaxException;
 
     Resources<Resource<Genre>> findAllNames() throws URISyntaxException;

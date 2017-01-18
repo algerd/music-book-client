@@ -30,6 +30,7 @@ import ru.javafx.musicbook.client.entity.Artist;
 import ru.javafx.musicbook.client.entity.Genre;
 import ru.javafx.musicbook.client.fxintegrity.FXMLController;
 import ru.javafx.musicbook.client.fxintegrity.FXMLControllerLoader;
+import ru.javafx.musicbook.client.repository.ArtistGenreRepository;
 import ru.javafx.musicbook.client.repository.ArtistRepository;
 import ru.javafx.musicbook.client.repository.GenreRepository;
 import static ru.javafx.musicbook.client.service.ContextMenuItemType.*;
@@ -52,6 +53,8 @@ public class GenresController extends BaseAwareController implements PagedContro
     private GenreRepository genreRepository;   
     @Autowired
     private ArtistRepository artistRepository;
+    @Autowired
+    private ArtistGenreRepository artistGenreRepository;
     
     @FXML
     private VBox genresTableVBox;
@@ -102,11 +105,10 @@ public class GenresController extends BaseAwareController implements PagedContro
                     super.updateItem(item, empty);
                     this.setText(null);
                     if (!empty) {                        
-                        try {                   
-                            this.setText("" + genreRepository.countArtistsByGenre(item));
+                        try {  
+                            this.setText("" + artistGenreRepository.countArtistsByGenre(item));
                         } catch (URISyntaxException ex) {
                             logger.error(ex.getMessage());
-                            //ex.printStackTrace();
                         }
                     }
                 }
@@ -135,7 +137,6 @@ public class GenresController extends BaseAwareController implements PagedContro
                             this.setText("" + ((count != 0) ? ((int) (100.0 * averageRating / count + 0.5))/ 100.0 : " - "));                            
                         } catch (URISyntaxException ex) {
                             logger.error(ex.getMessage());
-                            //ex.printStackTrace();
                         }
                     }
                 }

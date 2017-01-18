@@ -16,9 +16,11 @@ import javafx.scene.image.Image;
 import javax.imageio.ImageIO;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.hateoas.MediaTypes;
+import org.springframework.hateoas.PagedResources;
 import org.springframework.hateoas.Resource;
 import org.springframework.hateoas.Resources;
 import org.springframework.hateoas.client.Traverson;
+import org.springframework.hateoas.mvc.TypeReferences;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -33,7 +35,8 @@ import ru.javafx.musicbook.client.repository.CrudRepository;
 public abstract class CrudRepositoryImpl<T extends Entity> extends ChangeRepositoryImpl<T> implements CrudRepository<T> {
     
     protected ParameterizedTypeReference<Resource<T>> resourceParameterizedType;
-    protected ParameterizedTypeReference<Resources<Resource<T>>> resourcesParameterizedType;  
+    protected ParameterizedTypeReference<Resources<Resource<T>>> resourcesParameterizedType; 
+    protected TypeReferences.PagedResourcesType<Resource<T>> pagedResourcesType;
     
     @Override
     public URI save(String rel, T entity) throws URISyntaxException {
@@ -213,5 +216,20 @@ public abstract class CrudRepositoryImpl<T extends Entity> extends ChangeReposit
                 .withTemplateParameters(parameters)
                 .toObject(resourcesParameterizedType);       
     }
+    
+    
+    public PagedResources<Resource<T>> getPagedResources(Map<String, Object> parameters, String... rels) throws URISyntaxException {
+        return getPagedResources(basePath, parameters, rels);
+    }
+    public PagedResources<Resource<T>> getPagedResources(String path, Map<String, Object> parameters, String... rels) throws URISyntaxException {            
+        return new Traverson(new URI(path), MediaTypes.HAL_JSON)
+                .follow(rels)
+                .withTemplateParameters(parameters)
+                .withHeaders(sessionManager.createSessionHeaders())
+                .toObject(pagedResourcesType);       
+    }
+    
+    
+    
         
 }

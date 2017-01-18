@@ -24,7 +24,11 @@ import org.springframework.core.ParameterizedTypeReference;
 
 @Repository
 public class GenreRepositoryImpl extends CrudRepositoryImpl<Genre> implements GenreRepository {
-    
+
+    public GenreRepositoryImpl() {
+        parameterizedTypeReference = new ParameterizedTypeReference<Resource<Genre>>() {};
+    }
+       
     @Override
     public long countArtistsByGenre(Resource<Genre> genreResource) throws URISyntaxException {
         Resources<Resource<ArtistGenre>> resources = new Traverson(new URI(genreResource.getId().getHref()), MediaTypes.HAL_JSON)//
@@ -83,14 +87,6 @@ public class GenreRepositoryImpl extends CrudRepositoryImpl<Genre> implements Ge
                 .withTemplateParameters(parameters)
                 .withHeaders(sessionManager.createSessionHeaders())
                 .toObject(new ParameterizedTypeReference<Resources<Resource<Genre>>>() {});
-    }
-    
-    @Override
-    public Resource<Genre> saveAndGetResource(Genre entity) throws URISyntaxException {
-        return new Traverson(save(relPath, entity), MediaTypes.HAL_JSON)//
-                .follow("self")
-                .withHeaders(sessionManager.createSessionHeaders())
-                .toObject(new ParameterizedTypeReference<Resource<Genre>>() {});
     }
 
 }

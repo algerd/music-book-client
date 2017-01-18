@@ -17,6 +17,10 @@ import ru.javafx.musicbook.client.repository.AlbumRepository;
 @Repository
 public class AlbumRepositoryImpl extends CrudRepositoryImpl<Album> implements AlbumRepository {
     
+    public AlbumRepositoryImpl() {
+        parameterizedTypeReference = new ParameterizedTypeReference<Resource<Album>>() {};
+    }
+    
     @Override
     public PagedResources<Resource<Album>> searchByNameAndRatingAndYear(Map<String, Object> parameters) throws URISyntaxException {            
         return new Traverson(new URI(basePath), MediaTypes.HAL_JSON)
@@ -43,14 +47,6 @@ public class AlbumRepositoryImpl extends CrudRepositoryImpl<Album> implements Al
     @Override
     public void deleteGenreFromAlbum(Resource<Album> resource, int idGenre) throws URISyntaxException {
         delete(resource.getId().getHref() + "/genres/" + idGenre);
-    }
-    
-    @Override
-    public Resource<Album> saveAndGetResource(Album entity) throws URISyntaxException {
-        return new Traverson(save(relPath, entity), MediaTypes.HAL_JSON)//
-                .follow("self")
-                .withHeaders(sessionManager.createSessionHeaders())
-                .toObject(new ParameterizedTypeReference<Resource<Album>>() {});
     }
     
 }

@@ -100,7 +100,7 @@ public class ArtistDialogController extends BaseDialogController<Artist> {
             artist.setDescription(commentTextArea.getText().trim());             
             try { 
                 resource = edit ? artistRepository.update(resource) : artistRepository.saveAndGetResource(artist);
-                        
+                logger.info("Saved Artist Resource: {}", resource);
                 // Извлечь жанры из списка и сохранить их в связке связанные с артистом
                 includedChoiceCheckBoxController.getItemMap().keySet().parallelStream().forEach(resourceGenre -> {
                     ObservableValue<Boolean> flag = includedChoiceCheckBoxController.getItemMap().get(resourceGenre); 

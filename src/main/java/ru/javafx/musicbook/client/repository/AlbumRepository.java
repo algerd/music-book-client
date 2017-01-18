@@ -16,6 +16,5 @@ public interface AlbumRepository extends CrudRepository<Album> {
     void saveGenreInAlbum(Resource<Album> resource, int idGenre) throws URISyntaxException;
     
     void deleteGenreFromAlbum(Resource<Album> resource, int idGenre) throws URISyntaxException;
-    
-    Resource<Album> saveAndGetResource(Album entity) throws URISyntaxException;
+
 }

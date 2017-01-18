@@ -21,6 +21,5 @@ public interface GenreRepository extends CrudRepository<Genre> {
     Resources<Resource<Genre>> findByArtist(Resource<Artist> resource) throws URISyntaxException;
     
     Resources<Resource<Genre>> findByAlbum(Resource<Album> resource) throws URISyntaxException;
-    
-    Resource<Genre> saveAndGetResource(Genre entity) throws URISyntaxException;
+
 }

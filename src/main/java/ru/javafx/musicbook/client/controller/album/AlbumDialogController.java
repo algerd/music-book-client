@@ -227,7 +227,7 @@ public class AlbumDialogController extends BaseDialogController<Album> {
             album.setArtist(artistField.getValue().getId().getHref());
             try {
                 resource = edit ? albumRepository.update(resource) : albumRepository.saveAndGetResource(album);
-
+                logger.info("Saved Album Resource: {}", resource);
                 // Извлечь жанры из списка и сохранить их в связке связанные с артистом
                 includedChoiceCheckBoxController.getItemMap().keySet().parallelStream().forEach(resourceGenre -> {
                     ObservableValue<Boolean> flag = includedChoiceCheckBoxController.getItemMap().get(resourceGenre);                                       

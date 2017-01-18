@@ -65,13 +65,5 @@ public class ArtistRepositoryImpl extends CrudRepositoryImpl<Artist> implements 
                 .withTemplateParameters(parameters)
                 .toObject(new TypeReferences.ResourcesType<Resource<Artist>>() {});       
     }
-    
-    @Override
-    public Resource<Artist> saveAndGetResource(Artist entity) throws URISyntaxException {
-        return new Traverson(save(relPath, entity), MediaTypes.HAL_JSON)//
-                .follow("self")
-                .withHeaders(sessionManager.createSessionHeaders())
-                .toObject(new ParameterizedTypeReference<Resource<Artist>>() {});
-    }
 
 }

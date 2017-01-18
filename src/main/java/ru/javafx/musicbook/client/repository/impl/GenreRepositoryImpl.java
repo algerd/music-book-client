@@ -25,19 +25,16 @@ public class GenreRepositoryImpl extends CrudRepositoryImpl<Genre> implements Ge
 
     public GenreRepositoryImpl() {    
         resourceParameterizedType = new ParameterizedTypeReference<Resource<Genre>>() {};
-        resourcesParameterizedType = new ParameterizedTypeReference<Resources<Resource<Genre>>>() {};         
+        resourcesParameterizedType = new ParameterizedTypeReference<Resources<Resource<Genre>>>() {}; 
+        pagedResourcesType = new TypeReferences.PagedResourcesType<Resource<Genre>>() {};
     }
     
     @Override
     public PagedResources<Resource<Genre>> searchByName(Paginator paginator, String search) throws URISyntaxException {    
         Map<String, Object> parameters = new HashMap<>();
         parameters.put("search", search);
-        parameters.putAll(paginator.getParameters());        
-        PagedResources<Resource<Genre>> resources = new Traverson(new URI(basePath), MediaTypes.HAL_JSON)
-                .follow(relPath, "search", "by_name")
-                .withTemplateParameters(parameters)
-                .withHeaders(sessionManager.createSessionHeaders())
-                .toObject(new TypeReferences.PagedResourcesType<Resource<Genre>>() {});       
+        parameters.putAll(paginator.getParameters()); 
+        PagedResources<Resource<Genre>> resources = getPagedResources(parameters, relPath, "search", "by_name");       
         paginator.setTotalElements((int) resources.getMetadata().getTotalElements());
         return resources;       
     }

@@ -90,29 +90,23 @@ public abstract class CrudRepositoryImpl<T extends Entity> extends ChangeReposit
                 super.setDeleted(new WrapChangedEntity<>((Resource<T>)resource, null));
             } catch (URISyntaxException ex) {
                 logger.error(ex.getMessage());
-                //ex.printStackTrace();
             }           
         }
     }
     
     @Override
-    public boolean existByName(String search) throws URISyntaxException {
-        Map<String, Object> parameters = new HashMap<>();
-        parameters.put("search", search);         
+    public boolean existByName(String search) throws URISyntaxException {               
         try {
-            new Traverson(new URI(basePath), MediaTypes.HAL_JSON)
-                .follow(relPath, "search", "exist_by_name")
-                .withTemplateParameters(parameters)
-                .withHeaders(sessionManager.createSessionHeaders())    
-                .toObject(new ParameterizedTypeReference<Resource<T>>() {});
+            Map<String, Object> parameters = new HashMap<>();
+            parameters.put("search", search); 
+            getParameterizedResource(parameters, new String[]{relPath, "search", "exist_by_name"});
         }
         catch (HttpClientErrorException ex) {
             return false;
         }
         return true;             
     } 
-    
-    
+       
     @Override
     public void saveImage(Resource<T> resource, Image image) {
         if (image != null) {
@@ -161,8 +155,7 @@ public abstract class CrudRepositoryImpl<T extends Entity> extends ChangeReposit
                 .withHeaders(sessionManager.createSessionHeaders())
                 .toObject(resourceParameterizedType);
     }
-       
-    ///////////////////////////////////////////////////////
+
     @Override
     public Resource<T> getResource(String path) throws URISyntaxException {       
         return new Traverson(new URI(path), MediaTypes.HAL_JSON)//

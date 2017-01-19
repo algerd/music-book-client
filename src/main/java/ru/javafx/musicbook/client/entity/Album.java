@@ -10,15 +10,15 @@ import javafx.beans.property.StringProperty;
 @RelPath("albums")
 public class Album implements Entity {
 
-    //private int id_artist = 1; // id = 1 "Unknown" artist
+    // Default: Unknown album with id = 1
+    public static final String DEFAULT_ALBUM = "http://localhost:8080/api/albums/1";
+    
+    private String artist = Artist.DEFAULT_ARTIST;
     private final StringProperty name = new SimpleStringProperty("");
     private final IntegerProperty year = new SimpleIntegerProperty(0);
     private final StringProperty time = new SimpleStringProperty("");
     private final IntegerProperty rating = new SimpleIntegerProperty(0);
-    private final StringProperty description = new SimpleStringProperty(""); 
-    
-    // Default: Unknown artist with id = 1
-    private String artist = "http://localhost:8080/api/artists/1";
+    private final StringProperty description = new SimpleStringProperty("");     
 
     public String getArtist() {
         return artist;

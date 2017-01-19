@@ -9,7 +9,10 @@ import javafx.beans.property.StringProperty;
 
 @RelPath("artists")
 public class Artist implements Entity {
-     
+    
+    // Default: Unknown artist with id = 1
+    public static final String DEFAULT_ARTIST = "http://localhost:8080/api/artists/1";
+    
     private final StringProperty name = new SimpleStringProperty("");
     private final IntegerProperty rating = new SimpleIntegerProperty(0);
     private final StringProperty description = new SimpleStringProperty("");

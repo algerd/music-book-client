@@ -196,7 +196,7 @@ public class AlbumsController extends BaseAwareController implements PagedContro
             if (resorceGenre == null || resorceGenre.getContent().getName().equals("All genres")) {
                 resources = albumRepository.searchByNameAndRatingAndYear(parameters);
             } else {
-                parameters.put("id_genre", Helper.getId(resorceGenre));
+                parameters.put("genre", resorceGenre.getId().getHref());
                 resources = albumRepository.searchByNameAndRatingAndYearAndGenre(parameters);
             }          
             paginatorPaneController.getPaginator().setTotalElements((int) resources.getMetadata().getTotalElements());           
@@ -337,7 +337,7 @@ public class AlbumsController extends BaseAwareController implements PagedContro
         else if (mouseEvent.getButton() == MouseButton.SECONDARY) { 
             contextMenuService.add(ADD_ALBUM, null);
             // запретить удаление и редактирование записи с id = 1 (Unknown album)
-            if (selectedItem != null && Helper.getId(selectedItem) != 1) {
+            if (selectedItem != null && !selectedItem.getId().getHref().equals(Album.DEFAULT_ALBUM)) {
                 contextMenuService.add(EDIT_ALBUM, selectedItem);
                 contextMenuService.add(DELETE_ALBUM, selectedItem);                       
             }           

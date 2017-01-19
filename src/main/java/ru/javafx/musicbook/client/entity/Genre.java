@@ -7,6 +7,9 @@ import javafx.beans.property.StringProperty;
 
 @RelPath("genres")
 public class Genre implements Entity {
+    
+    // Default: Unknown genre with id = 1
+    public static final String DEFAULT_GENRE = "http://localhost:8080/api/genres/1";
 
     private final StringProperty name = new SimpleStringProperty("");
     private final StringProperty description = new SimpleStringProperty("");

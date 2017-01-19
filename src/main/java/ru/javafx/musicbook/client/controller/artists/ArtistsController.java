@@ -147,7 +147,7 @@ public class ArtistsController extends BaseAwareController implements PagedContr
             if (resorceGenre == null || resorceGenre.getContent().getName().equals("All genres")) {
                 resources = artistRepository.searchByNameAndRating(parameters);
             } else {
-                parameters.put("id_genre", Helper.getId(resorceGenre));
+                parameters.put("genre", resorceGenre.getId().getHref());
                 resources = artistRepository.searchByGenreAndRatingAndName(parameters);
             }          
             paginatorPaneController.getPaginator().setTotalElements((int) resources.getMetadata().getTotalElements());           
@@ -273,7 +273,7 @@ public class ArtistsController extends BaseAwareController implements PagedContr
         else if (mouseEvent.getButton() == MouseButton.SECONDARY) { 
             contextMenuService.add(ADD_ARTIST, null);
             // запретить удаление и редактирование записи с id = 1 (Unknown artist)
-            if (selectedItem != null && Helper.getId(selectedItem) != 1) {
+            if (selectedItem != null && !selectedItem.getId().getHref().equals(Artist.DEFAULT_ARTIST)) {;
                 contextMenuService.add(EDIT_ARTIST, selectedItem);
                 contextMenuService.add(DELETE_ARTIST, selectedItem);                       
             }

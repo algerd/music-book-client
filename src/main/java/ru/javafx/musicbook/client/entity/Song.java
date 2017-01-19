@@ -10,7 +10,6 @@ import javafx.beans.property.StringProperty;
 @RelPath("songs")
 public class Song implements Entity {
 
-    //private int id_album = 1; // id = 1 "Unknown" album
     private final StringProperty name = new SimpleStringProperty("");
     private final IntegerProperty track = new SimpleIntegerProperty(0);
     private final StringProperty lyric = new SimpleStringProperty("");

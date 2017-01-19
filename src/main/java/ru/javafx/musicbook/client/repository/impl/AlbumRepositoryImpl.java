@@ -32,14 +32,7 @@ public class AlbumRepositoryImpl extends CrudRepositoryImpl<Album> implements Al
     public PagedResources<Resource<Album>> searchByNameAndRatingAndYearAndGenre(Map<String, Object> parameters) throws URISyntaxException {                                    
         return getPagedResources(parameters, new String[]{relPath, "search", "by_name_and_rating_and_year_and_genre"});        
     } 
-    /*
-    @Override
-    public Resources<Resource<Album>> findByGenre(Resource<Genre> genreResource) throws URISyntaxException {
-        Map<String, Object> parameters = new HashMap<>();
-        parameters.put("genre", genreResource.getId().getHref());
-        return getParameterizedResources(parameters, new String[]{relPath, "search", "by_genre"});       
-    }
-    */
+
     @Override
     public Resources<Resource<Album>> findByGenre(Resource<Genre> genreResource) throws URISyntaxException {
         Map<String, Object> parameters = new HashMap<>();

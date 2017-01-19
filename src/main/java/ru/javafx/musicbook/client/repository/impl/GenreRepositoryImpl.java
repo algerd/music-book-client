@@ -17,7 +17,6 @@ import ru.javafx.musicbook.client.entity.Album;
 import ru.javafx.musicbook.client.entity.Artist;
 import ru.javafx.musicbook.client.entity.Genre;
 import ru.javafx.musicbook.client.repository.GenreRepository;
-import ru.javafx.musicbook.client.utils.Helper;
 import org.springframework.core.ParameterizedTypeReference;
 
 @Repository
@@ -50,14 +49,14 @@ public class GenreRepositoryImpl extends CrudRepositoryImpl<Genre> implements Ge
     @Override
     public Resources<Resource<Genre>> findByArtist(Resource<Artist> resource) throws URISyntaxException {
         Map<String, Object> parameters = new HashMap<>();
-        parameters.put("id_artist", Helper.getId(resource));
+        parameters.put("artist", resource.getId().getHref());
         return getParameterizedResources(parameters, new String[]{relPath, "search", "by_artist"});       
     } 
     
     @Override
     public Resources<Resource<Genre>> findByAlbum(Resource<Album> resource) throws URISyntaxException {
         Map<String, Object> parameters = new HashMap<>();
-        parameters.put("id_album", Helper.getId(resource));
+        parameters.put("album", resource.getId().getHref());
         return getParameterizedResources(parameters, new String[]{relPath, "search", "by_album"});
     }
 

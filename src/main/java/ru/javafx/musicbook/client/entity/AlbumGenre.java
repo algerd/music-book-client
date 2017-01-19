@@ -6,11 +6,8 @@ import java.util.Objects;
 @RelPath("album_genres")
 public class AlbumGenre implements Entity {
     
-    // Default: Unknown album with id = 1
-    private String album = "http://localhost:8080/api/albums/1";
-   
-    // Default: Unknown genre with id = 1
-    private String genre = "http://localhost:8080/api/genres/1";
+    private String album = Album.DEFAULT_ALBUM;
+    private String genre = Genre.DEFAULT_GENRE;
     
     public AlbumGenre() {}
 

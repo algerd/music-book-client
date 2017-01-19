@@ -39,4 +39,13 @@ public class AlbumGenreRepositoryImpl extends CrudRepositoryImpl<AlbumGenre> imp
         return getParameterizedResource(parameters, new String[]{relPath, "search", "findByAlbumAndGenre"});
     }
     
+    ///////////////////////////
+    /*
+    @Override
+    public Resources<Resource<Album>> findAlbumsByGenre(Resource<Genre> genreResource) throws URISyntaxException {
+        Map<String, Object> parameters = new HashMap<>();
+        parameters.put("genre", genreResource.getId().getHref());
+        return getParameterizedResources(parameters, new String[]{relPath, "search", "by_genre"});       
+    }
+    */
 }

@@ -13,7 +13,6 @@ import org.springframework.stereotype.Repository;
 import ru.javafx.musicbook.client.entity.Artist;
 import ru.javafx.musicbook.client.entity.Genre;
 import ru.javafx.musicbook.client.repository.ArtistRepository;
-import ru.javafx.musicbook.client.utils.Helper;
 
 @Repository
 public class ArtistRepositoryImpl extends CrudRepositoryImpl<Artist> implements ArtistRepository {

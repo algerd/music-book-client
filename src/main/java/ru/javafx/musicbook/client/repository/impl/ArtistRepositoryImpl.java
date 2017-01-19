@@ -33,14 +33,14 @@ public class ArtistRepositoryImpl extends CrudRepositoryImpl<Artist> implements 
     public PagedResources<Resource<Artist>> searchByGenreAndRatingAndName(Map<String, Object> parameters) throws URISyntaxException {                                    
         return getPagedResources(parameters, new String[] {relPath, "search", "by_genre_and_rating_and_name"});
     } 
-       
+
     @Override
     public Resources<Resource<Artist>> findByGenre(Resource<Genre> genreResource) throws URISyntaxException {
         Map<String, Object> parameters = new HashMap<>();
-        parameters.put("id_genre", Helper.getId(genreResource));
+        parameters.put("genre", genreResource.getId().getHref());
         return getParameterizedResources(parameters, new String[]{relPath, "search", "by_genre"});       
     } 
-  
+    
     @Override
     public Resources<Resource<Artist>> findAllNames() throws URISyntaxException {
         Map<String, Object> parameters = new HashMap<>();

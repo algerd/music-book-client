@@ -6,6 +6,8 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.ResourceBundle;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import java.util.stream.Collectors;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.FXCollections;
@@ -26,10 +28,13 @@ import ru.javafx.musicbook.client.controller.BaseAwareController;
 import ru.javafx.musicbook.client.controller.paginator.PagedController;
 import ru.javafx.musicbook.client.controller.paginator.PaginatorPaneController;
 import ru.javafx.musicbook.client.controller.paginator.Sort;
+import ru.javafx.musicbook.client.entity.Album;
 import ru.javafx.musicbook.client.entity.Artist;
 import ru.javafx.musicbook.client.entity.Genre;
 import ru.javafx.musicbook.client.fxintegrity.FXMLController;
 import ru.javafx.musicbook.client.fxintegrity.FXMLControllerLoader;
+import ru.javafx.musicbook.client.repository.AlbumGenreRepository;
+import ru.javafx.musicbook.client.repository.AlbumRepository;
 import ru.javafx.musicbook.client.repository.ArtistGenreRepository;
 import ru.javafx.musicbook.client.repository.ArtistRepository;
 import ru.javafx.musicbook.client.repository.GenreRepository;
@@ -54,7 +59,11 @@ public class GenresController extends BaseAwareController implements PagedContro
     @Autowired
     private ArtistRepository artistRepository;
     @Autowired
+    private AlbumRepository albumRepository;   
+    @Autowired
     private ArtistGenreRepository artistGenreRepository;
+    @Autowired
+    private AlbumGenreRepository albumGenreRepository;
     
     @FXML
     private VBox genresTableVBox;
@@ -71,6 +80,10 @@ public class GenresController extends BaseAwareController implements PagedContro
     private TableColumn<Resource<Genre>, Resource<Genre>> artistsAmountColumn;
     @FXML
     private TableColumn<Resource<Genre>, Resource<Genre>> artistsAvRatingColumn;
+    @FXML
+    private TableColumn<Resource<Genre>, Resource<Genre>> albumsAmountColumn;
+    @FXML
+    private TableColumn<Resource<Genre>, Resource<Genre>> albumsAvRatingColumn;
     
     public GenresController() {}
     
@@ -114,8 +127,7 @@ public class GenresController extends BaseAwareController implements PagedContro
                 }
             };
 			return cell;
-        });
-        
+        });       
         artistsAvRatingColumn.setCellValueFactory(cellData -> new SimpleObjectProperty<>(cellData.getValue()));
         artistsAvRatingColumn.setCellFactory(col -> {
             TableCell<Resource<Genre>, Resource<Genre>> cell = new TableCell<Resource<Genre>, Resource<Genre>>() {
@@ -134,6 +146,52 @@ public class GenresController extends BaseAwareController implements PagedContro
                                 averageRating += artist.getRating();
                             }
                             int count = artists.size();
+                            this.setText("" + ((count != 0) ? ((int) (100.0 * averageRating / count + 0.5))/ 100.0 : " - "));                            
+                        } catch (URISyntaxException ex) {
+                            logger.error(ex.getMessage());
+                        }
+                    }
+                }
+            };
+			return cell;
+        });
+        
+        albumsAmountColumn.setCellValueFactory(cellData -> new SimpleObjectProperty<>(cellData.getValue()));
+        albumsAmountColumn.setCellFactory(col -> {
+            TableCell<Resource<Genre>, Resource<Genre>> cell = new TableCell<Resource<Genre>, Resource<Genre>>() {
+                @Override
+                public void updateItem(Resource<Genre> item, boolean empty) {
+                    super.updateItem(item, empty);
+                    this.setText(null);
+                    if (!empty) {                        
+                        try {                   
+                            this.setText("" + albumGenreRepository.countAlbumsByGenre(item));
+                        } catch (URISyntaxException ex) {
+                            logger.error(ex.getMessage());
+                        }
+                    }
+                }
+            };
+			return cell;
+        });
+        albumsAvRatingColumn.setCellValueFactory(cellData -> new SimpleObjectProperty<>(cellData.getValue()));
+        albumsAvRatingColumn.setCellFactory(col -> {
+            TableCell<Resource<Genre>, Resource<Genre>> cell = new TableCell<Resource<Genre>, Resource<Genre>>() {
+                @Override
+                public void updateItem(Resource<Genre> item, boolean empty) {
+                    super.updateItem(item, empty);
+                    this.setText(null);
+                    if (!empty) {                        
+                        try {                                             
+                            List<Album> albums = new ArrayList<>();
+                            albumRepository.findByGenre(item).getContent().parallelStream().forEach(
+                                albumResource -> albums.add(albumResource.getContent())
+                            );        
+                            int averageRating = 0;
+                            for (Album album : albums) {
+                                averageRating += album.getRating();
+                            }
+                            int count = albums.size();
                             this.setText("" + ((count != 0) ? ((int) (100.0 * averageRating / count + 0.5))/ 100.0 : " - "));                            
                         } catch (URISyntaxException ex) {
                             logger.error(ex.getMessage());

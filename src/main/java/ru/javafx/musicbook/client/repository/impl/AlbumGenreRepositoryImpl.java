@@ -24,7 +24,7 @@ public class AlbumGenreRepositoryImpl extends CrudRepositoryImpl<AlbumGenre> imp
         
     @Override
     public long countAlbumsByGenre(Resource<Genre> genreResource) throws URISyntaxException {
-        Resources<Resource<AlbumGenre>> resources = getResources(genreResource.getId().getHref(), "albumGenre");          
+        Resources<Resource<AlbumGenre>> resources = getResources(genreResource.getId().getHref(), "albumGenres");          
         long i = 0;
         Iterator iterator = resources.iterator();
         for (; iterator.hasNext() ; ++i ) iterator.next();      

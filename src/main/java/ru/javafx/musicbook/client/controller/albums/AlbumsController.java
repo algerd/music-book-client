@@ -59,6 +59,7 @@ public class AlbumsController extends BaseAwareController implements PagedContro
     // filter 
     private Resource<Genre> resorceGenre;
     private String searchString = ""; 
+    private String searchSelector;
     private String sort;
     private String order;
     private final IntegerProperty minRating = new SimpleIntegerProperty();
@@ -116,6 +117,7 @@ public class AlbumsController extends BaseAwareController implements PagedContro
     public void initialize(URL url, ResourceBundle rb) {
         sort = "Rating";
         order = "Asc";
+        searchSelector = "Album";
         initSortAndOrderChoiceBoxes();
         initGenreChoiceBox();
         initAlbumsTable();
@@ -181,6 +183,18 @@ public class AlbumsController extends BaseAwareController implements PagedContro
         resetSearchLabel.setVisible(false);
     }
     
+    private enum SearchSelector {
+        ARTIST("Artist"), ALBUM("Album");
+        private final String name;
+        private SearchSelector(String name) {
+            this.name = name;
+        } 
+        @Override
+        public String toString() {
+            return name;
+        }        
+    }
+    
     @Override
     public void setPageValue() {         
         clearSelectionTable();
@@ -190,14 +204,18 @@ public class AlbumsController extends BaseAwareController implements PagedContro
         parameters.put("maxrating", getMaxRating());
         parameters.put("minyear", getMinYear());
         parameters.put("maxyear", getMaxYear());       
-        parameters.put("search", searchString);                   
+        parameters.put("search", searchString);
         parameters.putAll(paginatorPaneController.getPaginator().getParameters());      
         try {                       
             if (resorceGenre == null || resorceGenre.getContent().getName().equals("All genres")) {
-                resources = albumRepository.searchByNameAndRatingAndYear(parameters);
+                resources = (searchSelector.equals("Album")) ? 
+                        albumRepository.searchByNameAndRatingAndYear(parameters) : 
+                        albumRepository.searchByArtistNameAndRatingAndYear(parameters);
             } else {
                 parameters.put("genre", resorceGenre.getId().getHref());
-                resources = albumRepository.searchByNameAndRatingAndYearAndGenre(parameters);
+                resources = (searchSelector.equals("Album")) ? 
+                        albumRepository.searchByNameAndRatingAndYearAndGenre(parameters) :
+                        albumRepository.searchByArtistNameAndRatingAndYearAndGenre(parameters);
             }          
             paginatorPaneController.getPaginator().setTotalElements((int) resources.getMetadata().getTotalElements());           
             albumsTable.setItems(FXCollections.observableArrayList(resources.getContent().parallelStream().collect(Collectors.toList())));           
@@ -227,7 +245,7 @@ public class AlbumsController extends BaseAwareController implements PagedContro
     }
     
     private void initSortAndOrderChoiceBoxes() {
-        sortChoiceBox.getItems().addAll("Rating", "Name");
+        sortChoiceBox.getItems().addAll("Rating", "Name", "Year");
         sortChoiceBox.getSelectionModel().selectFirst();
         orderChoiceBox.getItems().addAll("Asc", "Desc");
         orderChoiceBox.getSelectionModel().selectFirst();   
@@ -236,11 +254,6 @@ public class AlbumsController extends BaseAwareController implements PagedContro
     private void initSearchChoiceBox() {
         searchChoiceBox.getItems().addAll("Album", "Artist");
         searchChoiceBox.getSelectionModel().selectFirst();
-        /*
-        searchChoiceBox.getSelectionModel().selectedIndexProperty().addListener(
-            (observable, oldValue, newValue) -> repeatFilter()
-        );
-        */
     }
     
     private Sort getSort() {
@@ -274,7 +287,11 @@ public class AlbumsController extends BaseAwareController implements PagedContro
         orderChoiceBox.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
             order = newValue;
             filter();
-        });  
+        });        
+        searchChoiceBox.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
+            searchSelector = newValue;
+            filter();
+        });      
     }
     
     private void initRepositoryListeners() {    

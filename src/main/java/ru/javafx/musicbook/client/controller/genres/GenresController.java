@@ -243,19 +243,19 @@ public class GenresController extends BaseAwareController implements PagedContro
     private void initRepositoryListeners() {                    
        //repositoryService.getAlbumGenreRepository().clearChangeListeners(this);                          
        //repositoryService.getSongGenreRepository().clearChangeListeners(this);                       
-       //repositoryService.getMusicianGenreRepository().clearChangeListeners(this);                          
-       //repositoryService.getAlbumRepository().clearDeleteListeners(this);  
+       //repositoryService.getMusicianGenreRepository().clearChangeListeners(this);                            
        //repositoryService.getSongRepository().clearDeleteListeners(this);  
        //repositoryService.getMusicianRepository().clearDeleteListeners(this);
+       albumRepository.clearChangeListeners(this);
        artistRepository.clearChangeListeners(this);
        genreRepository.clearChangeListeners(this);     
                              
         //repositoryService.getAlbumGenreRepository().addChangeListener(this::changed, this);                          
         //repositoryService.getSongGenreRepository().addChangeListener(this::changed, this);                       
-        //repositoryService.getMusicianGenreRepository().addChangeListener(this::changed, this);                          
-        //repositoryService.getAlbumRepository().addDeleteListener(this::changed, this);  
+        //repositoryService.getMusicianGenreRepository().addChangeListener(this::changed, this);                           
         //repositoryService.getSongRepository().addDeleteListener(this::changed, this);  
         //repositoryService.getMusicianRepository().addDeleteListener(this::changed, this);
+        albumRepository.addChangeListener((observable, oldVal, newVal) -> filter(), this);
         artistRepository.addChangeListener((observable, oldVal, newVal) -> filter(), this);
         genreRepository.addChangeListener((observable, oldVal, newVal) -> filter(), this);           
     }

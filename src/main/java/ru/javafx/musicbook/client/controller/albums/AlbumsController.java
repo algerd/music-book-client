@@ -4,6 +4,7 @@ package ru.javafx.musicbook.client.controller.albums;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -59,7 +60,7 @@ public class AlbumsController extends BaseAwareController implements PagedContro
     // filter 
     private Resource<Genre> resorceGenre;
     private String searchString = ""; 
-    private String searchSelector;
+    private SearchSelector searchSelector;
     private String sort;
     private String order;
     private final IntegerProperty minRating = new SimpleIntegerProperty();
@@ -91,7 +92,7 @@ public class AlbumsController extends BaseAwareController implements PagedContro
     @FXML
     private Label resetSearchLabel;   
     @FXML
-    private ChoiceBox<String> searchChoiceBox;
+    private ChoiceBox<SearchSelector> searchChoiceBox;
     @FXML
     private ChoiceBox<String> sortChoiceBox;
     @FXML
@@ -117,7 +118,7 @@ public class AlbumsController extends BaseAwareController implements PagedContro
     public void initialize(URL url, ResourceBundle rb) {
         sort = "Rating";
         order = "Asc";
-        searchSelector = "Album";
+        searchSelector = SearchSelector.ALBUM;
         initSortAndOrderChoiceBoxes();
         initGenreChoiceBox();
         initAlbumsTable();
@@ -208,12 +209,12 @@ public class AlbumsController extends BaseAwareController implements PagedContro
         parameters.putAll(paginatorPaneController.getPaginator().getParameters());      
         try {                       
             if (resorceGenre == null || resorceGenre.getContent().getName().equals("All genres")) {
-                resources = (searchSelector.equals("Album")) ? 
+                resources = (searchSelector.equals(SearchSelector.ALBUM)) ? 
                         albumRepository.searchByNameAndRatingAndYear(parameters) : 
                         albumRepository.searchByArtistNameAndRatingAndYear(parameters);
             } else {
                 parameters.put("genre", resorceGenre.getId().getHref());
-                resources = (searchSelector.equals("Album")) ? 
+                resources = (searchSelector.equals(SearchSelector.ALBUM)) ? 
                         albumRepository.searchByNameAndRatingAndYearAndGenre(parameters) :
                         albumRepository.searchByArtistNameAndRatingAndYearAndGenre(parameters);
             }          
@@ -252,8 +253,8 @@ public class AlbumsController extends BaseAwareController implements PagedContro
     }
     
     private void initSearchChoiceBox() {
-        searchChoiceBox.getItems().addAll("Album", "Artist");
-        searchChoiceBox.getSelectionModel().selectFirst();
+        searchChoiceBox.getItems().addAll(Arrays.asList(SearchSelector.values()));       
+        searchChoiceBox.getSelectionModel().select(SearchSelector.ALBUM);
     }
     
     private Sort getSort() {
@@ -295,11 +296,11 @@ public class AlbumsController extends BaseAwareController implements PagedContro
     }
     
     private void initRepositoryListeners() {    
-        //repositoryService.getArtistRepository().clearChangeListeners(this);               
+        artistRepository.clearChangeListeners(this);
         albumRepository.clearChangeListeners(this);
         genreRepository.clearChangeListeners(this);
-       
-        //repositoryService.getArtistRepository().addChangeListener(this::changedArtist, this);               
+        
+        artistRepository.addChangeListener((observable, oldVal, newVal) -> filter(), this);
         albumRepository.addChangeListener((observable, oldVal, newVal) -> filter(), this);
         genreRepository.addChangeListener(this::changedGenre, this);
     }
@@ -326,7 +327,7 @@ public class AlbumsController extends BaseAwareController implements PagedContro
         sortChoiceBox.getSelectionModel().selectFirst();
         orderChoiceBox.getSelectionModel().selectFirst();
         genreChoiceBox.getSelectionModel().selectFirst();  
-        searchChoiceBox.getSelectionModel().selectFirst();
+        searchChoiceBox.getSelectionModel().select(SearchSelector.ALBUM);
         initFilters();
         paginatorPaneController.initPageComboBox();
     } 

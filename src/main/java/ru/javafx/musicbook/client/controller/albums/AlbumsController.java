@@ -188,8 +188,8 @@ public class AlbumsController extends BaseAwareController implements PagedContro
         Map<String, Object> parameters = new HashMap<>();
         parameters.put("minrating", getMinRating());
         parameters.put("maxrating", getMaxRating());
-        parameters.put("minyear", getMinRating());
-        parameters.put("maxyear", getMaxRating());       
+        parameters.put("minyear", getMinYear());
+        parameters.put("maxyear", getMaxYear());       
         parameters.put("search", searchString);                   
         parameters.putAll(paginatorPaneController.getPaginator().getParameters());      
         try {                       

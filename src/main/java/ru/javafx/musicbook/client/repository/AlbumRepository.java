@@ -11,13 +11,7 @@ import ru.javafx.musicbook.client.entity.Genre;
 
 public interface AlbumRepository extends CrudRepository<Album> {
     
-    PagedResources<Resource<Album>> searchByNameAndRatingAndYear(Map<String, Object> parameters) throws URISyntaxException;
-
-    PagedResources<Resource<Album>> searchByNameAndRatingAndYearAndGenre(Map<String, Object> parameters) throws URISyntaxException;
-
-    PagedResources<Resource<Album>> searchByArtistNameAndRatingAndYear(Map<String, Object> parameters) throws URISyntaxException;
-
-    PagedResources<Resource<Album>> searchByArtistNameAndRatingAndYearAndGenre(Map<String, Object> parameters) throws URISyntaxException;
-    
+    PagedResources<Resource<Album>> searchAlbums(Map<String, Object> parameters) throws URISyntaxException;
+        
     Resources<Resource<Album>> findByGenre(Resource<Genre> genreResource) throws URISyntaxException;
 }

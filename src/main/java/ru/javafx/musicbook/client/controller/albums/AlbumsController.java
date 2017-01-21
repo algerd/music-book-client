@@ -61,6 +61,7 @@ public class AlbumsController extends BaseAwareController implements PagedContro
     private Resource<Genre> resorceGenre;
     private String searchString = ""; 
     private SearchSelector searchSelector;
+    private int selectorGenre = 0;
     private String sort;
     private String order;
     private final IntegerProperty minRating = new SimpleIntegerProperty();
@@ -205,19 +206,14 @@ public class AlbumsController extends BaseAwareController implements PagedContro
         parameters.put("maxrating", getMaxRating());
         parameters.put("minyear", getMinYear());
         parameters.put("maxyear", getMaxYear());       
-        parameters.put("search", searchString);
-        parameters.putAll(paginatorPaneController.getPaginator().getParameters());      
+        parameters.put("search", searchString); 
+        parameters.put("selector_genre", selectorGenre);
+        parameters.put("selector_search", searchSelector.toString());
+        parameters.put("genre", resorceGenre.getId().getHref());
+        parameters.putAll(paginatorPaneController.getPaginator().getParameters());  
         try {                       
-            if (resorceGenre == null || resorceGenre.getContent().getName().equals("All genres")) {
-                resources = (searchSelector.equals(SearchSelector.ALBUM)) ? 
-                        albumRepository.searchByNameAndRatingAndYear(parameters) : 
-                        albumRepository.searchByArtistNameAndRatingAndYear(parameters);
-            } else {
-                parameters.put("genre", resorceGenre.getId().getHref());
-                resources = (searchSelector.equals(SearchSelector.ALBUM)) ? 
-                        albumRepository.searchByNameAndRatingAndYearAndGenre(parameters) :
-                        albumRepository.searchByArtistNameAndRatingAndYearAndGenre(parameters);
-            }          
+            resources = albumRepository.searchAlbums(parameters);
+            //logger.info("Resources {}", resources);
             paginatorPaneController.getPaginator().setTotalElements((int) resources.getMetadata().getTotalElements());           
             albumsTable.setItems(FXCollections.observableArrayList(resources.getContent().parallelStream().collect(Collectors.toList())));           
             Helper.setHeightTable(albumsTable, paginatorPaneController.getPaginator().getSize());        
@@ -232,7 +228,7 @@ public class AlbumsController extends BaseAwareController implements PagedContro
            
         Genre emptyGenre = new Genre();
         emptyGenre.setName("All genres");
-        resorceGenre = new Resource<>(emptyGenre, new Link("emptyLink"));
+        resorceGenre = new Resource<>(emptyGenre, new Link(Genre.DEFAULT_GENRE));
         
         List <Resource<Genre>> genreResources = new ArrayList<>();
         genreResources.add(resorceGenre);
@@ -278,6 +274,7 @@ public class AlbumsController extends BaseAwareController implements PagedContro
         genreChoiceBox.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
             if (newValue != null) {
                 resorceGenre = newValue;
+                selectorGenre = resorceGenre.getContent().getName().equals("All genres") ? 0 : 1;                             
                 filter();
             }
         });

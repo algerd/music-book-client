@@ -55,6 +55,7 @@ public class ArtistsController extends BaseAwareController implements PagedContr
     private PaginatorPaneController paginatorPaneController;
     // filter properties       
     private Resource<Genre> resorceGenre;
+    private int selectorGenre = 0;
     private String searchString = "";
     private String sort;
     private String order;
@@ -121,7 +122,7 @@ public class ArtistsController extends BaseAwareController implements PagedContr
            
         Genre emptyGenre = new Genre();
         emptyGenre.setName("All genres");
-        resorceGenre = new Resource<>(emptyGenre, new Link("emptyLink"));
+        resorceGenre = new Resource<>(emptyGenre, new Link(Genre.DEFAULT_GENRE));
         
         List <Resource<Genre>> genreResources = new ArrayList<>();
         genreResources.add(resorceGenre);
@@ -141,15 +142,13 @@ public class ArtistsController extends BaseAwareController implements PagedContr
         Map<String, Object> parameters = new HashMap<>();
         parameters.put("minrating", getMinRating());
         parameters.put("maxrating", getMaxRating());
-        parameters.put("search", searchString);                   
+        parameters.put("search", searchString); 
+        parameters.put("selector_genre", selectorGenre);
+        parameters.put("genre", resorceGenre.getId().getHref());
         parameters.putAll(paginatorPaneController.getPaginator().getParameters());
         try {                       
-            if (resorceGenre == null || resorceGenre.getContent().getName().equals("All genres")) {
-                resources = artistRepository.searchByNameAndRating(parameters);
-            } else {
-                parameters.put("genre", resorceGenre.getId().getHref());
-                resources = artistRepository.searchByGenreAndRatingAndName(parameters);
-            }          
+            resources = artistRepository.searchArtists(parameters);
+            //logger.info("Resources {}", resources);        
             paginatorPaneController.getPaginator().setTotalElements((int) resources.getMetadata().getTotalElements());           
             artistsTable.setItems(FXCollections.observableArrayList(resources.getContent().parallelStream().collect(Collectors.toList())));           
             Helper.setHeightTable(artistsTable, paginatorPaneController.getPaginator().getSize());        
@@ -206,6 +205,7 @@ public class ArtistsController extends BaseAwareController implements PagedContr
         genreChoiceBox.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
             if (newValue != null) {
                 resorceGenre = newValue;
+                selectorGenre = resorceGenre.getContent().getName().equals("All genres") ? 0 : 1;                             
                 filter();
             }
         });

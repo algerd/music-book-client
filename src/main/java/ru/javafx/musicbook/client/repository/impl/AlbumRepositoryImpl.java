@@ -25,7 +25,7 @@ public class AlbumRepositoryImpl extends CrudRepositoryImpl<Album> implements Al
     
     @Override
     public PagedResources<Resource<Album>> searchAlbums(Map<String, Object> parameters) throws URISyntaxException {            
-        return getPagedResources(parameters, new String[]{relPath, "search", "get_albums"});
+        return getPagedResources(parameters, new String[]{relPath, "search", "search_albums"});
     }
     
     @Override

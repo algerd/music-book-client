@@ -210,7 +210,7 @@ public class AlbumsController extends BaseAwareController implements PagedContro
         parameters.put("selector_genre", selectorGenre);
         parameters.put("selector_search", searchSelector.toString());
         parameters.put("genre", resorceGenre.getId().getHref());
-        parameters.putAll(paginatorPaneController.getPaginator().getParameters());  
+        parameters.putAll(paginatorPaneController.getPaginator().getParameterMap());  
         try {                       
             resources = albumRepository.searchAlbums(parameters);
             //logger.info("Resources {}", resources);

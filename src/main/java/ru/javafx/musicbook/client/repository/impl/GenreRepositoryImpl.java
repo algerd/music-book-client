@@ -29,7 +29,7 @@ public class GenreRepositoryImpl extends CrudRepositoryImpl<Genre> implements Ge
     public PagedResources<Resource<Genre>> searchByName(Paginator paginator, String search) throws URISyntaxException {    
         Map<String, Object> parameters = new HashMap<>();
         parameters.put("search", search);
-        parameters.putAll(paginator.getParameters()); 
+        parameters.putAll(paginator.getParameterMap()); 
         PagedResources<Resource<Genre>> resources = getPagedResources(parameters, relPath, "search", "by_name");       
         paginator.setTotalElements((int) resources.getMetadata().getTotalElements());
         return resources;       

@@ -22,12 +22,12 @@ public class ArtistRepositoryImpl extends CrudRepositoryImpl<Artist> implements 
         resourcesParameterizedType = new ParameterizedTypeReference<Resources<Resource<Artist>>>() {};
         pagedResourcesType = new TypeReferences.PagedResourcesType<Resource<Artist>>() {};
     }
-    
-    @Override
-    public PagedResources<Resource<Artist>> searchArtists(Map<String, Object> parameters) throws URISyntaxException {
-        return getPagedResources(parameters, new String[] {relPath, "search", "search_artists"});
-    }
      
+    @Override
+    public PagedResources<Resource<Artist>> search(String relPath) throws URISyntaxException {
+        return getPagedResources(relPath);
+    }      
+         
     @Override
     public Resources<Resource<Artist>> findByGenre(Resource<Genre> genreResource) throws URISyntaxException {
         Map<String, Object> parameters = new HashMap<>();

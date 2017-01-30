@@ -1,8 +1,10 @@
 
 package ru.javafx.musicbook.client.controller.paginator;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -64,23 +66,38 @@ public class Paginator {
 		this(page, size, new Sort(direction, properties));
 	}
     
-    public Map<String, Object> getParameters() {
+    public Map<String, Object> getParameterMap() {
         Map<String, Object> parameters = new HashMap<>();
         parameters.put("page", page);
         parameters.put("size", size);
-        
         if (sort != null) {
-            String strSort = "";
+            parameters.put("sort", getSortString());
+        }
+        return parameters;
+    }
+    
+    public List<String> getParameterList() {
+        List<String> params = new ArrayList<>();
+        params.add("page=" + page);
+        params.add("size=" + size);
+        if (sort != null) {
+            params.add("sort=" + getSortString());
+        }
+        return params;
+    }
+    
+    private String getSortString() {
+        String strSort = "";
+        if (sort != null) {          
             Iterator<Sort.Order> sortIterator = sort.iterator();
             while (sortIterator.hasNext()) {
                 Sort.Order order = sortIterator.next();
                 strSort += ((!strSort.equals("")) ? "&sort=" : "") 
                     + order.getProperty()
                     + "," + ((order.getDirection().equals(Sort.Direction.DESC)) ? "desc" : "asc");
-            } 
-            parameters.put("sort", strSort);           
+            }         
         }
-        return parameters;
+        return strSort;
     }
     
     public int next() {

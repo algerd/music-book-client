@@ -6,7 +6,10 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import javafx.embed.swing.SwingFXUtils;
@@ -20,6 +23,7 @@ import org.springframework.hateoas.PagedResources;
 import org.springframework.hateoas.Resource;
 import org.springframework.hateoas.Resources;
 import org.springframework.hateoas.client.Traverson;
+import static org.springframework.hateoas.client.Traverson.getDefaultMessageConverters;
 import org.springframework.hateoas.mvc.TypeReferences;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -28,6 +32,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
+import ru.javafx.musicbook.client.entity.Artist;
 import ru.javafx.musicbook.client.entity.Entity;
 import ru.javafx.musicbook.client.repository.CrudRepository;
 
@@ -211,9 +216,11 @@ public abstract class CrudRepositoryImpl<T extends Entity> extends ChangeReposit
     }
     
     
+    @Override
     public PagedResources<Resource<T>> getPagedResources(Map<String, Object> parameters, String... rels) throws URISyntaxException {
         return getPagedResources(basePath, parameters, rels);
     }
+    @Override
     public PagedResources<Resource<T>> getPagedResources(String path, Map<String, Object> parameters, String... rels) throws URISyntaxException {            
         return new Traverson(new URI(path), MediaTypes.HAL_JSON)
                 .follow(rels)
@@ -222,7 +229,16 @@ public abstract class CrudRepositoryImpl<T extends Entity> extends ChangeReposit
                 .toObject(pagedResourcesType);       
     }
     
+    @Override
+    public PagedResources<Resource<T>> getPagedResources(String rel) throws URISyntaxException { 
+        URI uri = new URI(basePath + relPath + "?" + rel);
+        HttpHeaders headers = sessionManager.createSessionHeaders();
+        List<MediaType> types = new ArrayList<>();
+        types.add(MediaTypes.HAL_JSON);
+        headers.setAccept(types);
+        RestTemplate restTemplate = new RestTemplate();
+        restTemplate.setMessageConverters(getDefaultMessageConverters(types));
+        return restTemplate.exchange(uri, HttpMethod.GET, new HttpEntity<>(headers), pagedResourcesType).getBody();           
+    }
     
-    
-        
 }

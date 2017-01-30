@@ -134,21 +134,14 @@ public class ArtistsController extends BaseAwareController implements PagedContr
             logger.error(ex.getMessage());
         }
     }
- 
+
     @Override
-    public void setPageValue() {   
+    public void setPageValue() { 
         clearSelectionTable();
-        artistsTable.getItems().clear();
-        Map<String, Object> parameters = new HashMap<>();
-        parameters.put("minrating", getMinRating());
-        parameters.put("maxrating", getMaxRating());
-        parameters.put("search", searchString); 
-        parameters.put("selector_genre", selectorGenre);
-        parameters.put("genre", resorceGenre.getId().getHref());
-        parameters.putAll(paginatorPaneController.getPaginator().getParameters());
-        try {                       
-            resources = artistRepository.searchArtists(parameters);
-            //logger.info("Resources {}", resources);        
+        artistsTable.getItems().clear();                      
+        try {     
+            resources = artistRepository.search(createParamString());
+            //logger.info("Resources {}", resources);                           
             paginatorPaneController.getPaginator().setTotalElements((int) resources.getMetadata().getTotalElements());           
             artistsTable.setItems(FXCollections.observableArrayList(resources.getContent().parallelStream().collect(Collectors.toList())));           
             Helper.setHeightTable(artistsTable, paginatorPaneController.getPaginator().getSize());        
@@ -156,7 +149,24 @@ public class ArtistsController extends BaseAwareController implements PagedContr
             logger.error(ex.getMessage());
         }      
     }
-       
+    
+    private String createParamString() {
+        List<String> params = new ArrayList<>();       
+        if (getMinRating() != Params.MIN_RATING || getMaxRating() != Params.MAX_RATING) {
+            params.add("rating=" + getMinRating());
+            params.add("rating=" + getMaxRating());
+        }
+        if (!searchString.equals("")) {
+            params.add("name=startsWith");
+            params.add("name=" + searchString);
+        }
+        if (!resorceGenre.getContent().getName().equals("All genres")) {
+            params.add("genre.name=" + resorceGenre.getContent().getName());
+        }
+        params.addAll(paginatorPaneController.getPaginator().getParameterList());
+        return params.isEmpty()? "" : String.join("&", params);
+    }
+          
     private void initArtistsTable() { 
         rankColumn.setCellValueFactory(
             cellData -> new SimpleIntegerProperty(artistsTable.getItems().indexOf(cellData.getValue()) + 1).asObject()

@@ -4,9 +4,7 @@ package ru.javafx.musicbook.client.controller.artists;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.ResourceBundle;
 import java.util.stream.Collectors;
 import javafx.beans.property.IntegerProperty;
@@ -41,6 +39,7 @@ import ru.javafx.musicbook.client.controller.paginator.Sort.Order;
 import ru.javafx.musicbook.client.entity.Genre;
 import ru.javafx.musicbook.client.repository.ArtistRepository;
 import ru.javafx.musicbook.client.repository.GenreRepository;
+import ru.javafx.musicbook.client.repository.operators.StringOperator;
 import static ru.javafx.musicbook.client.service.ContextMenuItemType.*;
 import ru.javafx.musicbook.client.utils.Helper;
 
@@ -157,14 +156,16 @@ public class ArtistsController extends BaseAwareController implements PagedContr
             params.add("rating=" + getMaxRating());
         }
         if (!searchString.equals("")) {
-            params.add("name=startsWith");
+            params.add("name=" + StringOperator.STARTS_WITH);
             params.add("name=" + searchString);
         }
         if (!resorceGenre.getContent().getName().equals("All genres")) {
-            params.add("genre.name=" + resorceGenre.getContent().getName());
+            params.add("genre.id=" + Helper.getId(resorceGenre));
         }
         params.addAll(paginatorPaneController.getPaginator().getParameterList());
-        return params.isEmpty()? "" : String.join("&", params);
+        String paramStr = params.isEmpty()? "" : String.join("&", params);
+        //logger.info("paramStr :{}", paramStr);
+        return paramStr;
     }
           
     private void initArtistsTable() { 

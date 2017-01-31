@@ -101,6 +101,7 @@ public abstract class CrudRepositoryImpl<T extends Entity> extends ChangeReposit
     
     @Override
     public boolean existByName(String search) throws URISyntaxException {               
+        /*
         try {
             Map<String, Object> parameters = new HashMap<>();
             parameters.put("search", search); 
@@ -109,7 +110,11 @@ public abstract class CrudRepositoryImpl<T extends Entity> extends ChangeReposit
         catch (HttpClientErrorException ex) {
             return false;
         }
-        return true;             
+        return true;  
+        */
+  
+        return getPagedResources("name=" + search).getMetadata().getTotalElements() > 0;
+          
     } 
        
     @Override

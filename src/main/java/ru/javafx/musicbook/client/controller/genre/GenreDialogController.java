@@ -72,18 +72,21 @@ public class GenreDialogController extends BaseDialogController<Genre> {
            
     @Override
     protected boolean isInputValid() {
-        String errorMessage = "";       
-        if (nameTextField.getText() == null || nameTextField.getText().trim().equals("")) {
+        String errorMessage = ""; 
+        String text = nameTextField.getText();      
+        if (text == null || text.trim().equals("")) {
             errorMessage += "Введите название жанра!\n"; 
-        }        
-        try {
-            if (!genre.getName().equals(nameTextField.getText()) && genreRepository.existByName(nameTextField.getText())) {
-                errorMessage += "Такой жанр уже есть!\n"; 
-            }
-        } catch (URISyntaxException ex) {
-            logger.error(ex.getMessage());
-            //ex.printStackTrace();
-        }     
+        } else {
+            text = text.trim().toLowerCase();
+            try {
+                if (!genre.getName().toLowerCase().equals(text) 
+                        && genreRepository.getPagedResources("name=" + text).getMetadata().getTotalElements() > 0) {
+                    errorMessage += "Такой жанр уже есть!\n";
+                }
+            } catch (URISyntaxException ex) {
+                logger.error(ex.getMessage());
+            } 
+        }           
         if (errorMessage.equals("")) {
             return true;
         } 

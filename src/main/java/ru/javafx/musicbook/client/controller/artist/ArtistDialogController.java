@@ -141,18 +141,20 @@ public class ArtistDialogController extends BaseDialogController<Artist> {
     @Override
     protected boolean isInputValid() {
         String errorMessage = "";
-        
-        if (nameTextField.getText() == null || nameTextField.getText().trim().equals("")) {
+        String text = nameTextField.getText();         
+        if (text == null || text.trim().equals("")) {
             errorMessage += "Введите имя артиста!\n"; 
-        }     
-        try {
-            if (!artist.getName().equals(nameTextField.getText()) && artistRepository.existByName(nameTextField.getText())) {
-                errorMessage += "Такой артист уже есть!\n";
-            }
-        } catch (URISyntaxException ex) {
-            logger.error(ex.getMessage());
-            //ex.printStackTrace();
-        }        
+        } else {
+            text = text.trim().toLowerCase();
+            try {
+                if (!artist.getName().toLowerCase().equals(text) && 
+                        artistRepository.getPagedResources("name=" + text.trim().toLowerCase()).getMetadata().getTotalElements() > 0) {
+                    errorMessage += "Такой артист уже есть!\n";
+                }
+            } catch (URISyntaxException ex) {
+                logger.error(ex.getMessage());
+            } 
+        }              
         if (errorMessage.equals("")) {
             return true;
         } 

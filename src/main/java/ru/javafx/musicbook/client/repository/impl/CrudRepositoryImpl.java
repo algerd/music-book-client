@@ -7,8 +7,6 @@ import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -30,9 +28,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
-import ru.javafx.musicbook.client.entity.Artist;
 import ru.javafx.musicbook.client.entity.Entity;
 import ru.javafx.musicbook.client.repository.CrudRepository;
 
@@ -98,24 +94,6 @@ public abstract class CrudRepositoryImpl<T extends Entity> extends ChangeReposit
             }           
         }
     }
-    
-    @Override
-    public boolean existByName(String search) throws URISyntaxException {               
-        /*
-        try {
-            Map<String, Object> parameters = new HashMap<>();
-            parameters.put("search", search); 
-            getParameterizedResource(parameters, new String[]{relPath, "search", "exist_by_name"});
-        }
-        catch (HttpClientErrorException ex) {
-            return false;
-        }
-        return true;  
-        */
-  
-        return getPagedResources("name=" + search).getMetadata().getTotalElements() > 0;
-          
-    } 
        
     @Override
     public void saveImage(Resource<T> resource, Image image) {

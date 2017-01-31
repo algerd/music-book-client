@@ -20,9 +20,7 @@ public interface CrudRepository<T extends Entity> extends ChangeRepository<T> {
     void delete(Resource<T> resource) throws URISyntaxException;   
     HttpStatus delete(String absRef) throws URISyntaxException;   
     void deleteWithAlert(Resource<? extends Entity> resource);
-    
-    boolean existByName(String search)  throws URISyntaxException;
-    
+          
     void saveImage(Resource<T> resource, Image image);    
     HttpStatus postImage(Resource<T> resource, Image image);    
     void deleteImage(Resource<T> resource);

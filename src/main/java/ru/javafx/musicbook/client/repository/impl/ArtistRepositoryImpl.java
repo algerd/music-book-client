@@ -21,12 +21,7 @@ public class ArtistRepositoryImpl extends CrudRepositoryImpl<Artist> implements 
         resourceParameterizedType = new ParameterizedTypeReference<Resource<Artist>>() {};
         resourcesParameterizedType = new ParameterizedTypeReference<Resources<Resource<Artist>>>() {};
         pagedResourcesType = new TypeReferences.PagedResourcesType<Resource<Artist>>() {};
-    }
-     
-    @Override
-    public PagedResources<Resource<Artist>> search(String relPath) throws URISyntaxException {
-        return getPagedResources(relPath);
-    }      
+    }     
          
     @Override
     public Resources<Resource<Artist>> findByGenre(Resource<Genre> genreResource) throws URISyntaxException {

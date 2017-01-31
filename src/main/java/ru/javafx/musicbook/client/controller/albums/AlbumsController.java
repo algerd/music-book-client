@@ -5,9 +5,7 @@ import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.ResourceBundle;
 import java.util.stream.Collectors;
 import javafx.beans.property.IntegerProperty;
@@ -43,6 +41,7 @@ import ru.javafx.musicbook.client.fxintegrity.FXMLControllerLoader;
 import ru.javafx.musicbook.client.repository.AlbumRepository;
 import ru.javafx.musicbook.client.repository.ArtistRepository;
 import ru.javafx.musicbook.client.repository.GenreRepository;
+import ru.javafx.musicbook.client.repository.operators.StringOperator;
 import static ru.javafx.musicbook.client.service.ContextMenuItemType.ADD_ALBUM;
 import static ru.javafx.musicbook.client.service.ContextMenuItemType.DELETE_ALBUM;
 import static ru.javafx.musicbook.client.service.ContextMenuItemType.EDIT_ALBUM;
@@ -61,7 +60,6 @@ public class AlbumsController extends BaseAwareController implements PagedContro
     private Resource<Genre> resorceGenre;
     private String searchString = ""; 
     private SearchSelector searchSelector;
-    private int selectorGenre = 0;
     private String sort;
     private String order;
     private final IntegerProperty minRating = new SimpleIntegerProperty();
@@ -122,6 +120,7 @@ public class AlbumsController extends BaseAwareController implements PagedContro
         searchSelector = SearchSelector.ALBUM;
         initSortAndOrderChoiceBoxes();
         initGenreChoiceBox();
+        initFilters();
         initAlbumsTable();
         initRepositoryListeners();
         initRepositoryListeners();
@@ -164,7 +163,7 @@ public class AlbumsController extends BaseAwareController implements PagedContro
     }
     
     private void initPaginatorPane() {
-        initFilters();
+        //initFilters();
         paginatorPaneController = (PaginatorPaneController) fxmlLoader.load(PaginatorPaneController.class);
         albumsTableVBox.getChildren().add(paginatorPaneController.getView());
         paginatorPaneController.getPaginator().setSize(5);    
@@ -196,23 +195,13 @@ public class AlbumsController extends BaseAwareController implements PagedContro
             return name;
         }        
     }
-    
+ 
     @Override
     public void setPageValue() {         
         clearSelectionTable();
-        albumsTable.getItems().clear();
-        Map<String, Object> parameters = new HashMap<>();
-        parameters.put("minrating", getMinRating());
-        parameters.put("maxrating", getMaxRating());
-        parameters.put("minyear", getMinYear());
-        parameters.put("maxyear", getMaxYear());       
-        parameters.put("search", searchString); 
-        parameters.put("selector_genre", selectorGenre);
-        parameters.put("selector_search", searchSelector.toString());
-        parameters.put("genre", resorceGenre.getId().getHref());
-        parameters.putAll(paginatorPaneController.getPaginator().getParameterMap());  
+        albumsTable.getItems().clear();        
         try {                       
-            resources = albumRepository.searchAlbums(parameters);
+            resources = albumRepository.getPagedResources(createParamString());
             //logger.info("Resources {}", resources);
             paginatorPaneController.getPaginator().setTotalElements((int) resources.getMetadata().getTotalElements());           
             albumsTable.setItems(FXCollections.observableArrayList(resources.getContent().parallelStream().collect(Collectors.toList())));           
@@ -220,6 +209,35 @@ public class AlbumsController extends BaseAwareController implements PagedContro
         } catch (URISyntaxException ex) {
             logger.error(ex.getMessage());
         } 
+    }
+    
+    private String createParamString() {
+        List<String> params = new ArrayList<>();       
+        if (getMinRating() != Params.MIN_RATING || getMaxRating() != Params.MAX_RATING) {
+            params.add("rating=" + getMinRating());
+            params.add("rating=" + getMaxRating());
+        }      
+        if (getMinYear()!= Params.MIN_YEAR || getMaxYear()!= Params.MAX_YEAR) {
+            params.add("year=" + getMinYear());
+            params.add("year=" + getMaxYear());
+        }      
+        if (!searchString.equals("")) {
+            if (searchSelector.equals(SearchSelector.ALBUM)) {
+                params.add("name=" + StringOperator.STARTS_WITH);
+                params.add("name=" + searchString);
+            }
+            else if (searchSelector.equals(SearchSelector.ARTIST)) {
+                params.add("artist.name=" + StringOperator.STARTS_WITH);
+                params.add("artist.name=" + searchString);
+            }   
+        }
+        if (!resorceGenre.getContent().getName().equals("All genres")) {
+            params.add("genre.id=" + Helper.getId(resorceGenre));
+        }
+        params.addAll(paginatorPaneController.getPaginator().getParameterList());
+        String paramStr = params.isEmpty()? "" : String.join("&", params);
+        logger.info("paramStr :{}", paramStr);
+        return paramStr;
     }
     
     private void initGenreChoiceBox() {
@@ -273,8 +291,7 @@ public class AlbumsController extends BaseAwareController implements PagedContro
         }); 
         genreChoiceBox.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
             if (newValue != null) {
-                resorceGenre = newValue;
-                selectorGenre = resorceGenre.getContent().getName().equals("All genres") ? 0 : 1;                             
+                resorceGenre = newValue;                            
                 filter();
             }
         });

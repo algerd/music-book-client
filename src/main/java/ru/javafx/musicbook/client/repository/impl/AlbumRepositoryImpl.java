@@ -22,12 +22,7 @@ public class AlbumRepositoryImpl extends CrudRepositoryImpl<Album> implements Al
         resourcesParameterizedType = new ParameterizedTypeReference<Resources<Resource<Album>>>() {}; 
         pagedResourcesType = new TypeReferences.PagedResourcesType<Resource<Album>>() {};
     }
-    
-    @Override
-    public PagedResources<Resource<Album>> searchAlbums(Map<String, Object> parameters) throws URISyntaxException {            
-        return getPagedResources(parameters, new String[]{relPath, "search", "search_albums"});
-    }
-    
+   
     @Override
     public Resources<Resource<Album>> findByGenre(Resource<Genre> genreResource) throws URISyntaxException {
         Map<String, Object> parameters = new HashMap<>();

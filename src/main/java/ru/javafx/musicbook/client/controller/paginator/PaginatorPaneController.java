@@ -57,34 +57,34 @@ public class PaginatorPaneController extends BaseFxmlController {
             pageNumbers.add(i);
         }
         pageComboBox.getItems().clear();
-        pageComboBox.getItems().addAll(pageNumbers);
+        pageComboBox.getItems().addAll(pageNumbers); 
+        initPageComboBox = true;
         pageComboBox.getSelectionModel().selectFirst();
-        pageComboBox.setVisibleRowCount(8);
-        initPageComboBox = true;      
+        pageComboBox.setVisibleRowCount(8);          
     }
     
     public void initSizeChoiceBox() {
         List<Integer> sizeNumbers = Arrays.asList(5, 10, 15, 20, 25);
         sizeChoiceBox.getItems().clear();
         sizeChoiceBox.getItems().addAll(sizeNumbers);
-        sizeChoiceBox.getSelectionModel().selectFirst();               
+        sizeChoiceBox.getSelectionModel().selectFirst();        
     }
     
     private void initListeners() {
         pageComboBox.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
             if (newValue != null) {
                 paginator.setPage(newValue - 1);
-                //if (!initPageComboBox) {
-                    parentController.setPageValue();
-                //}
-                //initPageComboBox = false;
+                if (!(initPageComboBox && pageComboBox.getSelectionModel().selectedItemProperty().getValue() == 1)) {           
+                    parentController.setPageValue();   
+                } 
+                initPageComboBox = false;
             }
         });
         sizeChoiceBox.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
             if (newValue != null) {
                 paginator.setSize(newValue);
                 parentController.setPageValue();
-                initPageComboBox();
+                initPageComboBox();               
             }
         });
     }

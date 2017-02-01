@@ -229,7 +229,6 @@ public class ArtistsController extends BaseAwareController implements PagedContr
     }
     
     private void filter() {
-        logger.info("filter");
         paginatorPaneController.getPaginator().setSort(getSort());
         setPageValue();
         paginatorPaneController.initPageComboBox();

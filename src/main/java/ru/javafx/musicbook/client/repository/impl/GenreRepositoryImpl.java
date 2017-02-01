@@ -24,16 +24,6 @@ public class GenreRepositoryImpl extends CrudRepositoryImpl<Genre> implements Ge
         resourcesParameterizedType = new ParameterizedTypeReference<Resources<Resource<Genre>>>() {}; 
         pagedResourcesType = new TypeReferences.PagedResourcesType<Resource<Genre>>() {};
     }
-    
-    @Override
-    public PagedResources<Resource<Genre>> searchByName(Paginator paginator, String search) throws URISyntaxException {    
-        Map<String, Object> parameters = new HashMap<>();
-        parameters.put("search", search);
-        parameters.putAll(paginator.getParameterMap()); 
-        PagedResources<Resource<Genre>> resources = getPagedResources(parameters, relPath, "search", "by_name");       
-        paginator.setTotalElements((int) resources.getMetadata().getTotalElements());
-        return resources;       
-    }
    
     @Override
     public Resources<Resource<Genre>> findAllNames() throws URISyntaxException {

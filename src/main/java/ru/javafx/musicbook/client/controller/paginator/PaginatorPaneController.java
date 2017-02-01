@@ -26,6 +26,7 @@ public class PaginatorPaneController extends BaseFxmlController {
     
     private PagedController parentController;
     private Paginator paginator;
+    private boolean initPageComboBox = false;
     
     @FXML
     private AnchorPane paginatorPane;
@@ -58,7 +59,8 @@ public class PaginatorPaneController extends BaseFxmlController {
         pageComboBox.getItems().clear();
         pageComboBox.getItems().addAll(pageNumbers);
         pageComboBox.getSelectionModel().selectFirst();
-        pageComboBox.setVisibleRowCount(8);             
+        pageComboBox.setVisibleRowCount(8);
+        initPageComboBox = true;      
     }
     
     public void initSizeChoiceBox() {
@@ -72,7 +74,10 @@ public class PaginatorPaneController extends BaseFxmlController {
         pageComboBox.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
             if (newValue != null) {
                 paginator.setPage(newValue - 1);
-                parentController.setPageValue();
+                //if (!initPageComboBox) {
+                    parentController.setPageValue();
+                //}
+                //initPageComboBox = false;
             }
         });
         sizeChoiceBox.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {

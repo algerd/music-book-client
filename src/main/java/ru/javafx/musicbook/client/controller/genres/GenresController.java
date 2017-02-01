@@ -6,8 +6,6 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.ResourceBundle;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import java.util.stream.Collectors;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.FXCollections;
@@ -38,6 +36,7 @@ import ru.javafx.musicbook.client.repository.AlbumRepository;
 import ru.javafx.musicbook.client.repository.ArtistGenreRepository;
 import ru.javafx.musicbook.client.repository.ArtistRepository;
 import ru.javafx.musicbook.client.repository.GenreRepository;
+import ru.javafx.musicbook.client.repository.operators.StringOperator;
 import static ru.javafx.musicbook.client.service.ContextMenuItemType.*;
 import ru.javafx.musicbook.client.utils.Helper;
 
@@ -99,12 +98,25 @@ public class GenresController extends BaseAwareController implements PagedContro
         clearSelectionTable();
         genresTable.getItems().clear();
         try {
-            resources = genreRepository.searchByName(paginatorPaneController.getPaginator(), searchString);
+            resources = genreRepository.getPagedResources(createParamString());
+            paginatorPaneController.getPaginator().setTotalElements((int) resources.getMetadata().getTotalElements());
             genresTable.setItems(FXCollections.observableArrayList(resources.getContent().parallelStream().collect(Collectors.toList())));           
             Helper.setHeightTable(genresTable, paginatorPaneController.getPaginator().getSize(), 2);        
         } catch (URISyntaxException ex) {
             logger.error(ex.getMessage());
         }      
+    }
+    
+    private String createParamString() {
+        List<String> params = new ArrayList<>();              
+        if (!searchString.equals("")) {
+            params.add("name=" + StringOperator.STARTS_WITH_IGNORE_CASE);
+            params.add("name=" + searchString);
+        }
+        params.addAll(paginatorPaneController.getPaginator().getParameterList());
+        String paramStr = params.isEmpty()? "" : String.join("&", params);
+        logger.info("paramStr :{}", paramStr);
+        return paramStr;
     }
     
     private void initGenresTable() {

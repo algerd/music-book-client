@@ -202,7 +202,6 @@ public class AlbumsController extends BaseAwareController implements PagedContro
         albumsTable.getItems().clear();        
         try {                       
             resources = albumRepository.getPagedResources(createParamString());
-            //logger.info("Resources {}", resources);
             paginatorPaneController.getPaginator().setTotalElements((int) resources.getMetadata().getTotalElements());           
             albumsTable.setItems(FXCollections.observableArrayList(resources.getContent().parallelStream().collect(Collectors.toList())));           
             Helper.setHeightTable(albumsTable, paginatorPaneController.getPaginator().getSize());        

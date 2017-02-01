@@ -134,12 +134,12 @@ public class ArtistsController extends BaseAwareController implements PagedContr
     }
 
     @Override
-    public void setPageValue() { 
+    public void setPageValue() {      
         clearSelectionTable();
         artistsTable.getItems().clear();                      
         try {     
-            resources = artistRepository.getPagedResources(createParamString());
-            //logger.info("Resources {}", resources);                           
+            resources = artistRepository.getPagedResources(createParamString());  
+            logger.info("Artist resources: {}", resources);
             paginatorPaneController.getPaginator().setTotalElements((int) resources.getMetadata().getTotalElements());           
             artistsTable.setItems(FXCollections.observableArrayList(resources.getContent().parallelStream().collect(Collectors.toList())));           
             Helper.setHeightTable(artistsTable, paginatorPaneController.getPaginator().getSize());        
@@ -229,6 +229,7 @@ public class ArtistsController extends BaseAwareController implements PagedContr
     }
     
     private void filter() {
+        logger.info("filter");
         paginatorPaneController.getPaginator().setSort(getSort());
         setPageValue();
         paginatorPaneController.initPageComboBox();

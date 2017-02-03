@@ -51,7 +51,7 @@ import ru.javafx.musicbook.client.utils.Helper;
     value = "/fxml/albums/Albums.fxml",    
     title = "Albums")
 @Scope("prototype")
-public class AlbumsController extends BaseAwareController implements PagedController  {
+public class AlbumsController extends BaseAwareController implements PagedController {
     
     private Resource<Album> selectedItem;
     private PagedResources<Resource<Album>> resources; 
@@ -113,6 +113,18 @@ public class AlbumsController extends BaseAwareController implements PagedContro
     @FXML
     private TableColumn<Resource<Album>, Integer> ratingColumn;
     
+    private enum SearchSelector {
+        ARTIST("Artist"), ALBUM("Album");
+        private final String name;
+        private SearchSelector(String name) {
+            this.name = name;
+        } 
+        @Override
+        public String toString() {
+            return name;
+        }        
+    }
+    
     @Override
     public void initialize(URL url, ResourceBundle rb) {
         sort = "Rating";
@@ -120,12 +132,11 @@ public class AlbumsController extends BaseAwareController implements PagedContro
         searchSelector = SearchSelector.ALBUM;
         initSortAndOrderChoiceBoxes();
         initGenreChoiceBox();
+        initSearchChoiceBox();
         initFilters();
         initAlbumsTable();
         initRepositoryListeners();
-        initRepositoryListeners();
-        initFilterListeners();
-        initSearchChoiceBox();
+        initFilterListeners();       
     }
     
     private void initAlbumsTable() { 
@@ -183,21 +194,9 @@ public class AlbumsController extends BaseAwareController implements PagedContro
         Helper.initIntegerSpinner(maxYearSpinner, Params.MIN_YEAR, Params.MAX_YEAR, Params.MAX_YEAR, true, maxYear);     
         resetSearchLabel.setVisible(false);
     }
-    
-    private enum SearchSelector {
-        ARTIST("Artist"), ALBUM("Album");
-        private final String name;
-        private SearchSelector(String name) {
-            this.name = name;
-        } 
-        @Override
-        public String toString() {
-            return name;
-        }        
-    }
- 
+       
     @Override
-    public void setPageValue() {         
+    public void setPageValue() {  
         clearSelectionTable();
         albumsTable.getItems().clear();        
         try {                       

@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import ru.javafx.musicbook.client.controller.albums.AlbumsController;
 import ru.javafx.musicbook.client.controller.artists.ArtistsController;
 import ru.javafx.musicbook.client.controller.genres.GenresController;
+import ru.javafx.musicbook.client.controller.songs.SongsController;
 import ru.javafx.musicbook.client.fxintegrity.BaseFxmlController;
 import ru.javafx.musicbook.client.fxintegrity.FXMLController;
 import ru.javafx.musicbook.client.service.RequestViewService;
@@ -41,6 +42,11 @@ public class TopBarController extends BaseFxmlController {
     @FXML
     private void showAlbums() {
         requestViewService.show(AlbumsController.class);
+    }
+    
+    @FXML
+    private void showSongs() {
+        requestViewService.show(SongsController.class);
     }
     
     @FXML

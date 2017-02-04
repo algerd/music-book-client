@@ -102,7 +102,9 @@ public class ArtistsController extends BaseAwareController implements PagedContr
         order = "Asc";
         initSortAndOrderChoiceBoxes();
         initGenreChoiceBox();
-        initArtistsTable();  
+        initArtistsTable(); 
+        initFilters();
+        initPaginatorPane();
         initRepositoryListeners();
         initFilterListeners();     
     }
@@ -177,11 +179,9 @@ public class ArtistsController extends BaseAwareController implements PagedContr
         artistsTable.getSelectionModel().selectedItemProperty().addListener(
             (observable, oldValue, newValue) -> selectedItem = artistsTable.getSelectionModel().getSelectedItem()
         );
-        initPaginatorPane();
     }
     
     private void initPaginatorPane() {
-        initFilters();
         paginatorPaneController = (PaginatorPaneController) fxmlLoader.load(PaginatorPaneController.class);
         artistsTableVBox.getChildren().add(paginatorPaneController.getView());
         paginatorPaneController.getPaginator().setSize(5);    

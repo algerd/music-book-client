@@ -135,6 +135,7 @@ public class AlbumsController extends BaseAwareController implements PagedContro
         initSearchChoiceBox();
         initFilters();
         initAlbumsTable();
+        initPaginatorPane();
         initRepositoryListeners();
         initFilterListeners();       
     }
@@ -170,11 +171,9 @@ public class AlbumsController extends BaseAwareController implements PagedContro
         albumsTable.getSelectionModel().selectedItemProperty().addListener(
             (observable, oldValue, newValue) -> selectedItem = albumsTable.getSelectionModel().getSelectedItem()
         );
-        initPaginatorPane();
     }
     
     private void initPaginatorPane() {
-        //initFilters();
         paginatorPaneController = (PaginatorPaneController) fxmlLoader.load(PaginatorPaneController.class);
         albumsTableVBox.getChildren().add(paginatorPaneController.getView());
         paginatorPaneController.getPaginator().setSize(5);    
@@ -234,7 +233,7 @@ public class AlbumsController extends BaseAwareController implements PagedContro
         }
         params.addAll(paginatorPaneController.getPaginator().getParameterList());
         String paramStr = params.isEmpty()? "" : String.join("&", params);
-        logger.info("paramStr :{}", paramStr);
+        //logger.info("paramStr :{}", paramStr);
         return paramStr;
     }
     

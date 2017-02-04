@@ -12,6 +12,7 @@
             <children>
                 <Button mnemonicParsing="false" onAction="#showArtists" text="Artists" />
                 <Button mnemonicParsing="false" onAction="#showAlbums" text="Albums" />
+                <Button mnemonicParsing="false" onAction="#showSongs" text="Songs" />
                 <Button mnemonicParsing="false" onAction="#showGenres" text="Genres" />
             </children>
             <opaqueInsets>

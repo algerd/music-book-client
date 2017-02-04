@@ -11,6 +11,7 @@ import java.util.stream.Collectors;
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleObjectProperty;
+import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.Label;
@@ -29,8 +30,10 @@ import org.springframework.hateoas.PagedResources;
 import org.springframework.hateoas.Resource;
 import ru.javafx.musicbook.client.Params;
 import ru.javafx.musicbook.client.controller.BaseAwareController;
+import ru.javafx.musicbook.client.controller.albums.AlbumsController;
 import ru.javafx.musicbook.client.controller.paginator.PagedController;
 import ru.javafx.musicbook.client.controller.paginator.PaginatorPaneController;
+import ru.javafx.musicbook.client.controller.paginator.Sort;
 import ru.javafx.musicbook.client.entity.Album;
 import ru.javafx.musicbook.client.entity.Genre;
 import ru.javafx.musicbook.client.entity.Song;
@@ -40,6 +43,7 @@ import ru.javafx.musicbook.client.repository.AlbumRepository;
 import ru.javafx.musicbook.client.repository.ArtistRepository;
 import ru.javafx.musicbook.client.repository.GenreRepository;
 import ru.javafx.musicbook.client.repository.SongRepository;
+import ru.javafx.musicbook.client.repository.operators.StringOperator;
 import ru.javafx.musicbook.client.utils.Helper;
 
 @FXMLController(
@@ -126,7 +130,8 @@ public class SongsController extends BaseAwareController implements PagedControl
         initGenreChoiceBox();
         initSearchChoiceBox();
         initFilters();
-        //initSongsTable();
+        initSongsTable();
+        initPaginatorPane();
         //initRepositoryListeners();
         //initFilterListeners();      
     }
@@ -195,12 +200,64 @@ public class SongsController extends BaseAwareController implements PagedControl
                 }
             };
 			return cell;
-		});
+		});       
+    }
+    
+    private void initPaginatorPane() {
+        paginatorPaneController = (PaginatorPaneController) fxmlLoader.load(PaginatorPaneController.class);
+        songsTableVBox.getChildren().add(paginatorPaneController.getView());
+        paginatorPaneController.getPaginator().setSize(5);    
+        paginatorPaneController.getPaginator().setSort(getSort());
+        paginatorPaneController.initPaginator(this);
     }
     
     @Override
     public void setPageValue() {
-        
+        clearSelectionTable();
+        songsTable.getItems().clear();        
+        try {                       
+            resources = songRepository.getPagedResources(createParamString());
+            paginatorPaneController.getPaginator().setTotalElements((int) resources.getMetadata().getTotalElements());           
+            songsTable.setItems(FXCollections.observableArrayList(resources.getContent().parallelStream().collect(Collectors.toList())));           
+            Helper.setHeightTable(songsTable, paginatorPaneController.getPaginator().getSize());        
+        } catch (URISyntaxException ex) {
+            logger.error(ex.getMessage());
+        }
+    }
+    
+    private String createParamString() {
+        List<String> params = new ArrayList<>();       
+        if (getMinRating() != Params.MIN_RATING || getMaxRating() != Params.MAX_RATING) {
+            params.add("rating=" + getMinRating());
+            params.add("rating=" + getMaxRating());
+        }                   
+        if (!searchString.equals("")) {
+            String operator = "";
+            String value = "";
+            switch (searchSelector) {
+                case SONG:
+                    operator = "name=" + StringOperator.STARTS_WITH;
+                    value = "name=" + searchString;
+                    break;
+                case ALBUM:
+                    operator = "album.name=" + StringOperator.STARTS_WITH;
+                    value = "album.name=" + searchString;
+                    break;
+                case ARTIST:
+                    operator = "album.name=" + StringOperator.STARTS_WITH;
+                    value = "artist.name=" + searchString;
+                    break;
+            }
+            params.add(operator);
+            params.add(value);
+        }
+        if (!resorceGenre.getContent().getName().equals("All genres")) {
+            params.add("genre.id=" + Helper.getId(resorceGenre));
+        }
+        params.addAll(paginatorPaneController.getPaginator().getParameterList());
+        String paramStr = params.isEmpty()? "" : String.join("&", params);
+        logger.info("paramStr :{}", paramStr);
+        return paramStr;
     }
     
     private void initSortAndOrderChoiceBoxes() {
@@ -294,6 +351,13 @@ public class SongsController extends BaseAwareController implements PagedControl
             //contextMenuService.add(ADD_SONG, null);
             contextMenuService.show(view, mouseEvent);
         } 
+    }
+    
+    private Sort getSort() {
+        return new Sort(new Sort.Order(
+           order.equals("Asc") ? Sort.Direction.ASC : Sort.Direction.DESC,
+           sort.toLowerCase()
+        ));
     }
     
     public int getMaxRating() {

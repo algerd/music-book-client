@@ -89,6 +89,8 @@ public class GenresController extends BaseAwareController implements PagedContro
     @Override
     public void initialize(URL url, ResourceBundle rb) { 
         initGenresTable();
+        initFilters();
+        initPaginatorPane();
         initRepositoryListeners();
         initFilterListeners();
     }
@@ -217,11 +219,9 @@ public class GenresController extends BaseAwareController implements PagedContro
         genresTable.getSelectionModel().selectedItemProperty().addListener(
             (observable, oldValue, newValue) -> selectedItem = genresTable.getSelectionModel().getSelectedItem()
         );
-        initPaginatorPane();
     }
     
     private void initPaginatorPane() {
-        initFilters();
         paginatorPaneController = (PaginatorPaneController) fxmlLoader.load(PaginatorPaneController.class);
         genresTableVBox.getChildren().add(paginatorPaneController.getView());
         paginatorPaneController.getPaginator().setSize(5);

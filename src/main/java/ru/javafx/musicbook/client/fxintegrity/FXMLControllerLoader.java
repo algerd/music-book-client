@@ -45,8 +45,8 @@ public class FXMLControllerLoader {
 		try {
 			loader.load();
 		} catch (IOException ex) {
-            logger.error("Cannot load fxml controller");
-			//throw new IllegalStateException("Cannot load fxml controller", ex);
+            //logger.error(ex.getMessage());
+            ex.printStackTrace();
 		}
 		return loader;
 	}

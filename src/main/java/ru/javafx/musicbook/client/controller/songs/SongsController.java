@@ -11,6 +11,7 @@ import java.util.stream.Collectors;
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleObjectProperty;
+import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.scene.control.ChoiceBox;
@@ -30,11 +31,11 @@ import org.springframework.hateoas.PagedResources;
 import org.springframework.hateoas.Resource;
 import ru.javafx.musicbook.client.Params;
 import ru.javafx.musicbook.client.controller.BaseAwareController;
-import ru.javafx.musicbook.client.controller.albums.AlbumsController;
 import ru.javafx.musicbook.client.controller.paginator.PagedController;
 import ru.javafx.musicbook.client.controller.paginator.PaginatorPaneController;
 import ru.javafx.musicbook.client.controller.paginator.Sort;
 import ru.javafx.musicbook.client.entity.Album;
+import ru.javafx.musicbook.client.entity.Artist;
 import ru.javafx.musicbook.client.entity.Genre;
 import ru.javafx.musicbook.client.entity.Song;
 import ru.javafx.musicbook.client.fxintegrity.FXMLController;
@@ -132,8 +133,8 @@ public class SongsController extends BaseAwareController implements PagedControl
         initFilters();
         initSongsTable();
         initPaginatorPane();
-        //initRepositoryListeners();
-        //initFilterListeners();      
+        initRepositoryListeners();
+        initFilterListeners();      
     }
     
     private void initSongsTable() {
@@ -161,7 +162,12 @@ public class SongsController extends BaseAwareController implements PagedControl
             };
 			return cell;
 		});
-        
+/*
+        TODO:
+        в yearColumn и artistColumn производятся одинаковые запросы к albumRepository.
+        Надо или объединить их как-то или сделать отдельный SongProjection запрос в бд, который будет
+        возвращать список уже заполненных данных(SongProjection).
+*/        
         yearColumn.setCellValueFactory(cellData -> new SimpleObjectProperty<>(cellData.getValue()));
         yearColumn.setCellFactory(col -> {
 			TableCell<Resource<Song>, Resource<Song>> cell = new TableCell<Resource<Song>, Resource<Song>>() {
@@ -188,14 +194,15 @@ public class SongsController extends BaseAwareController implements PagedControl
                 public void updateItem(Resource<Song> item, boolean empty) {
                     super.updateItem(item, empty);
                     this.setText(null);
-                    if (!empty) {  
-                        /*
+                    if (!empty) {                    
                         try {  
-                            this.setText(albumRepository.getResource(item.getLink("album").getHref()).getContent().getName());
+                            //TODO: надо объединить в один запрос
+                            Resource<Album> album = albumRepository.getResource(item.getLink("album").getHref());
+                            Artist artist = artistRepository.getResource(album.getLink("artist").getHref()).getContent();                       
+                            this.setText(artist.getName());
                         } catch (URISyntaxException ex) {
                             logger.error(ex.getMessage());
-                        } 
-                        */
+                        }                       
                     }
                 }
             };
@@ -232,24 +239,20 @@ public class SongsController extends BaseAwareController implements PagedControl
             params.add("rating=" + getMaxRating());
         }                   
         if (!searchString.equals("")) {
-            String operator = "";
-            String value = "";
+            String name = "";
             switch (searchSelector) {
                 case SONG:
-                    operator = "name=" + StringOperator.STARTS_WITH;
-                    value = "name=" + searchString;
+                    name = "name=";
                     break;
                 case ALBUM:
-                    operator = "album.name=" + StringOperator.STARTS_WITH;
-                    value = "album.name=" + searchString;
+                    name = "album.name=";
                     break;
                 case ARTIST:
-                    operator = "album.name=" + StringOperator.STARTS_WITH;
-                    value = "artist.name=" + searchString;
+                    name = "artist.name=";
                     break;
             }
-            params.add(operator);
-            params.add(value);
+            params.add(name + StringOperator.STARTS_WITH);
+            params.add(name + searchString);
         }
         if (!resorceGenre.getContent().getName().equals("All genres")) {
             params.add("genre.id=" + Helper.getId(resorceGenre));
@@ -299,6 +302,58 @@ public class SongsController extends BaseAwareController implements PagedControl
         resetSearchLabel.setVisible(false);
     }
     
+    private void initFilterListeners() {
+        minRating.addListener((ObservableValue, oldValue, newValue)-> filter());
+        maxRating.addListener((ObservableValue, oldValue, newValue)-> filter());
+        
+        searchField.textProperty().addListener((ObservableValue, oldValue, newValue)-> {
+            resetSearchLabel.setVisible(newValue.length() > 0);
+            searchString = newValue.trim();
+            filter();   
+        }); 
+        genreChoiceBox.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
+            if (newValue != null) {
+                resorceGenre = newValue;                            
+                filter();
+            }
+        });
+        sortChoiceBox.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
+            sort = newValue;
+            filter();
+        });
+        orderChoiceBox.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
+            order = newValue;
+            filter();
+        });        
+        searchChoiceBox.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
+            searchSelector = newValue;
+            filter();
+        });      
+    }
+    
+    private void initRepositoryListeners() {    
+        artistRepository.clearChangeListeners(this);
+        albumRepository.clearChangeListeners(this);
+        songRepository.clearChangeListeners(this);
+        genreRepository.clearChangeListeners(this);
+        
+        artistRepository.addChangeListener((observable, oldVal, newVal) -> filter(), this);
+        albumRepository.addChangeListener((observable, oldVal, newVal) -> filter(), this);
+        songRepository.addChangeListener((observable, oldVal, newVal) -> filter(), this);
+        genreRepository.addChangeListener(this::changedGenre, this);
+    }
+    
+    private void changedGenre(ObservableValue observable, Object oldVal, Object newVal) {
+        initGenreChoiceBox();
+        resetFilter();
+    }
+    
+    private void filter() {
+        paginatorPaneController.getPaginator().setSort(getSort());
+        setPageValue();
+        paginatorPaneController.initPageComboBox();
+    }
+    
     private void clearSelectionTable() {
         songsTable.getSelectionModel().clearSelection();
         selectedItem = null;
@@ -312,12 +367,12 @@ public class SongsController extends BaseAwareController implements PagedControl
     
     @FXML
     private void resetFilter() {
-        //resetSearchField();
+        resetSearchField();
         sortChoiceBox.getSelectionModel().selectFirst();
         orderChoiceBox.getSelectionModel().selectFirst();
         genreChoiceBox.getSelectionModel().selectFirst();  
         searchChoiceBox.getSelectionModel().select(SongsController.SearchSelector.SONG);
-        //initFilters();
+        initFilters();
         paginatorPaneController.initPageComboBox();
     } 
     

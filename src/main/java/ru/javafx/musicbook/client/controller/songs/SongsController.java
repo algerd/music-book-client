@@ -34,8 +34,6 @@ import ru.javafx.musicbook.client.controller.BaseAwareController;
 import ru.javafx.musicbook.client.controller.paginator.PagedController;
 import ru.javafx.musicbook.client.controller.paginator.PaginatorPaneController;
 import ru.javafx.musicbook.client.controller.paginator.Sort;
-import ru.javafx.musicbook.client.entity.Album;
-import ru.javafx.musicbook.client.entity.Artist;
 import ru.javafx.musicbook.client.entity.Genre;
 import ru.javafx.musicbook.client.entity.Song;
 import ru.javafx.musicbook.client.fxintegrity.FXMLController;
@@ -162,12 +160,7 @@ public class SongsController extends BaseAwareController implements PagedControl
             };
 			return cell;
 		});
-/*
-        TODO:
-        в yearColumn и artistColumn производятся одинаковые запросы к albumRepository.
-        Надо или объединить их как-то или сделать отдельный SongProjection запрос в бд, который будет
-        возвращать список уже заполненных данных(SongProjection).
-*/        
+       
         yearColumn.setCellValueFactory(cellData -> new SimpleObjectProperty<>(cellData.getValue()));
         yearColumn.setCellFactory(col -> {
 			TableCell<Resource<Song>, Resource<Song>> cell = new TableCell<Resource<Song>, Resource<Song>>() {
@@ -196,10 +189,9 @@ public class SongsController extends BaseAwareController implements PagedControl
                     this.setText(null);
                     if (!empty) {                    
                         try {  
-                            //TODO: надо объединить в один запрос
-                            Resource<Album> album = albumRepository.getResource(item.getLink("album").getHref());
-                            Artist artist = artistRepository.getResource(album.getLink("artist").getHref()).getContent();                       
-                            this.setText(artist.getName());
+                            //Resource<Album> album = albumRepository.getResource(item.getLink("album").getHref());
+                            //Artist artist = artistRepository.getResource(album.getLink("artist").getHref()).getContent(); 
+                            this.setText(artistRepository.getPagedResources("song.id=" + Helper.getId(item)).getContent().iterator().next().getContent().getName());
                         } catch (URISyntaxException ex) {
                             logger.error(ex.getMessage());
                         }                       

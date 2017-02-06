@@ -16,9 +16,18 @@ public class Song implements Entity {
     private final StringProperty time = new SimpleStringProperty("");
     private final IntegerProperty rating = new SimpleIntegerProperty(0);   
     private final StringProperty description = new SimpleStringProperty("");
+    private String album = Album.DEFAULT_ALBUM;
     
     public Song() {}
-    
+
+    public String getAlbum() {
+        return album;
+    }
+
+    public void setAlbum(String album) {
+        this.album = album;
+    }
+      
     public String getName() {
         return name.get();
     }

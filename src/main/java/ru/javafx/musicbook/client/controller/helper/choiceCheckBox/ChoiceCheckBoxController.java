@@ -198,8 +198,7 @@ public class ChoiceCheckBoxController<T> implements Initializable {
 
     public void setMainPane(Pane mainPane) {
         this.mainPane = mainPane;       
-        this.mainPane.addEventFilter(MouseEvent.MOUSE_PRESSED, mouseEvent -> {
-            //System.out.println(mouseEvent.getTarget().getClass().getSimpleName());         
+        this.mainPane.addEventFilter(MouseEvent.MOUSE_PRESSED, mouseEvent -> {       
             if (choiceBox.isShowing()
                 && !(mouseEvent.getTarget() instanceof Label) 
                 && !(mouseEvent.getTarget() instanceof CheckBox)

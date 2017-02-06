@@ -20,15 +20,15 @@ public class Album implements Entity {
     private final IntegerProperty rating = new SimpleIntegerProperty(0);
     private final StringProperty description = new SimpleStringProperty("");     
 
+    public Album() {}
+    
     public String getArtist() {
         return artist;
     }
     public void setArtist(String artist) {
         this.artist = artist;
     }  
-    
-    public Album() {}
-    
+      
     public String getName() {
         return name.get();
     }

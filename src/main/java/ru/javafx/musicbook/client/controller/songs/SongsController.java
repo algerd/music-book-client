@@ -43,6 +43,9 @@ import ru.javafx.musicbook.client.repository.ArtistRepository;
 import ru.javafx.musicbook.client.repository.GenreRepository;
 import ru.javafx.musicbook.client.repository.SongRepository;
 import ru.javafx.musicbook.client.repository.operators.StringOperator;
+import static ru.javafx.musicbook.client.service.ContextMenuItemType.ADD_SONG;
+import static ru.javafx.musicbook.client.service.ContextMenuItemType.DELETE_SONG;
+import static ru.javafx.musicbook.client.service.ContextMenuItemType.EDIT_SONG;
 import ru.javafx.musicbook.client.utils.Helper;
 
 @FXMLController(
@@ -199,7 +202,11 @@ public class SongsController extends BaseAwareController implements PagedControl
                 }
             };
 			return cell;
-		});       
+		});  
+        
+        songsTable.getSelectionModel().selectedItemProperty().addListener(
+            (observable, oldValue, newValue) -> selectedItem = songsTable.getSelectionModel().getSelectedItem()
+        );
     }
     
     private void initPaginatorPane() {
@@ -383,9 +390,9 @@ public class SongsController extends BaseAwareController implements PagedControl
             }           
         }
         else if (mouseEvent.getButton() == MouseButton.SECONDARY) { 
-            //contextMenuService.add(ADD_SONG, null);
-            //contextMenuService.add(EDIT_SONG, selectedItem);
-            //contextMenuService.add(DELETE_SONG, selectedItem);                                  
+            contextMenuService.add(ADD_SONG, null);
+            contextMenuService.add(EDIT_SONG, selectedItem);
+            contextMenuService.add(DELETE_SONG, selectedItem);  
             contextMenuService.show(view, mouseEvent);  
         }
     }
@@ -395,7 +402,7 @@ public class SongsController extends BaseAwareController implements PagedControl
         clearSelectionTable();
         contextMenuService.clear();
 		if (mouseEvent.getButton() == MouseButton.SECONDARY) {
-            //contextMenuService.add(ADD_SONG, null);
+            contextMenuService.add(ADD_SONG, null);
             contextMenuService.show(view, mouseEvent);
         } 
     }

@@ -11,6 +11,7 @@ import org.springframework.hateoas.Resources;
 import org.springframework.hateoas.mvc.TypeReferences;
 import org.springframework.stereotype.Repository;
 import ru.javafx.musicbook.client.entity.Album;
+import ru.javafx.musicbook.client.entity.Artist;
 import ru.javafx.musicbook.client.entity.Genre;
 import ru.javafx.musicbook.client.repository.AlbumRepository;
 
@@ -24,10 +25,17 @@ public class AlbumRepositoryImpl extends CrudRepositoryImpl<Album> implements Al
     }
    
     @Override
-    public Resources<Resource<Album>> findByGenre(Resource<Genre> genreResource) throws URISyntaxException {
+    public Resources<Resource<Album>> findByGenre(Resource<Genre> resource) throws URISyntaxException {
         Map<String, Object> parameters = new HashMap<>();
-        parameters.put("genre", genreResource.getId().getHref());
+        parameters.put("genre", resource.getId().getHref());
         return getParameterizedResources(parameters, new String[]{relPath, "search", "by_genre"});       
+    }
+    
+    @Override
+    public Resources<Resource<Album>> findByArtist(Resource<Artist> resource) throws URISyntaxException {
+        Map<String, Object> parameters = new HashMap<>();
+        parameters.put("artist", resource.getId().getHref());
+        return getParameterizedResources(parameters, new String[]{relPath, "search", "by_artist"});
     }
     
 }

@@ -28,7 +28,7 @@
                         <ColumnConstraints hgrow="SOMETIMES" minWidth="200.0" prefWidth="300.0" />
                     </columnConstraints>
                     <rowConstraints>
-                  <RowConstraints minHeight="-Infinity" prefHeight="30.0" vgrow="SOMETIMES" />
+                        <RowConstraints minHeight="-Infinity" prefHeight="30.0" vgrow="SOMETIMES" />
                         <RowConstraints minHeight="-Infinity" prefHeight="30.0" vgrow="SOMETIMES" />
                         <RowConstraints minHeight="-Infinity" prefHeight="30.0" vgrow="SOMETIMES" />
                         <RowConstraints minHeight="-Infinity" prefHeight="30.0" vgrow="SOMETIMES" />

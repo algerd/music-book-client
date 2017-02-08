@@ -27,6 +27,7 @@ import ru.javafx.musicbook.client.entity.Entity;
 import ru.javafx.musicbook.client.repository.AlbumRepository;
 import ru.javafx.musicbook.client.repository.ArtistRepository;
 import ru.javafx.musicbook.client.repository.GenreRepository;
+import ru.javafx.musicbook.client.repository.MusicianRepository;
 import ru.javafx.musicbook.client.repository.SongRepository;
 
 @Service
@@ -45,7 +46,7 @@ public class ContextMenuServiceImpl implements ContextMenuService {
     @Autowired
     private SongRepository songRepository; 
      @Autowired
-    private SongRepository musicianRepository; 
+    private MusicianRepository musicianRepository; 
       
     private final ContextMenu contextMenu = new ContextMenu();
     private final Map<ContextMenuItemType, EventHandler<ActionEvent>> menuMap = new HashMap<>();

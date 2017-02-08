@@ -178,9 +178,7 @@ public class MusiciansController extends BaseAwareController implements PagedCon
         genreRepository.clearChangeListeners(this);     
         
         //add listeners
-        //musicianRepository.addChangeListener((observable, oldVal, newVal) -> filter(), this);
-        musicianRepository.addDeleteListener(this::test, this);
-        
+        musicianRepository.addChangeListener((observable, oldVal, newVal) -> filter(), this);       
         genreRepository.addChangeListener(this::changedGenre, this);                                 
     }
      
@@ -188,12 +186,7 @@ public class MusiciansController extends BaseAwareController implements PagedCon
         initGenreChoiceBox();
         resetFilter();
     } 
-    
-    private void test(ObservableValue observable, Object oldVal, Object newVal) {
-        logger.info("changed");
-    }
-    
-     
+  
     private void initFilterListeners() {
         minRating.addListener((ObservableValue, oldValue, newValue)-> filter());
         maxRating.addListener((ObservableValue, oldValue, newValue)-> filter());
@@ -253,7 +246,6 @@ public class MusiciansController extends BaseAwareController implements PagedCon
     }
      
     private void filter() {
-        logger.info("musician filter");
         paginatorPaneController.getPaginator().setSort(getSort());
         setPageValue();
         paginatorPaneController.initPageComboBox();

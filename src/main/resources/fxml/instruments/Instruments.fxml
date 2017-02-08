@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.*?>
+<?import java.util.*?>
+<?import javafx.scene.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<AnchorPane id="AnchorPane" fx:id="view" onMouseClicked="#showContextMenu" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8.0.60" xmlns:fx="http://javafx.com/fxml/1" 
+            fx:controller="ru.javafx.musicbook.client.controller.instruments.InstrumentsController">   
+    <children>
+        <VBox fx:id="insrumentsTableVBox" spacing="20.0" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="10.0">
+            <children>
+                <Label text="Instruments" />
+                <GridPane>
+                    <columnConstraints>
+                        <ColumnConstraints hgrow="SOMETIMES" maxWidth="-Infinity" minWidth="-Infinity" prefWidth="110.0" />
+                        <ColumnConstraints hgrow="SOMETIMES" maxWidth="250.0" minWidth="-Infinity" prefWidth="250.0" />
+                    </columnConstraints>
+                    <rowConstraints>
+                        <RowConstraints maxHeight="-Infinity" minHeight="-Infinity" prefHeight="25.0" vgrow="SOMETIMES" />
+                    </rowConstraints>
+                        <children>
+                            <Label text="Search Instrument" />
+                            <AnchorPane GridPane.columnIndex="1">
+                                <children>
+                                    <TextField fx:id="searchField" layoutX="31.0" layoutY="4.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
+                                    <Label fx:id="resetSearchLabel" layoutX="222.0" layoutY="8.0" onMouseClicked="#resetSearchField" text="X" textFill="#f50707" AnchorPane.rightAnchor="4.0" AnchorPane.topAnchor="4.0">
+                                        <cursor>
+                                           <Cursor fx:constant="HAND" />
+                                        </cursor>
+                                    </Label>
+                                </children>
+                            </AnchorPane>
+                        </children>
+                </GridPane>
+                <TableView fx:id="instrumentsTable" onMouseClicked="#onMouseClickTable">
+                    <columns>
+                        <TableColumn fx:id="instrumentColumn" minWidth="-Infinity" prefWidth="250.0" text="Instrument" />
+                        <TableColumn fx:id="numberOfMusiciansColumn" maxWidth="2000.0" minWidth="-Infinity" prefWidth="100.0" text="Number of Musicians" />
+                        <TableColumn fx:id="averageRatingColumn" maxWidth="2000.0" minWidth="-Infinity" prefWidth="100.0" text="Average Rating" />
+                    </columns>
+                    <columnResizePolicy>
+                        <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
+                    </columnResizePolicy>
+                </TableView>
+            </children>
+        </VBox>
+    </children>
+</AnchorPane>

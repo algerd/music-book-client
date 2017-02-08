@@ -88,7 +88,9 @@ public abstract class CrudRepositoryImpl<T extends Entity> extends ChangeReposit
         if (result.get() == ButtonType.OK) {
             try {
                 delete((Resource<T>)resource);
+                logger.info("deleted: {}", deleted);
                 super.setDeleted(new WrapChangedEntity<>((Resource<T>)resource, null));
+                logger.info("deleted: {}", deleted);
             } catch (URISyntaxException ex) {
                 logger.error(ex.getMessage());
             }           

@@ -31,18 +31,16 @@ import ru.javafx.musicbook.client.controller.BaseAwareController;
 import ru.javafx.musicbook.client.controller.paginator.PagedController;
 import ru.javafx.musicbook.client.controller.paginator.PaginatorPaneController;
 import ru.javafx.musicbook.client.controller.paginator.Sort;
-import ru.javafx.musicbook.client.controller.songs.SongsController;
 import ru.javafx.musicbook.client.entity.Genre;
 import ru.javafx.musicbook.client.entity.Musician;
 import ru.javafx.musicbook.client.fxintegrity.FXMLController;
 import ru.javafx.musicbook.client.fxintegrity.FXMLControllerLoader;
-import ru.javafx.musicbook.client.repository.ArtistRepository;
 import ru.javafx.musicbook.client.repository.GenreRepository;
 import ru.javafx.musicbook.client.repository.MusicianRepository;
 import ru.javafx.musicbook.client.repository.operators.StringOperator;
-import static ru.javafx.musicbook.client.service.ContextMenuItemType.ADD_SONG;
-import static ru.javafx.musicbook.client.service.ContextMenuItemType.DELETE_SONG;
-import static ru.javafx.musicbook.client.service.ContextMenuItemType.EDIT_SONG;
+import static ru.javafx.musicbook.client.service.ContextMenuItemType.ADD_MUSICIAN;
+import static ru.javafx.musicbook.client.service.ContextMenuItemType.DELETE_MUSICIAN;
+import static ru.javafx.musicbook.client.service.ContextMenuItemType.EDIT_MUSICIAN;
 import ru.javafx.musicbook.client.utils.Helper;
 
 @FXMLController(
@@ -180,7 +178,9 @@ public class MusiciansController extends BaseAwareController implements PagedCon
         genreRepository.clearChangeListeners(this);     
         
         //add listeners
-        musicianRepository.addChangeListener((observable, oldVal, newVal) -> filter(), this);                         
+        //musicianRepository.addChangeListener((observable, oldVal, newVal) -> filter(), this);
+        musicianRepository.addDeleteListener(this::test, this);
+        
         genreRepository.addChangeListener(this::changedGenre, this);                                 
     }
      
@@ -188,6 +188,11 @@ public class MusiciansController extends BaseAwareController implements PagedCon
         initGenreChoiceBox();
         resetFilter();
     } 
+    
+    private void test(ObservableValue observable, Object oldVal, Object newVal) {
+        logger.info("changed");
+    }
+    
      
     private void initFilterListeners() {
         minRating.addListener((ObservableValue, oldValue, newValue)-> filter());
@@ -248,6 +253,7 @@ public class MusiciansController extends BaseAwareController implements PagedCon
     }
      
     private void filter() {
+        logger.info("musician filter");
         paginatorPaneController.getPaginator().setSort(getSort());
         setPageValue();
         paginatorPaneController.initPageComboBox();
@@ -296,11 +302,11 @@ public class MusiciansController extends BaseAwareController implements PagedCon
             }           
         }
         else if (mouseEvent.getButton() == MouseButton.SECONDARY) { 
-            //contextMenuService.add(ADD_MUSICIAN, null);
+            contextMenuService.add(ADD_MUSICIAN, null);
             // запретить удаление и редактирование записи с id = 1 (Unknown album)
             if (selectedItem != null && !selectedItem.getId().getHref().equals(Musician.DEFAULT_MUSICIAN)) {
-                //contextMenuService.add(EDIT_MUSICIAN, selectedItem);
-                //contextMenuService.add(DELETE_MUSICIAN, selectedItem);  
+                contextMenuService.add(EDIT_MUSICIAN, selectedItem);
+                contextMenuService.add(DELETE_MUSICIAN, selectedItem);  
             }
             contextMenuService.show(view, mouseEvent);  
         }
@@ -311,7 +317,7 @@ public class MusiciansController extends BaseAwareController implements PagedCon
         clearSelectionTable();
         contextMenuService.clear();
 		if (mouseEvent.getButton() == MouseButton.SECONDARY) {
-            //contextMenuService.add(ADD_MUSICIAN, null);
+            contextMenuService.add(ADD_MUSICIAN, null);
             contextMenuService.show(view, mouseEvent);
         } 
     }

@@ -111,21 +111,7 @@ public class Helper {
             }         
         });
     }
-    
-    /*
-    public static void initEntityChoiceBox(ChoiceBox choiceBox) {
-        choiceBox.setConverter(new StringConverter<Entity>() {
-            @Override
-            public String toString(Entity object) {
-                return object == null? null : object.getName();
-            }
-            @Override
-            public Entity fromString(String string) {
-                return null;
-            }
-        });
-    }
-    
+        
     public static void initDatePicker(DatePicker datePicker, boolean editable) {
         datePicker.setEditable(editable);
         
@@ -151,7 +137,7 @@ public class Helper {
         // Set a day cell factory to disable all future day cells and show weekends in blue
 		datePicker.setDayCellFactory(dayCellFactory);     
     }
-    */
+
     public static void setHeightTable(TableView tableView, int maxCountVisibleRows) {
         setHeightTable(tableView, maxCountVisibleRows, 1);
     }

@@ -20,12 +20,12 @@ public enum ContextMenuItemType {
         
         ADD_SONG(new MenuItem("Add Song")),
         EDIT_SONG(new MenuItem("Edit Song")),
-        DELETE_SONG(new MenuItem("Delete Song"));       
-        /*
+        DELETE_SONG(new MenuItem("Delete Song")),       
+        
         ADD_MUSICIAN(new MenuItem("Add Musician")),
         EDIT_MUSICIAN(new MenuItem("Edit Musician")),
-        DELETE_MUSICIAN(new MenuItem("Delete Musician")),
-        
+        DELETE_MUSICIAN(new MenuItem("Delete Musician"));
+        /*
         ADD_MUSICIAN_ALBUM(new MenuItem("Add Musician To Album")),
         EDIT_MUSICIAN_ALBUM(new MenuItem("Edit Musician In Album")),
         DELETE_MUSICIAN_ALBUM(new MenuItem("Delete Musician From Album")),

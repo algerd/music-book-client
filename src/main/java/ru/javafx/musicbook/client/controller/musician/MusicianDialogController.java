@@ -26,11 +26,15 @@ import ru.javafx.musicbook.client.controller.BaseDialogController;
 import ru.javafx.musicbook.client.controller.helper.choiceCheckBox.ChoiceCheckBoxController;
 import ru.javafx.musicbook.client.controller.helper.inputImageBox.DialogImageBoxController;
 import ru.javafx.musicbook.client.entity.Genre;
+import ru.javafx.musicbook.client.entity.Instrument;
 import ru.javafx.musicbook.client.entity.Musician;
 import ru.javafx.musicbook.client.entity.MusicianGenre;
+import ru.javafx.musicbook.client.entity.MusicianInstrument;
 import ru.javafx.musicbook.client.fxintegrity.FXMLController;
 import ru.javafx.musicbook.client.repository.GenreRepository;
+import ru.javafx.musicbook.client.repository.InstrumentRepository;
 import ru.javafx.musicbook.client.repository.MusicianGenreRepository;
+import ru.javafx.musicbook.client.repository.MusicianInstrumentRepository;
 import ru.javafx.musicbook.client.repository.MusicianRepository;
 import ru.javafx.musicbook.client.repository.impl.WrapChangedEntity;
 import ru.javafx.musicbook.client.utils.Helper;
@@ -43,19 +47,26 @@ public class MusicianDialogController extends BaseDialogController<Musician> {
     
     private Musician musician; 
     private final List<Genre> genres = new ArrayList<>();
+    private final List<Instrument> instruments = new ArrayList<>();
     private final IntegerProperty rating = new SimpleIntegerProperty();
 
     @Autowired
     private GenreRepository genreRepository;
     @Autowired
+    private InstrumentRepository instrumentRepository;
+    @Autowired
     private MusicianRepository musicianRepository;
     @Autowired
     private MusicianGenreRepository musicianGenreRepository;
+    @Autowired
+    private MusicianInstrumentRepository musicianInstrumentRepository;
     
     @FXML
     private DialogImageBoxController includedDialogImageBoxController;
     @FXML
-    private ChoiceCheckBoxController<Genre> includedChoiceCheckBoxController;   
+    private ChoiceCheckBoxController<Genre> includedChoiceCheckBoxController; 
+    @FXML
+    private ChoiceCheckBoxController<Instrument> includedInstrumentChoiceCheckBoxController;
     @FXML
     private AnchorPane view;
     @FXML
@@ -83,6 +94,8 @@ public class MusicianDialogController extends BaseDialogController<Musician> {
         includedDialogImageBoxController.setStage(dialogStage);
         includedChoiceCheckBoxController.setMainPane(view);
         includedChoiceCheckBoxController.getChoiceCheckBox().setPrefWidth(250.0);
+        includedInstrumentChoiceCheckBoxController.setMainPane(view);
+        includedInstrumentChoiceCheckBoxController.getChoiceCheckBox().setPrefWidth(250.0);
     }
     
     private void initGenreChoiceCheckBox() {
@@ -97,6 +110,23 @@ public class MusicianDialogController extends BaseDialogController<Musician> {
                 genre -> map.put(genre, new SimpleBooleanProperty(genres.contains(genre.getContent())))             
             );
             includedChoiceCheckBoxController.addItems(map);
+        } catch (URISyntaxException ex) {
+            logger.error(ex.getMessage());
+        }       
+    }
+    
+    private void initInstrumentChoiceCheckBox() {
+        Map<Resource<Instrument>, ObservableValue<Boolean>> map = new HashMap<>();
+        try {         
+            if (edit) {
+                instrumentRepository.findByMusician(resource).getContent().parallelStream().forEach(
+                    instrumentResource -> instruments.add(instrumentResource.getContent())
+                );
+            }            
+            instrumentRepository.findAllNames().getContent().parallelStream().forEach(
+                instrument -> map.put(instrument, new SimpleBooleanProperty(instruments.contains(instrument.getContent())))             
+            );
+            includedInstrumentChoiceCheckBoxController.addItems(map);
         } catch (URISyntaxException ex) {
             logger.error(ex.getMessage());
         }       
@@ -134,7 +164,8 @@ public class MusicianDialogController extends BaseDialogController<Musician> {
     @Override
     protected void add() {
         musician = new Musician();
-        initGenreChoiceCheckBox();      
+        initGenreChoiceCheckBox();
+        initInstrumentChoiceCheckBox();
     }
     
     @Override
@@ -150,6 +181,7 @@ public class MusicianDialogController extends BaseDialogController<Musician> {
         ratingSpinner.getValueFactory().setValue(musician.getRating());
         commentTextArea.setText(musician.getDescription());
         initGenreChoiceCheckBox();
+        initInstrumentChoiceCheckBox();
         if (resource.hasLink("get_image")) {
             includedDialogImageBoxController.setImage(resource.getLink("get_image").getHref()); 
         }
@@ -168,14 +200,15 @@ public class MusicianDialogController extends BaseDialogController<Musician> {
             try { 
                 resource = edit ? musicianRepository.update(resource) : musicianRepository.saveAndGetResource(musician);
                 logger.info("Saved Musician Resource: {}", resource);
+                
                 // Извлечь жанры из списка и сохранить их в связке
                 includedChoiceCheckBoxController.getItemMap().keySet().parallelStream().forEach(resourceGenre -> {
                     ObservableValue<Boolean> flag = includedChoiceCheckBoxController.getItemMap().get(resourceGenre); 
                     try {
                         //удалить невыбранные жанры, если они есть у артиста
                         if (!flag.getValue() && genres.contains(resourceGenre.getContent())) {
-                            Resource<MusicianGenre> artistGenreResource = musicianGenreRepository.findByMusicianAndGenre(resource, resourceGenre);                                                     
-                            musicianGenreRepository.delete(artistGenreResource);
+                            Resource<MusicianGenre> musicianGenre = musicianGenreRepository.findByMusicianAndGenre(resource, resourceGenre);                                                     
+                            musicianGenreRepository.delete(musicianGenre);
                         }
                         //добавить выбранные жанры, если их ещё нет
                         if (flag.getValue() && !genres.contains(resourceGenre.getContent())) { 
@@ -187,7 +220,29 @@ public class MusicianDialogController extends BaseDialogController<Musician> {
                     } catch (URISyntaxException ex) {
                         logger.error(ex.getMessage());
                     }   
-                });            
+                });  
+                
+                // Извлечь инструменты из списка и сохранить их в связке
+                includedInstrumentChoiceCheckBoxController.getItemMap().keySet().parallelStream().forEach(resourceInstrument -> {
+                    ObservableValue<Boolean> flag = includedInstrumentChoiceCheckBoxController.getItemMap().get(resourceInstrument); 
+                    try {
+                        //удалить невыбранные инструменты, если они есть у артиста
+                        if (!flag.getValue() && instruments.contains(resourceInstrument.getContent())) {
+                            Resource<MusicianInstrument> musicianInstrumentResource = musicianInstrumentRepository.findByMusicianAndInstrument(resource, resourceInstrument);                                                     
+                            musicianInstrumentRepository.delete(musicianInstrumentResource);
+                        }
+                        //добавить выбранные инструменты, если их ещё нет
+                        if (flag.getValue() && !instruments.contains(resourceInstrument.getContent())) { 
+                            MusicianInstrument musicianInstrument = new MusicianInstrument();
+                            musicianInstrument.setMusician(resource.getId().getHref());
+                            musicianInstrument.setInstrument(resourceInstrument.getId().getHref());
+                            musicianInstrumentRepository.save(musicianInstrument);
+                        }
+                    } catch (URISyntaxException ex) {
+                        logger.error(ex.getMessage());
+                    }   
+                });  
+                
                 if (includedDialogImageBoxController.isChangedImage()) {
                     musicianRepository.saveImage(resource, includedDialogImageBoxController.getImage());
                     includedDialogImageBoxController.setChangedImage(false);                              

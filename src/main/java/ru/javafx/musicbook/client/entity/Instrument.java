@@ -63,7 +63,7 @@ public class Instrument implements Entity {
             return false;
         }
         final Instrument other = (Instrument) obj;
-        if (!Objects.equals(this.name, other.name)) {
+        if (!Objects.equals(getName(), other.getName())) {
             return false;
         }
         return true;

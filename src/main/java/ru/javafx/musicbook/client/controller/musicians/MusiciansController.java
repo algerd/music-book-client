@@ -32,10 +32,12 @@ import ru.javafx.musicbook.client.controller.paginator.PagedController;
 import ru.javafx.musicbook.client.controller.paginator.PaginatorPaneController;
 import ru.javafx.musicbook.client.controller.paginator.Sort;
 import ru.javafx.musicbook.client.entity.Genre;
+import ru.javafx.musicbook.client.entity.Instrument;
 import ru.javafx.musicbook.client.entity.Musician;
 import ru.javafx.musicbook.client.fxintegrity.FXMLController;
 import ru.javafx.musicbook.client.fxintegrity.FXMLControllerLoader;
 import ru.javafx.musicbook.client.repository.GenreRepository;
+import ru.javafx.musicbook.client.repository.InstrumentRepository;
 import ru.javafx.musicbook.client.repository.MusicianRepository;
 import ru.javafx.musicbook.client.repository.operators.StringOperator;
 import static ru.javafx.musicbook.client.service.ContextMenuItemType.ADD_MUSICIAN;
@@ -54,6 +56,7 @@ public class MusiciansController extends BaseAwareController implements PagedCon
     private PaginatorPaneController paginatorPaneController;
     // filter 
     private Resource<Genre> resorceGenre;
+    private Resource<Instrument> resorceInstrument;
     private String searchString = ""; 
     private String sort;
     private String order;
@@ -66,6 +69,8 @@ public class MusiciansController extends BaseAwareController implements PagedCon
     private MusicianRepository musicianRepository;
     @Autowired
     private GenreRepository genreRepository;
+    @Autowired
+    private InstrumentRepository instrumentRepository;
     
     // filters:
     @FXML
@@ -74,8 +79,8 @@ public class MusiciansController extends BaseAwareController implements PagedCon
     private Spinner<Integer> maxRatingSpinner;
     @FXML
     private ChoiceBox<Resource<Genre>> genreChoiceBox;
-    //@FXML
-    //private ChoiceBox<Resource<Instrument>> instrumentChoiceBox;        
+    @FXML
+    private ChoiceBox<Resource<Instrument>> instrumentChoiceBox;        
     @FXML
     private TextField searchField;
     @FXML
@@ -108,6 +113,7 @@ public class MusiciansController extends BaseAwareController implements PagedCon
         order = "Asc";
         initSortAndOrderChoiceBoxes();
         initGenreChoiceBox();
+        initInstrumentChoiceBox();
         initFilters();
         initMusiciansTable();
         initPaginatorPane();
@@ -130,12 +136,31 @@ public class MusiciansController extends BaseAwareController implements PagedCon
         emptyGenre.setName("All genres");
         resorceGenre = new Resource<>(emptyGenre, new Link(Genre.DEFAULT_GENRE));
         
-        List <Resource<Genre>> genreResources = new ArrayList<>();
+        List<Resource<Genre>> genreResources = new ArrayList<>();
         genreResources.add(resorceGenre);
         try {
             genreResources.addAll(genreRepository.findAllNames().getContent().parallelStream().collect(Collectors.toList()));         
             genreChoiceBox.getItems().addAll(genreResources);
             genreChoiceBox.getSelectionModel().selectFirst();
+        } catch (URISyntaxException ex) {
+            logger.error(ex.getMessage());
+        }
+    }
+    
+    private void initInstrumentChoiceBox() {
+        instrumentChoiceBox.getItems().clear();
+        Helper.initResourceChoiceBox(instrumentChoiceBox); 
+           
+        Instrument emptyInstrument = new Instrument();
+        emptyInstrument.setName("All instruments");
+        resorceInstrument = new Resource<>(emptyInstrument, new Link(Instrument.DEFAULT_INSTRUMENT));
+        
+        List<Resource<Instrument>> instrumentResources = new ArrayList<>();
+        instrumentResources.add(resorceInstrument);
+        try {
+            instrumentResources.addAll(instrumentRepository.findAllNames().getContent().parallelStream().collect(Collectors.toList()));         
+            instrumentChoiceBox.getItems().addAll(instrumentResources);
+            instrumentChoiceBox.getSelectionModel().selectFirst();
         } catch (URISyntaxException ex) {
             logger.error(ex.getMessage());
         }
@@ -175,15 +200,22 @@ public class MusiciansController extends BaseAwareController implements PagedCon
     private void initRepositoryListeners() {
         //clear listeners
         musicianRepository.clearChangeListeners(this);                                                
-        genreRepository.clearChangeListeners(this);     
+        genreRepository.clearChangeListeners(this); 
+        instrumentRepository.clearChangeListeners(this);
         
         //add listeners
         musicianRepository.addChangeListener((observable, oldVal, newVal) -> filter(), this);       
-        genreRepository.addChangeListener(this::changedGenre, this);                                 
+        genreRepository.addChangeListener(this::changedGenre, this);
+        instrumentRepository.addChangeListener(this::changedInstrument, this);
     }
      
     private void changedGenre(ObservableValue observable, Object oldVal, Object newVal) {
         initGenreChoiceBox();
+        resetFilter();
+    } 
+    
+    private void changedInstrument(ObservableValue observable, Object oldVal, Object newVal) {
+        initInstrumentChoiceBox();
         resetFilter();
     } 
   
@@ -199,6 +231,12 @@ public class MusiciansController extends BaseAwareController implements PagedCon
         genreChoiceBox.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
             if (newValue != null) {
                 resorceGenre = newValue;                            
+                filter();
+            }
+        });
+        instrumentChoiceBox.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
+            if (newValue != null) {
+                resorceInstrument = newValue;                            
                 filter();
             }
         });
@@ -239,6 +277,9 @@ public class MusiciansController extends BaseAwareController implements PagedCon
         if (!resorceGenre.getContent().getName().equals("All genres")) {
             params.add("genre.id=" + Helper.getId(resorceGenre));
         }
+        if (!resorceInstrument.getContent().getName().equals("All instruments")) {
+            params.add("instrument.id=" + Helper.getId(resorceInstrument));
+        }
         params.addAll(paginatorPaneController.getPaginator().getParameterList());
         String paramStr = params.isEmpty()? "" : String.join("&", params);
         logger.info("paramStr :{}", paramStr);
@@ -257,6 +298,7 @@ public class MusiciansController extends BaseAwareController implements PagedCon
         sortChoiceBox.getSelectionModel().selectFirst();
         orderChoiceBox.getSelectionModel().selectFirst();
         genreChoiceBox.getSelectionModel().selectFirst();  
+        instrumentChoiceBox.getSelectionModel().selectFirst();  
         initFilters();
         paginatorPaneController.initPageComboBox();
     } 

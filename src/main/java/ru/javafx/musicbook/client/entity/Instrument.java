@@ -62,9 +62,12 @@ public class Instrument implements Entity {
         if (getClass() != obj.getClass()) {
             return false;
         }
-        final Genre other = (Genre) obj;
-        return Objects.equals(getName(), other.getName());
-    }
+        final Instrument other = (Instrument) obj;
+        if (!Objects.equals(this.name, other.name)) {
+            return false;
+        }
+        return true;
+    }  
 
     @Override
     public String toString() {

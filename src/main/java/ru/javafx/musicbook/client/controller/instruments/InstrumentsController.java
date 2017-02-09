@@ -49,7 +49,7 @@ public class InstrumentsController extends BaseAwareController implements PagedC
     @Autowired
     private InstrumentRepository instrumentRepository;  
     
-     @FXML
+    @FXML
     private VBox instrumentsTableVBox;
     @FXML
     private TextField searchField;
@@ -84,7 +84,8 @@ public class InstrumentsController extends BaseAwareController implements PagedC
             resources = instrumentRepository.getPagedResources(createParamString());
             paginatorPaneController.getPaginator().setTotalElements((int) resources.getMetadata().getTotalElements());
             instrumentsTable.setItems(FXCollections.observableArrayList(resources.getContent().parallelStream().collect(Collectors.toList())));           
-            Helper.setHeightTable(instrumentsTable, paginatorPaneController.getPaginator().getSize(), 2);        
+            logger.info("{}", paginatorPaneController.getPaginator().getSize());
+            Helper.setHeightTable(instrumentsTable, paginatorPaneController.getPaginator().getSize());        
         } catch (URISyntaxException ex) {
             logger.error(ex.getMessage());
         }      
@@ -191,7 +192,7 @@ public class InstrumentsController extends BaseAwareController implements PagedC
     }
     
     @FXML
-    private void resetSearchLabel() {
+    private void resetSearchField() {
         searchField.textProperty().setValue("");
         resetSearchLabel.setVisible(false);
     }

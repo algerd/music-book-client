@@ -15,6 +15,7 @@
                 <Button mnemonicParsing="false" onAction="#showSongs" text="Songs" />
                 <Button mnemonicParsing="false" onAction="#showGenres" text="Genres" />
                 <Button mnemonicParsing="false" onAction="#showMusicians" text="Musicians" />
+                <Button mnemonicParsing="false" onAction="#showInstruments" text="Instruments" />
             </children>
             <opaqueInsets>
                <Insets />

@@ -31,6 +31,9 @@ import ru.javafx.musicbook.client.fxintegrity.FXMLController;
 import ru.javafx.musicbook.client.fxintegrity.FXMLControllerLoader;
 import ru.javafx.musicbook.client.repository.InstrumentRepository;
 import ru.javafx.musicbook.client.repository.operators.StringOperator;
+import static ru.javafx.musicbook.client.service.ContextMenuItemType.ADD_INSTRUMENT;
+import static ru.javafx.musicbook.client.service.ContextMenuItemType.DELETE_INSTRUMENT;
+import static ru.javafx.musicbook.client.service.ContextMenuItemType.EDIT_INSTRUMENT;
 import ru.javafx.musicbook.client.utils.Helper;
 
 @FXMLController(
@@ -84,7 +87,6 @@ public class InstrumentsController extends BaseAwareController implements PagedC
             resources = instrumentRepository.getPagedResources(createParamString());
             paginatorPaneController.getPaginator().setTotalElements((int) resources.getMetadata().getTotalElements());
             instrumentsTable.setItems(FXCollections.observableArrayList(resources.getContent().parallelStream().collect(Collectors.toList())));           
-            logger.info("{}", paginatorPaneController.getPaginator().getSize());
             Helper.setHeightTable(instrumentsTable, paginatorPaneController.getPaginator().getSize());        
         } catch (URISyntaxException ex) {
             logger.error(ex.getMessage());
@@ -172,18 +174,16 @@ public class InstrumentsController extends BaseAwareController implements PagedC
         paginatorPaneController.initPageComboBox();
     }
     
-    private void initRepositoryListeners() {
-        /*
+    private void initRepositoryListeners() {       
         //clear listeners
-        repositoryService.getMusicianInstrumentRepository().clearChangeListeners(this);               
-        repositoryService.getInstrumentRepository().clearChangeListeners(this);
-        repositoryService.getMusicianRepository().clearDeleteListeners(this);                         
+        instrumentRepository.clearChangeListeners(this);  
+        //repositoryService.getMusicianInstrumentRepository().clearChangeListeners(this);               
+        //repositoryService.getMusicianRepository().clearDeleteListeners(this);                         
         
         //add listeners
-        repositoryService.getMusicianInstrumentRepository().addChangeListener(this::changed, this);
-        repositoryService.getInstrumentRepository().addChangeListener(this::changed, this); 
-        repositoryService.getMusicianRepository().addDeleteListener(this::changed, this); 
-        */
+        instrumentRepository.addChangeListener((observable, oldVal, newVal) -> filter(), this);
+        //repositoryService.getMusicianInstrumentRepository().addChangeListener(this::changed, this);
+        //repositoryService.getMusicianRepository().addDeleteListener(this::changed, this);        
     }
     
     private void clearSelectionTable() {
@@ -213,10 +213,10 @@ public class InstrumentsController extends BaseAwareController implements PagedC
             }           
         }
         else if (mouseEvent.getButton() == MouseButton.SECONDARY) { 
-            //contextMenuService.add(ADD_INSTRUMENT, null);
+            contextMenuService.add(ADD_INSTRUMENT, null);
             if (selectedItem != null && !selectedItem.getId().getHref().equals(Instrument.DEFAULT_INSTRUMENT)) {
-                //contextMenuService.add(EDIT_INSTRUMENT, selectedItem);
-                //contextMenuService.add(DELETE_INSTRUMENT, selectedItem);                       
+                contextMenuService.add(EDIT_INSTRUMENT, selectedItem);
+                contextMenuService.add(DELETE_INSTRUMENT, selectedItem);                       
             }
             contextMenuService.show(view, mouseEvent);       
         }
@@ -227,7 +227,7 @@ public class InstrumentsController extends BaseAwareController implements PagedC
         clearSelectionTable();
         contextMenuService.clear();
 		if (mouseEvent.getButton() == MouseButton.SECONDARY) {       
-            //contextMenuService.add(ADD_INSTRUMENT, null);
+            contextMenuService.add(ADD_INSTRUMENT, null);
             contextMenuService.show(view, mouseEvent);
         }      
     }

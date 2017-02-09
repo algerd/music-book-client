@@ -225,7 +225,7 @@ public class AlbumDialogController extends BaseDialogController<Album> {
         if (isInputValid()) {
             album.setName(nameField.getText().trim());             
             album.setTime(getMinute() + ":" + ((getSecund() < 10) ? "0" : "") + getSecund());                     
-            album.setDescription(commentTextArea.getText().trim());             
+            album.setDescription(commentTextArea.getText() != null ? commentTextArea.getText().trim() : "");             
             album.setYear(getYear());
             album.setRating(getRating());   
             album.setArtist(artistField.getValue().getId().getHref());

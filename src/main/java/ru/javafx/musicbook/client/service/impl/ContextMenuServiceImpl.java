@@ -17,6 +17,7 @@ import org.springframework.stereotype.Service;
 import ru.javafx.musicbook.client.controller.album.AlbumDialogController;
 import ru.javafx.musicbook.client.controller.artist.ArtistDialogController;
 import ru.javafx.musicbook.client.controller.genre.GenreDialogController;
+import ru.javafx.musicbook.client.controller.instrument.InstrumentDialogController;
 import ru.javafx.musicbook.client.controller.musician.MusicianDialogController;
 import ru.javafx.musicbook.client.controller.song.SongDialogController;
 import ru.javafx.musicbook.client.service.ContextMenuItemType;
@@ -27,6 +28,7 @@ import ru.javafx.musicbook.client.entity.Entity;
 import ru.javafx.musicbook.client.repository.AlbumRepository;
 import ru.javafx.musicbook.client.repository.ArtistRepository;
 import ru.javafx.musicbook.client.repository.GenreRepository;
+import ru.javafx.musicbook.client.repository.InstrumentRepository;
 import ru.javafx.musicbook.client.repository.MusicianRepository;
 import ru.javafx.musicbook.client.repository.SongRepository;
 
@@ -45,8 +47,10 @@ public class ContextMenuServiceImpl implements ContextMenuService {
     private AlbumRepository albumRepository; 
     @Autowired
     private SongRepository songRepository; 
-     @Autowired
+    @Autowired
     private MusicianRepository musicianRepository; 
+    @Autowired
+    private InstrumentRepository instrumentRepository;  
       
     private final ContextMenu contextMenu = new ContextMenu();
     private final Map<ContextMenuItemType, EventHandler<ActionEvent>> menuMap = new HashMap<>();
@@ -90,11 +94,11 @@ public class ContextMenuServiceImpl implements ContextMenuService {
         menuMap.put(ContextMenuItemType.ADD_ARTIST_REFERENCE, e -> requestViewService.artistReferenceDialog(valueMap.get(ContextMenuItemType.ADD_ARTIST_REFERENCE)));
         menuMap.put(ContextMenuItemType.EDIT_ARTIST_REFERENCE, e -> requestViewService.artistReferenceDialog(valueMap.get(ContextMenuItemType.EDIT_ARTIST_REFERENCE)));
         menuMap.put(ContextMenuItemType.DELETE_ARTIST_REFERENCE, e -> deleteAlertService.show((ArtistReferenceEntity) valueMap.get(ContextMenuItemType.DELETE_ARTIST_REFERENCE)));
-    
-        menuMap.put(ContextMenuItemType.ADD_INSTRUMENT, e -> requestViewService.instrumentDialog(valueMap.get(ContextMenuItemType.ADD_INSTRUMENT)));
-        menuMap.put(ContextMenuItemType.EDIT_INSTRUMENT, e -> requestViewService.instrumentDialog(valueMap.get(ContextMenuItemType.EDIT_INSTRUMENT)));
-        menuMap.put(ContextMenuItemType.DELETE_INSTRUMENT, e -> deleteAlertService.show((InstrumentEntity) valueMap.get(ContextMenuItemType.DELETE_INSTRUMENT)));
         */
+        menuMap.put(ContextMenuItemType.ADD_INSTRUMENT, e -> requestViewService.showDialog(InstrumentDialogController.class, valueMap.get(ADD_INSTRUMENT)));
+        menuMap.put(ContextMenuItemType.EDIT_INSTRUMENT, e -> requestViewService.showDialog(InstrumentDialogController.class, valueMap.get(EDIT_INSTRUMENT)));
+        menuMap.put(ContextMenuItemType.DELETE_INSTRUMENT, e -> instrumentRepository.deleteWithAlert(valueMap.get(DELETE_INSTRUMENT)));
+        
     }
     
     @Override

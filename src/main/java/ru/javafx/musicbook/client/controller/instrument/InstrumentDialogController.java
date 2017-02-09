@@ -1,5 +1,5 @@
 
-package ru.javafx.musicbook.client.controller.genre;
+package ru.javafx.musicbook.client.controller.instrument;
 
 import java.net.URISyntaxException;
 import java.net.URL;
@@ -12,34 +12,34 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.hateoas.Resource;
 import ru.javafx.musicbook.client.controller.BaseDialogController;
 import ru.javafx.musicbook.client.controller.helper.inputImageBox.DialogImageBoxController;
-import ru.javafx.musicbook.client.entity.Genre;
+import ru.javafx.musicbook.client.entity.Instrument;
 import ru.javafx.musicbook.client.fxintegrity.FXMLController;
-import ru.javafx.musicbook.client.repository.GenreRepository;
+import ru.javafx.musicbook.client.repository.InstrumentRepository;
 import ru.javafx.musicbook.client.repository.impl.WrapChangedEntity;
 import ru.javafx.musicbook.client.utils.Helper;
 
 @FXMLController(
-    value = "/fxml/genre/GenreDialog.fxml",    
-    title = "Genre Dialog Window")
+    value = "/fxml/instrument/InstrumentDialog.fxml",    
+    title = "Instrument Dialog Window")
 @Scope("prototype")
-public class GenreDialogController extends BaseDialogController<Genre> {
-
-    private Genre genre;
+public class InstrumentDialogController extends BaseDialogController<Instrument> {
+    
+    private Instrument instrument;
     
     @Autowired
-    private GenreRepository genreRepository;
+    private InstrumentRepository instrumentRepository;
     
     @FXML
     private DialogImageBoxController includedDialogImageBoxController;
     @FXML
-    private TextField nameTextField;   
+    private TextField nameField;
     @FXML
-    private TextArea commentTextArea;
+    private TextArea descriptionTextArea;
     
     @Override
     public void initialize(URL url, ResourceBundle rb) {        
-        Helper.limitTextInput(nameTextField, 255);
-        Helper.limitTextInput(commentTextArea, 1000);
+        Helper.limitTextInput(nameField, 255);
+        Helper.limitTextInput(descriptionTextArea, 1000);
         includedDialogImageBoxController.setStage(dialogStage);
     }
     
@@ -47,19 +47,19 @@ public class GenreDialogController extends BaseDialogController<Genre> {
     @Override
     protected void handleOkButton() {
         if (isInputValid()) { 
-            genre.setName(nameTextField.getText() != null ? nameTextField.getText().trim() : "");
-            genre.setDescription(commentTextArea.getText() != null ? commentTextArea.getText().trim() : "");  
+            instrument.setName( nameField.getText() != null ? nameField.getText().trim() : "");
+            instrument.setDescription(descriptionTextArea.getText() != null ? descriptionTextArea.getText().trim() : "");  
             try {  
-                resource = edit ? genreRepository.update(resource) : genreRepository.saveAndGetResource(genre);                
-                logger.info("Saved Genre Resource: {}", resource);
+                resource = edit ? instrumentRepository.update(resource) : instrumentRepository.saveAndGetResource(instrument);                
+                logger.info("Saved Instrument Resource: {}", resource);
                 if (includedDialogImageBoxController.isChangedImage()) {
-                    genreRepository.saveImage(resource, includedDialogImageBoxController.getImage());
+                    instrumentRepository.saveImage(resource, includedDialogImageBoxController.getImage());
                     includedDialogImageBoxController.setChangedImage(false);                              
                 }  
                 if (edit) {
-                    genreRepository.setUpdated(new WrapChangedEntity<>(oldResource, resource));
+                    instrumentRepository.setUpdated(new WrapChangedEntity<>(oldResource, resource));
                 } else {
-                    genreRepository.setAdded(new WrapChangedEntity<>(null, resource));
+                    instrumentRepository.setAdded(new WrapChangedEntity<>(null, resource));
                 } 
             } catch (URISyntaxException ex) {
                 logger.error(ex.getMessage());
@@ -69,18 +69,18 @@ public class GenreDialogController extends BaseDialogController<Genre> {
             edit = false;
         }
     }
-           
+    
     @Override
     protected boolean isInputValid() {
         String errorMessage = ""; 
-        String text = nameTextField.getText();      
+        String text = nameField.getText();      
         if (text == null || text.trim().equals("")) {
-            errorMessage += "Введите название жанра!\n"; 
+            errorMessage += "Введите название инструмента!\n"; 
         } else {
             text = text.trim().toLowerCase();
             try {
-                if (!genre.getName().toLowerCase().equals(text) 
-                        && genreRepository.getPagedResources("name=" + text).getMetadata().getTotalElements() > 0) {
+                if (!instrument.getName().toLowerCase().equals(text) 
+                        && instrumentRepository.getPagedResources("name=" + text).getMetadata().getTotalElements() > 0) {
                     errorMessage += "Такой жанр уже есть!\n";
                 }
             } catch (URISyntaxException ex) {
@@ -95,22 +95,23 @@ public class GenreDialogController extends BaseDialogController<Genre> {
             return false;
         }
     }
-      
+    
     @Override
     protected void add() {
-        genre = new Genre();
+        instrument = new Instrument();
     }
        
     @Override
     protected void edit() { 
         edit = true;
-        genre = resource.getContent(); 
-        oldResource = new Resource<>(genre.clone(), resource.getLinks());
-        nameTextField.setText(genre.getName());
-        commentTextArea.setText(genre.getDescription());
+        instrument = resource.getContent(); 
+        oldResource = new Resource<>(instrument.clone(), resource.getLinks());
+        nameField.setText(instrument.getName());
+        descriptionTextArea.setText(instrument.getDescription());
         if (resource.hasLink("get_image")) {
             includedDialogImageBoxController.setImage(resource.getLink("get_image").getHref()); 
         }
     }
+    
 
 }

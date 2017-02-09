@@ -37,11 +37,11 @@ public class Instrument implements Entity {
     }
     
     @Override
-    public Genre clone() {
-        Genre genre = new Genre();
-        genre.setName(this.getName());
-        genre.setDescription(this.getDescription());
-        return genre;
+    public Instrument clone() {
+        Instrument instrument = new Instrument();
+        instrument.setName(this.getName());
+        instrument.setDescription(this.getDescription());
+        return instrument;
     }
 
     @Override

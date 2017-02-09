@@ -160,11 +160,11 @@ public class MusicianDialogController extends BaseDialogController<Musician> {
     protected void handleOkButton() {
         if (isInputValid()) { 
             musician.setName(nameTextField.getText().trim());
-            musician.setCountry(countryTextField.getText().trim());
+            musician.setCountry(countryTextField.getText() != null ? countryTextField.getText().trim() : "");
             musician.setDateOfBirth(dobDatePicker.getEditor().getText());
             musician.setDateOfDeath(dodDatePicker.getEditor().getText());
             musician.setRating(getRating());
-            musician.setDescription(commentTextArea.getText().trim());             
+            musician.setDescription(commentTextArea.getText() != null ? commentTextArea.getText().trim() : "");             
             try { 
                 resource = edit ? musicianRepository.update(resource) : musicianRepository.saveAndGetResource(musician);
                 logger.info("Saved Musician Resource: {}", resource);

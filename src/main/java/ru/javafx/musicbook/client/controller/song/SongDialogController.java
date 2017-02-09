@@ -280,8 +280,8 @@ public class SongDialogController extends BaseDialogController<Song> {
         if (isInputValid()) {
             song.setName(nameField.getText().trim());             
             song.setTime(getMinute() + ":" + ((getSecund() < 10) ? "0" : "") + getSecund());                     
-            song.setDescription(commentTextArea.getText());  
-            song.setLyric(lyricField.getText());
+            song.setDescription(commentTextArea.getText() != null ? commentTextArea.getText().trim() : "");  
+            song.setLyric(lyricField.getText() != null ? lyricField.getText().trim() : "");
             song.setRating(getRating());   
             song.setAlbum(albumField.getValue().getId().getHref());
             try {

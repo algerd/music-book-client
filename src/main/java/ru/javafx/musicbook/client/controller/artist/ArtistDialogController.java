@@ -97,7 +97,7 @@ public class ArtistDialogController extends BaseDialogController<Artist> {
         if (isInputValid()) { 
             artist.setName(nameTextField.getText().trim());
             artist.setRating(getRating());
-            artist.setDescription(commentTextArea.getText().trim());             
+            artist.setDescription(commentTextArea.getText() != null ? commentTextArea.getText().trim() : "");             
             try { 
                 resource = edit ? artistRepository.update(resource) : artistRepository.saveAndGetResource(artist);
                 logger.info("Saved Artist Resource: {}", resource);

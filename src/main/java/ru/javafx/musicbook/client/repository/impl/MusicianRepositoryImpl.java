@@ -9,6 +9,7 @@ import org.springframework.hateoas.Resource;
 import org.springframework.hateoas.Resources;
 import org.springframework.hateoas.mvc.TypeReferences;
 import org.springframework.stereotype.Repository;
+import ru.javafx.musicbook.client.entity.Genre;
 import ru.javafx.musicbook.client.entity.Instrument;
 import ru.javafx.musicbook.client.entity.Musician;
 import ru.javafx.musicbook.client.repository.MusicianRepository;
@@ -28,5 +29,12 @@ public class MusicianRepositoryImpl extends CrudRepositoryImpl<Musician> impleme
         parameters.put("instrument", resource.getId().getHref());
         return getParameterizedResources(parameters, new String[]{relPath, "search", "by_instrument"});       
     } 
+    
+    @Override
+    public Resources<Resource<Musician>> findByGenre(Resource<Genre> resource) throws URISyntaxException {
+        Map<String, Object> parameters = new HashMap<>();
+        parameters.put("genre", resource.getId().getHref());
+        return getParameterizedResources(parameters, new String[]{relPath, "search", "by_genre"});       
+    }
     
 }

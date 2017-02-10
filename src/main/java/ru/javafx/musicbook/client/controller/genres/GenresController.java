@@ -29,6 +29,7 @@ import ru.javafx.musicbook.client.controller.paginator.Sort;
 import ru.javafx.musicbook.client.entity.Album;
 import ru.javafx.musicbook.client.entity.Artist;
 import ru.javafx.musicbook.client.entity.Genre;
+import ru.javafx.musicbook.client.entity.Musician;
 import ru.javafx.musicbook.client.entity.Song;
 import ru.javafx.musicbook.client.fxintegrity.FXMLController;
 import ru.javafx.musicbook.client.fxintegrity.FXMLControllerLoader;
@@ -37,6 +38,7 @@ import ru.javafx.musicbook.client.repository.AlbumRepository;
 import ru.javafx.musicbook.client.repository.ArtistGenreRepository;
 import ru.javafx.musicbook.client.repository.ArtistRepository;
 import ru.javafx.musicbook.client.repository.GenreRepository;
+import ru.javafx.musicbook.client.repository.MusicianGenreRepository;
 import ru.javafx.musicbook.client.repository.MusicianRepository;
 import ru.javafx.musicbook.client.repository.SongGenreRepository;
 import ru.javafx.musicbook.client.repository.SongRepository;
@@ -73,6 +75,8 @@ public class GenresController extends BaseAwareController implements PagedContro
     private AlbumGenreRepository albumGenreRepository;
     @Autowired
     private SongGenreRepository  songGenreRepository;
+    @Autowired
+    private MusicianGenreRepository musicianGenreRepository;
     
     @FXML
     private VBox genresTableVBox;
@@ -97,6 +101,10 @@ public class GenresController extends BaseAwareController implements PagedContro
     private TableColumn<Resource<Genre>, Resource<Genre>> songsAmountColumn;
     @FXML
     private TableColumn<Resource<Genre>, Resource<Genre>> songsAvRatingColumn;
+    @FXML
+    private TableColumn<Resource<Genre>, Resource<Genre>> musiciansAmountColumn;
+    @FXML
+    private TableColumn<Resource<Genre>, Resource<Genre>> musiciansAvRatingColumn;
       
     public GenresController() {}
     
@@ -266,6 +274,52 @@ public class GenresController extends BaseAwareController implements PagedContro
                                 averageRating += song.getRating();
                             }
                             int count = songs.size();
+                            this.setText("" + ((count != 0) ? ((int) (100.0 * averageRating / count + 0.5))/ 100.0 : " - "));                            
+                        } catch (URISyntaxException ex) {
+                            logger.error(ex.getMessage());
+                        }
+                    }
+                }
+            };
+			return cell;
+        });
+        
+        musiciansAmountColumn.setCellValueFactory(cellData -> new SimpleObjectProperty<>(cellData.getValue()));
+        musiciansAmountColumn.setCellFactory(col -> {
+            TableCell<Resource<Genre>, Resource<Genre>> cell = new TableCell<Resource<Genre>, Resource<Genre>>() {
+                @Override
+                public void updateItem(Resource<Genre> item, boolean empty) {
+                    super.updateItem(item, empty);
+                    this.setText(null);
+                    if (!empty) {                        
+                        try {                   
+                            this.setText("" + musicianGenreRepository.countMusiciansByGenre(item));
+                        } catch (URISyntaxException ex) {
+                            logger.error(ex.getMessage());
+                        }
+                    }
+                }
+            };
+			return cell;
+        });
+        musiciansAvRatingColumn.setCellValueFactory(cellData -> new SimpleObjectProperty<>(cellData.getValue()));
+        musiciansAvRatingColumn.setCellFactory(col -> {
+            TableCell<Resource<Genre>, Resource<Genre>> cell = new TableCell<Resource<Genre>, Resource<Genre>>() {
+                @Override
+                public void updateItem(Resource<Genre> item, boolean empty) {
+                    super.updateItem(item, empty);
+                    this.setText(null);
+                    if (!empty) {                        
+                        try {                                             
+                            List<Musician> musicians = new ArrayList<>();
+                            musicianRepository.findByGenre(item).getContent().parallelStream().forEach(
+                                songResource -> musicians.add(songResource.getContent())
+                            );        
+                            int averageRating = 0;
+                            for (Musician musician : musicians) {
+                                averageRating += musician.getRating();
+                            }
+                            int count = musicians.size();
                             this.setText("" + ((count != 0) ? ((int) (100.0 * averageRating / count + 0.5))/ 100.0 : " - "));                            
                         } catch (URISyntaxException ex) {
                             logger.error(ex.getMessage());

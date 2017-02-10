@@ -3,6 +3,7 @@ package ru.javafx.musicbook.client.repository.impl;
 
 import java.net.URISyntaxException;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.hateoas.Resource;
@@ -28,5 +29,14 @@ public class MusicianGenreRepositoryImpl extends CrudRepositoryImpl<MusicianGenr
         parameters.put("genre", genre.getId().getHref());
         return getParameterizedResource(parameters, new String[]{relPath, "search", "findByMusicianAndGenre"});
     }
+    
+    @Override
+    public long countMusiciansByGenre(Resource<Genre> genreResource) throws URISyntaxException {
+        Resources<Resource<MusicianGenre>> resources = getResources(genreResource.getId().getHref(), "musicianGenres");          
+        long i = 0;
+        Iterator iterator = resources.iterator();
+        for (; iterator.hasNext() ; ++i ) iterator.next();      
+        return i;
+    } 
   
 }

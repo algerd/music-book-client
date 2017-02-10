@@ -29,6 +29,7 @@ import ru.javafx.musicbook.client.controller.paginator.Sort;
 import ru.javafx.musicbook.client.entity.Album;
 import ru.javafx.musicbook.client.entity.Artist;
 import ru.javafx.musicbook.client.entity.Genre;
+import ru.javafx.musicbook.client.entity.Song;
 import ru.javafx.musicbook.client.fxintegrity.FXMLController;
 import ru.javafx.musicbook.client.fxintegrity.FXMLControllerLoader;
 import ru.javafx.musicbook.client.repository.AlbumGenreRepository;
@@ -36,6 +37,9 @@ import ru.javafx.musicbook.client.repository.AlbumRepository;
 import ru.javafx.musicbook.client.repository.ArtistGenreRepository;
 import ru.javafx.musicbook.client.repository.ArtistRepository;
 import ru.javafx.musicbook.client.repository.GenreRepository;
+import ru.javafx.musicbook.client.repository.MusicianRepository;
+import ru.javafx.musicbook.client.repository.SongGenreRepository;
+import ru.javafx.musicbook.client.repository.SongRepository;
 import ru.javafx.musicbook.client.repository.operators.StringOperator;
 import static ru.javafx.musicbook.client.service.ContextMenuItemType.*;
 import ru.javafx.musicbook.client.utils.Helper;
@@ -58,11 +62,17 @@ public class GenresController extends BaseAwareController implements PagedContro
     @Autowired
     private ArtistRepository artistRepository;
     @Autowired
-    private AlbumRepository albumRepository;   
+    private AlbumRepository albumRepository;
+    @Autowired
+    private SongRepository songRepository;
+    @Autowired
+    private MusicianRepository musicianRepository;
     @Autowired
     private ArtistGenreRepository artistGenreRepository;
     @Autowired
     private AlbumGenreRepository albumGenreRepository;
+    @Autowired
+    private SongGenreRepository  songGenreRepository;
     
     @FXML
     private VBox genresTableVBox;
@@ -83,7 +93,11 @@ public class GenresController extends BaseAwareController implements PagedContro
     private TableColumn<Resource<Genre>, Resource<Genre>> albumsAmountColumn;
     @FXML
     private TableColumn<Resource<Genre>, Resource<Genre>> albumsAvRatingColumn;
-    
+    @FXML
+    private TableColumn<Resource<Genre>, Resource<Genre>> songsAmountColumn;
+    @FXML
+    private TableColumn<Resource<Genre>, Resource<Genre>> songsAvRatingColumn;
+      
     public GenresController() {}
     
     @Override
@@ -215,6 +229,52 @@ public class GenresController extends BaseAwareController implements PagedContro
             };
 			return cell;
         });
+        
+        songsAmountColumn.setCellValueFactory(cellData -> new SimpleObjectProperty<>(cellData.getValue()));
+        songsAmountColumn.setCellFactory(col -> {
+            TableCell<Resource<Genre>, Resource<Genre>> cell = new TableCell<Resource<Genre>, Resource<Genre>>() {
+                @Override
+                public void updateItem(Resource<Genre> item, boolean empty) {
+                    super.updateItem(item, empty);
+                    this.setText(null);
+                    if (!empty) {                        
+                        try {                   
+                            this.setText("" + songGenreRepository.countSongsByGenre(item));
+                        } catch (URISyntaxException ex) {
+                            logger.error(ex.getMessage());
+                        }
+                    }
+                }
+            };
+			return cell;
+        });
+        songsAvRatingColumn.setCellValueFactory(cellData -> new SimpleObjectProperty<>(cellData.getValue()));
+        songsAvRatingColumn.setCellFactory(col -> {
+            TableCell<Resource<Genre>, Resource<Genre>> cell = new TableCell<Resource<Genre>, Resource<Genre>>() {
+                @Override
+                public void updateItem(Resource<Genre> item, boolean empty) {
+                    super.updateItem(item, empty);
+                    this.setText(null);
+                    if (!empty) {                        
+                        try {                                             
+                            List<Song> songs = new ArrayList<>();
+                            songRepository.findByGenre(item).getContent().parallelStream().forEach(
+                                songResource -> songs.add(songResource.getContent())
+                            );        
+                            int averageRating = 0;
+                            for (Song song : songs) {
+                                averageRating += song.getRating();
+                            }
+                            int count = songs.size();
+                            this.setText("" + ((count != 0) ? ((int) (100.0 * averageRating / count + 0.5))/ 100.0 : " - "));                            
+                        } catch (URISyntaxException ex) {
+                            logger.error(ex.getMessage());
+                        }
+                    }
+                }
+            };
+			return cell;
+        });
                 
         genresTable.getSelectionModel().selectedItemProperty().addListener(
             (observable, oldValue, newValue) -> selectedItem = genresTable.getSelectionModel().getSelectedItem()
@@ -255,18 +315,20 @@ public class GenresController extends BaseAwareController implements PagedContro
     private void initRepositoryListeners() {                    
        //repositoryService.getAlbumGenreRepository().clearChangeListeners(this);                          
        //repositoryService.getSongGenreRepository().clearChangeListeners(this);                       
-       //repositoryService.getMusicianGenreRepository().clearChangeListeners(this);                            
-       //repositoryService.getSongRepository().clearDeleteListeners(this);  
+       //repositoryService.getMusicianGenreRepository().clearChangeListeners(this);                             
        //repositoryService.getMusicianRepository().clearDeleteListeners(this);
+       musicianRepository.clearChangeListeners(this);
+       songRepository.clearChangeListeners(this);
        albumRepository.clearChangeListeners(this);
        artistRepository.clearChangeListeners(this);
        genreRepository.clearChangeListeners(this);     
                              
         //repositoryService.getAlbumGenreRepository().addChangeListener(this::changed, this);                          
         //repositoryService.getSongGenreRepository().addChangeListener(this::changed, this);                       
-        //repositoryService.getMusicianGenreRepository().addChangeListener(this::changed, this);                           
-        //repositoryService.getSongRepository().addDeleteListener(this::changed, this);  
+        //repositoryService.getMusicianGenreRepository().addChangeListener(this::changed, this);                            
         //repositoryService.getMusicianRepository().addDeleteListener(this::changed, this);
+        musicianRepository.addChangeListener((observable, oldVal, newVal) -> filter(), this);
+        songRepository.addChangeListener((observable, oldVal, newVal) -> filter(), this);
         albumRepository.addChangeListener((observable, oldVal, newVal) -> filter(), this);
         artistRepository.addChangeListener((observable, oldVal, newVal) -> filter(), this);
         genreRepository.addChangeListener((observable, oldVal, newVal) -> filter(), this);           

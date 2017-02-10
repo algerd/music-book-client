@@ -180,17 +180,15 @@ public class SongDialogController extends BaseDialogController<Song> {
             errorMessage += "Введите название песни!\n"; 
         } else {
             text = text.trim().toLowerCase();
-            /*
             try {
-                if (!album.getName().toLowerCase().equals(text) 
-                        && artistRepository.getPagedResources("name=" + text + "&artist.id=" + Helper.getId(resource)).getMetadata().getTotalElements() > 0) {
+                Resource<Album> resAlbum = albumField.getSelectionModel().getSelectedItem();
+                if (!song.getName().toLowerCase().equals(text) 
+                        && songRepository.getPagedResources("name=" + text + "&album.id=" + Helper.getId(resAlbum)).getMetadata().getTotalElements() > 0) {
                     errorMessage += "Такая песня уже есть у альбома!\n";
-                }
+                }                           
             } catch (URISyntaxException ex) {
                 logger.error(ex.getMessage());
-                //ex.printStackTrace();
             } 
-            */
         }
         if (errorMessage.equals("")) {
             return true;

@@ -140,17 +140,14 @@ public class MusicianDialogController extends BaseDialogController<Musician> {
             errorMessage += "Введите название музыканта!\n"; 
         } else {
             text = text.trim().toLowerCase();
-            /*
             try {
-                if (!album.getName().toLowerCase().equals(text) 
-                        && artistRepository.getPagedResources("name=" + text + "&artist.id=" + Helper.getId(resource)).getMetadata().getTotalElements() > 0) {
-                    errorMessage += "Такой альбом уже есть!\n";
+                if (!musician.getName().toLowerCase().equals(text) && 
+                        musicianRepository.getPagedResources("name=" + text.trim().toLowerCase()).getMetadata().getTotalElements() > 0) {
+                    errorMessage += "Такой артист уже есть!\n";
                 }
             } catch (URISyntaxException ex) {
                 logger.error(ex.getMessage());
-                //ex.printStackTrace();
             } 
-            */
         }
         if (errorMessage.equals("")) {
             return true;

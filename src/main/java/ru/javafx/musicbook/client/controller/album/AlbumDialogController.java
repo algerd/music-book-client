@@ -139,17 +139,15 @@ public class AlbumDialogController extends BaseDialogController<Album> {
             errorMessage += "Введите название альбома!\n"; 
         } else {
             text = text.trim().toLowerCase();
-            /*
+            Resource<Artist> resArtist = artistField.getSelectionModel().getSelectedItem();
             try {
                 if (!album.getName().toLowerCase().equals(text) 
-                        && artistRepository.getPagedResources("name=" + text + "&artist.id=" + Helper.getId(resource)).getMetadata().getTotalElements() > 0) {
-                    errorMessage += "Такой альбом уже есть!\n";
+                        && albumRepository.getPagedResources("name=" + text + "&artist.id=" + Helper.getId(resArtist)).getMetadata().getTotalElements() > 0) {
+                    errorMessage += "Такой альбом уже есть у артиста!\n";
                 }
             } catch (URISyntaxException ex) {
                 logger.error(ex.getMessage());
-                //ex.printStackTrace();
             } 
-            */
         }
         if (errorMessage.equals("")) {
             return true;

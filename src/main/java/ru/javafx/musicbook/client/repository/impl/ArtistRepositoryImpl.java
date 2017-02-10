@@ -23,9 +23,9 @@ public class ArtistRepositoryImpl extends CrudRepositoryImpl<Artist> implements 
     }     
          
     @Override
-    public Resources<Resource<Artist>> findByGenre(Resource<Genre> genreResource) throws URISyntaxException {
+    public Resources<Resource<Artist>> findByGenre(Resource<Genre> resource) throws URISyntaxException {
         Map<String, Object> parameters = new HashMap<>();
-        parameters.put("genre", genreResource.getId().getHref());
+        parameters.put("genre", resource.getId().getHref());
         return getParameterizedResources(parameters, new String[]{relPath, "search", "by_genre"});       
     } 
     

@@ -27,9 +27,12 @@ import ru.javafx.musicbook.client.controller.paginator.PagedController;
 import ru.javafx.musicbook.client.controller.paginator.PaginatorPaneController;
 import ru.javafx.musicbook.client.controller.paginator.Sort;
 import ru.javafx.musicbook.client.entity.Instrument;
+import ru.javafx.musicbook.client.entity.Musician;
 import ru.javafx.musicbook.client.fxintegrity.FXMLController;
 import ru.javafx.musicbook.client.fxintegrity.FXMLControllerLoader;
 import ru.javafx.musicbook.client.repository.InstrumentRepository;
+import ru.javafx.musicbook.client.repository.MusicianInstrumentRepository;
+import ru.javafx.musicbook.client.repository.MusicianRepository;
 import ru.javafx.musicbook.client.repository.operators.StringOperator;
 import static ru.javafx.musicbook.client.service.ContextMenuItemType.ADD_INSTRUMENT;
 import static ru.javafx.musicbook.client.service.ContextMenuItemType.DELETE_INSTRUMENT;
@@ -50,7 +53,11 @@ public class InstrumentsController extends BaseAwareController implements PagedC
     @Autowired
     private FXMLControllerLoader fxmlLoader;  
     @Autowired
-    private InstrumentRepository instrumentRepository;  
+    private InstrumentRepository instrumentRepository; 
+    @Autowired
+    private MusicianRepository musicianRepository; 
+    @Autowired
+    private MusicianInstrumentRepository musicianInstrumentRepository;
     
     @FXML
     private VBox instrumentsTableVBox;
@@ -114,8 +121,12 @@ public class InstrumentsController extends BaseAwareController implements PagedC
                 public void updateItem(Resource<Instrument> item, boolean empty) {
                     super.updateItem(item, empty);
                     this.setText(null);
-                    if (!empty) {                        
-                        //this.setText("" + repositoryService.getMusicianInstrumentRepository().countMusicianInstrumentByInstrument(item));                   
+                    if (!empty) {                                               
+                        try {  
+                            this.setText("" + musicianInstrumentRepository.countMusiciansByInstrument(item));
+                        } catch (URISyntaxException ex) {
+                            logger.error(ex.getMessage());
+                        }
                     }
                 }
             };
@@ -129,15 +140,20 @@ public class InstrumentsController extends BaseAwareController implements PagedC
                     super.updateItem(item, empty);
                     this.setText(null);
                     if (!empty) {
-                        /*
-                        List<MusicianInstrumentEntity> musicianInstruments = repositoryService.getMusicianInstrumentRepository().selectMusicianInstrumentByInstrument(item);
-                        int averageRating = 0;
-                        for (MusicianInstrumentEntity musicianInstrument : musicianInstruments) {
-                            averageRating += musicianInstrument.getMusician().getRating();
+                         try {                                             
+                            List<Musician> musicians = new ArrayList<>();
+                            musicianRepository.findByInstrument(item).getContent().parallelStream().forEach(
+                                instrumentResource -> musicians.add(instrumentResource.getContent())
+                            );        
+                            int averageRating = 0;
+                            for (Musician musician : musicians) {
+                                averageRating += musician.getRating();
+                            }
+                            int count = musicians.size();
+                            this.setText("" + ((count != 0) ? ((int) (100.0 * averageRating / count + 0.5))/ 100.0 : " - "));                            
+                        } catch (URISyntaxException ex) {
+                            logger.error(ex.getMessage());
                         }
-                        int countMusicians = musicianInstruments.size();
-                        this.setText("" + ((countMusicians != 0) ? ((int) (100.0 * averageRating / musicianInstruments.size() + 0.5))/ 100.0 : ""));
-                        */
                     }
                 }
             };
@@ -176,14 +192,12 @@ public class InstrumentsController extends BaseAwareController implements PagedC
     
     private void initRepositoryListeners() {       
         //clear listeners
-        instrumentRepository.clearChangeListeners(this);  
-        //repositoryService.getMusicianInstrumentRepository().clearChangeListeners(this);               
-        //repositoryService.getMusicianRepository().clearDeleteListeners(this);                         
+        instrumentRepository.clearChangeListeners(this); 
+        musicianRepository.clearChangeListeners(this);                         
         
         //add listeners
         instrumentRepository.addChangeListener((observable, oldVal, newVal) -> filter(), this);
-        //repositoryService.getMusicianInstrumentRepository().addChangeListener(this::changed, this);
-        //repositoryService.getMusicianRepository().addDeleteListener(this::changed, this);        
+        musicianRepository.addChangeListener((observable, oldVal, newVal) -> filter(), this);       
     }
     
     private void clearSelectionTable() {

@@ -11,4 +11,5 @@ public interface MusicianInstrumentRepository extends CrudRepository<MusicianIns
     
     Resource<MusicianInstrument> findByMusicianAndInstrument(Resource<Musician> artist, Resource<Instrument> instrument) throws URISyntaxException;
     
+    long countMusiciansByInstrument(Resource<Instrument> instrumentResource) throws URISyntaxException;
 }

@@ -29,7 +29,7 @@ public abstract class PagedTableController<T extends Entity> extends BaseAwareCo
     protected FXMLControllerLoader fxmlLoader;
     
     @FXML
-    protected TableView<Resource<T>> artistsTable;
+    protected TableView<Resource<T>> pagedTable;
     @FXML
     protected Pane tableContainer;
     
@@ -40,8 +40,7 @@ public abstract class PagedTableController<T extends Entity> extends BaseAwareCo
     public void initPagedTableController(CrudRepository<T> pagedTableRepository) {
         this.pagedTableRepository = pagedTableRepository;
         initPagedTable(); 
-        artistsTable.getSelectionModel().selectedItemProperty().addListener(
-            (observable, oldValue, newValue) -> selectedItem = artistsTable.getSelectionModel().getSelectedItem()
+        pagedTable.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> selectedItem = pagedTable.getSelectionModel().getSelectedItem()
         );
         initPaginatorPane();
     }
@@ -57,20 +56,20 @@ public abstract class PagedTableController<T extends Entity> extends BaseAwareCo
     @Override
     public void setPageValue() {      
         clearSelectionTable();
-        artistsTable.getItems().clear();                      
+        pagedTable.getItems().clear();                      
         try {     
             resources = pagedTableRepository.getPagedResources(createParamString());  
             //logger.info("Paged table resources: {}", resources);
             paginatorPaneController.getPaginator().setTotalElements((int) resources.getMetadata().getTotalElements());           
-            artistsTable.setItems(FXCollections.observableArrayList(resources.getContent().parallelStream().collect(Collectors.toList())));           
-            Helper.setHeightTable(artistsTable, paginatorPaneController.getPaginator().getSize());        
+            pagedTable.setItems(FXCollections.observableArrayList(resources.getContent().parallelStream().collect(Collectors.toList())));           
+            Helper.setHeightTable(pagedTable, paginatorPaneController.getPaginator().getSize());        
         } catch (URISyntaxException ex) {
             logger.error(ex.getMessage());
         }      
     } 
            
-    private void clearSelectionTable() {
-        artistsTable.getSelectionModel().clearSelection();
+    public void clearSelectionTable() {
+        pagedTable.getSelectionModel().clearSelection();
         selectedItem = null;
     }
 

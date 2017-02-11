@@ -139,7 +139,7 @@ public class ArtistsController extends PagedTableController<Artist> {
     @Override
     protected void initPagedTable() {
         rankColumn.setCellValueFactory(
-            cellData -> new SimpleIntegerProperty(artistsTable.getItems().indexOf(cellData.getValue()) + 1).asObject()
+            cellData -> new SimpleIntegerProperty(pagedTable.getItems().indexOf(cellData.getValue()) + 1).asObject()
         );      
         artistColumn.setCellValueFactory(cellData -> cellData.getValue().getContent().nameProperty());       
         ratingColumn.setCellValueFactory(cellData -> cellData.getValue().getContent().ratingProperty().asObject()); 
@@ -259,12 +259,7 @@ public class ArtistsController extends PagedTableController<Artist> {
             contextMenuService.show(view, mouseEvent);
         }      
     }
-    
-    private void clearSelectionTable() {
-        artistsTable.getSelectionModel().clearSelection();
-        selectedItem = null;
-    }
-    
+       
     public int getMaxRating() {
         return maxRating.get();
     }

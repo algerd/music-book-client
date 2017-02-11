@@ -84,7 +84,7 @@
                   </HBox>
                      </children>
                 </GridPane>
-                <TableView fx:id="artistsTable" onMouseClicked="#onMouseClickTable">
+                <TableView fx:id="pagedTable" onMouseClicked="#onMouseClickTable">
                     <columns>
                         <TableColumn fx:id="rankColumn" maxWidth="1000.0" minWidth="-Infinity" prefWidth="50.0" text="Rank" />
                         <TableColumn fx:id="artistColumn" minWidth="-Infinity" prefWidth="300.0" text="Artist" />

@@ -20,7 +20,7 @@
 <AnchorPane id="AnchorPane" fx:id="view" onMouseClicked="#showContextMenu" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ru.javafx.musicbook.client.controller.songs.SongsController">
    
     <children>
-        <VBox fx:id="songsTableVBox" prefHeight="200.0" prefWidth="100.0" spacing="10.0" AnchorPane.bottomAnchor="10.0" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="10.0">
+        <VBox fx:id="tableContainer" prefHeight="200.0" prefWidth="100.0" spacing="10.0" AnchorPane.bottomAnchor="10.0" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="10.0">
             <children>       
                 <GridPane AnchorPane.leftAnchor="10.0" AnchorPane.topAnchor="10.0">
                     <columnConstraints>
@@ -89,7 +89,7 @@
                         </HBox>
                     </children>
                 </GridPane>
-                <TableView fx:id="songsTable" onMouseClicked="#onMouseClickTable" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="140.0">
+                <TableView fx:id="pagedTable" onMouseClicked="#onMouseClickTable" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="140.0">
                     <columns>
                         <TableColumn fx:id="rankColumn" minWidth="50.0" prefWidth="50.0" text="Rank" />
                         <TableColumn fx:id="songColumn" minWidth="100.0" prefWidth="150.0" text="Song" />

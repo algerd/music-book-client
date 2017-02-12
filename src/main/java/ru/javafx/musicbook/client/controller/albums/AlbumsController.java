@@ -12,32 +12,25 @@ import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.value.ObservableValue;
-import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.Spinner;
 import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
-import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
-import javafx.scene.layout.VBox;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.hateoas.Link;
-import org.springframework.hateoas.PagedResources;
 import org.springframework.hateoas.Resource;
 import ru.javafx.musicbook.client.Params;
-import ru.javafx.musicbook.client.controller.BaseAwareController;
-import ru.javafx.musicbook.client.controller.paginator.PagedController;
-import ru.javafx.musicbook.client.controller.paginator.PaginatorPaneController;
+import ru.javafx.musicbook.client.controller.PagedTableController;
 import ru.javafx.musicbook.client.controller.paginator.Sort;
 import ru.javafx.musicbook.client.entity.Album;
 import ru.javafx.musicbook.client.entity.Genre;
 import ru.javafx.musicbook.client.fxintegrity.FXMLController;
-import ru.javafx.musicbook.client.fxintegrity.FXMLControllerLoader;
 import ru.javafx.musicbook.client.repository.AlbumRepository;
 import ru.javafx.musicbook.client.repository.ArtistRepository;
 import ru.javafx.musicbook.client.repository.GenreRepository;
@@ -51,12 +44,8 @@ import ru.javafx.musicbook.client.utils.Helper;
     value = "/fxml/albums/Albums.fxml",    
     title = "Albums")
 @Scope("prototype")
-public class AlbumsController extends BaseAwareController implements PagedController {
+public class AlbumsController extends PagedTableController<Album> {
     
-    private Resource<Album> selectedItem;
-    private PagedResources<Resource<Album>> resources; 
-    private PaginatorPaneController paginatorPaneController;
-    // filter 
     private Resource<Genre> resorceGenre;
     private String searchString = ""; 
     private SearchSelector searchSelector;
@@ -67,8 +56,6 @@ public class AlbumsController extends BaseAwareController implements PagedContro
     private final IntegerProperty minYear = new SimpleIntegerProperty();
     private final IntegerProperty maxYear = new SimpleIntegerProperty();
     
-    @Autowired
-    private FXMLControllerLoader fxmlLoader; 
     @Autowired
     private ArtistRepository artistRepository;
     @Autowired
@@ -95,13 +82,8 @@ public class AlbumsController extends BaseAwareController implements PagedContro
     @FXML
     private ChoiceBox<String> sortChoiceBox;
     @FXML
-    private ChoiceBox<String> orderChoiceBox;   
-    
+    private ChoiceBox<String> orderChoiceBox;       
     // table
-    @FXML
-    private VBox albumsTableVBox;
-    @FXML
-    private TableView<Resource<Album>> albumsTable;
     @FXML
     private TableColumn<Resource<Album>, Integer> rankColumn;
     @FXML
@@ -134,15 +116,15 @@ public class AlbumsController extends BaseAwareController implements PagedContro
         initGenreChoiceBox();
         initSearchChoiceBox();
         initFilters();
-        initAlbumsTable();
-        initPaginatorPane();
+        super.initPagedTableController(albumRepository);
         initRepositoryListeners();
         initFilterListeners();       
     }
     
-    private void initAlbumsTable() { 
+    @Override
+    protected void initPagedTable() { 
         rankColumn.setCellValueFactory(
-            cellData -> new SimpleIntegerProperty(albumsTable.getItems().indexOf(cellData.getValue()) + 1).asObject()
+            cellData -> new SimpleIntegerProperty(pagedTable.getItems().indexOf(cellData.getValue()) + 1).asObject()
         ); 
         
         albumColumn.setCellValueFactory(cellData -> cellData.getValue().getContent().nameProperty());       
@@ -167,20 +149,8 @@ public class AlbumsController extends BaseAwareController implements PagedContro
             };
 			return cell;
 		});
-        
-        albumsTable.getSelectionModel().selectedItemProperty().addListener(
-            (observable, oldValue, newValue) -> selectedItem = albumsTable.getSelectionModel().getSelectedItem()
-        );
     }
-    
-    private void initPaginatorPane() {
-        paginatorPaneController = (PaginatorPaneController) fxmlLoader.load(PaginatorPaneController.class);
-        albumsTableVBox.getChildren().add(paginatorPaneController.getView());
-        paginatorPaneController.getPaginator().setSize(5);    
-        paginatorPaneController.getPaginator().setSort(getSort());
-        paginatorPaneController.initPaginator(this);
-    }
-    
+      
     private void initFilters() {
         setMinRating(Params.MIN_RATING);
         setMaxRating(Params.MAX_RATING);
@@ -193,22 +163,9 @@ public class AlbumsController extends BaseAwareController implements PagedContro
         Helper.initIntegerSpinner(maxYearSpinner, Params.MIN_YEAR, Params.MAX_YEAR, Params.MAX_YEAR, true, maxYear);     
         resetSearchLabel.setVisible(false);
     }
-       
+          
     @Override
-    public void setPageValue() {  
-        clearSelectionTable();
-        albumsTable.getItems().clear();        
-        try {                       
-            resources = albumRepository.getPagedResources(createParamString());
-            paginatorPaneController.getPaginator().setTotalElements((int) resources.getMetadata().getTotalElements());           
-            albumsTable.setItems(FXCollections.observableArrayList(resources.getContent().parallelStream().collect(Collectors.toList())));           
-            Helper.setHeightTable(albumsTable, paginatorPaneController.getPaginator().getSize());        
-        } catch (URISyntaxException ex) {
-            logger.error(ex.getMessage());
-        } 
-    }
-    
-    private String createParamString() {
+    protected String createParamString() {
         List<String> params = new ArrayList<>();       
         if (getMinRating() != Params.MIN_RATING || getMaxRating() != Params.MAX_RATING) {
             params.add("rating=" + getMinRating());
@@ -268,7 +225,8 @@ public class AlbumsController extends BaseAwareController implements PagedContro
         searchChoiceBox.getSelectionModel().select(SearchSelector.ALBUM);
     }
     
-    private Sort getSort() {
+    @Override
+    protected Sort getSort() {
         return new Sort(new Sort.Order(
            order.equals("Asc") ? Sort.Direction.ASC : Sort.Direction.DESC,
            sort.toLowerCase()
@@ -326,12 +284,7 @@ public class AlbumsController extends BaseAwareController implements PagedContro
         setPageValue();
         paginatorPaneController.initPageComboBox();
     }
-      
-    private void clearSelectionTable() {
-        albumsTable.getSelectionModel().clearSelection();
-        selectedItem = null;
-    }
-    
+          
     @FXML
     private void resetFilter() {
         resetSearchField();

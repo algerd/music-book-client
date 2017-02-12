@@ -6,25 +6,18 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.ResourceBundle;
-import java.util.stream.Collectors;
 import javafx.beans.property.SimpleObjectProperty;
-import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
 import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
-import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
-import javafx.scene.layout.VBox;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
-import org.springframework.hateoas.PagedResources;
 import org.springframework.hateoas.Resource;
-import ru.javafx.musicbook.client.controller.BaseAwareController;
-import ru.javafx.musicbook.client.controller.paginator.PagedController;
-import ru.javafx.musicbook.client.controller.paginator.PaginatorPaneController;
+import ru.javafx.musicbook.client.controller.PagedTableController;
 import ru.javafx.musicbook.client.controller.paginator.Sort;
 import ru.javafx.musicbook.client.entity.Album;
 import ru.javafx.musicbook.client.entity.Artist;
@@ -32,7 +25,6 @@ import ru.javafx.musicbook.client.entity.Genre;
 import ru.javafx.musicbook.client.entity.Musician;
 import ru.javafx.musicbook.client.entity.Song;
 import ru.javafx.musicbook.client.fxintegrity.FXMLController;
-import ru.javafx.musicbook.client.fxintegrity.FXMLControllerLoader;
 import ru.javafx.musicbook.client.repository.AlbumGenreRepository;
 import ru.javafx.musicbook.client.repository.AlbumRepository;
 import ru.javafx.musicbook.client.repository.ArtistGenreRepository;
@@ -44,21 +36,15 @@ import ru.javafx.musicbook.client.repository.SongGenreRepository;
 import ru.javafx.musicbook.client.repository.SongRepository;
 import ru.javafx.musicbook.client.repository.operators.StringOperator;
 import static ru.javafx.musicbook.client.service.ContextMenuItemType.*;
-import ru.javafx.musicbook.client.utils.Helper;
 
 @FXMLController(
     value = "/fxml/genres/Genres.fxml",    
     title = "Genres")
 @Scope("prototype")
-public class GenresController extends BaseAwareController implements PagedController {
+public class GenresController extends PagedTableController<Genre> {
 
-    private Resource<Genre> selectedItem;
-    private PagedResources<Resource<Genre>> resources; 
-    private PaginatorPaneController paginatorPaneController;
     private String searchString = "";
-    
-    @Autowired
-    private FXMLControllerLoader fxmlLoader;  
+     
     @Autowired
     private GenreRepository genreRepository;   
     @Autowired
@@ -79,14 +65,10 @@ public class GenresController extends BaseAwareController implements PagedContro
     private MusicianGenreRepository musicianGenreRepository;
     
     @FXML
-    private VBox genresTableVBox;
-    @FXML
     private TextField searchField;
     @FXML
     private Label resetSearchLabel;   
     //table
-    @FXML
-    private TableView<Resource<Genre>> genresTable;
     @FXML
     private TableColumn<Resource<Genre>, String> genreColumn;
     @FXML
@@ -110,28 +92,15 @@ public class GenresController extends BaseAwareController implements PagedContro
     
     @Override
     public void initialize(URL url, ResourceBundle rb) { 
-        initGenresTable();
         initFilters();
-        initPaginatorPane();
+        super.setPagedTableHeaderSize(2);
+        super.initPagedTableController(genreRepository);
         initRepositoryListeners();
         initFilterListeners();
     }
-    
+       
     @Override
-    public void setPageValue() {
-        clearSelectionTable();
-        genresTable.getItems().clear();
-        try {
-            resources = genreRepository.getPagedResources(createParamString());
-            paginatorPaneController.getPaginator().setTotalElements((int) resources.getMetadata().getTotalElements());
-            genresTable.setItems(FXCollections.observableArrayList(resources.getContent().parallelStream().collect(Collectors.toList())));           
-            Helper.setHeightTable(genresTable, paginatorPaneController.getPaginator().getSize(), 2);        
-        } catch (URISyntaxException ex) {
-            logger.error(ex.getMessage());
-        }      
-    }
-    
-    private String createParamString() {
+    protected String createParamString() {
         List<String> params = new ArrayList<>();              
         if (!searchString.equals("")) {
             params.add("name=" + StringOperator.STARTS_WITH_IGNORE_CASE);
@@ -143,7 +112,8 @@ public class GenresController extends BaseAwareController implements PagedContro
         return paramStr;
     }
     
-    private void initGenresTable() {
+    @Override
+    protected void initPagedTable() {
         genreColumn.setCellValueFactory(cellData -> cellData.getValue().getContent().nameProperty());       
         
         artistsAmountColumn.setCellValueFactory(cellData -> new SimpleObjectProperty<>(cellData.getValue()));
@@ -329,20 +299,13 @@ public class GenresController extends BaseAwareController implements PagedContro
             };
 			return cell;
         });
-                
-        genresTable.getSelectionModel().selectedItemProperty().addListener(
-            (observable, oldValue, newValue) -> selectedItem = genresTable.getSelectionModel().getSelectedItem()
-        );
     }
     
-    private void initPaginatorPane() {
-        paginatorPaneController = (PaginatorPaneController) fxmlLoader.load(PaginatorPaneController.class);
-        genresTableVBox.getChildren().add(paginatorPaneController.getView());
-        paginatorPaneController.getPaginator().setSize(5);
-        paginatorPaneController.getPaginator().setSort(new Sort(new Sort.Order(Sort.Direction.ASC, "name")));
-        paginatorPaneController.initPaginator(this);
+    @Override
+    protected Sort getSort() {
+        return new Sort(new Sort.Order(Sort.Direction.ASC, "name"));
     }
-    
+   
     private void initFilterListeners() {        
         searchField.textProperty().addListener((ObservableValue, oldValue, newValue)-> {           
             resetSearchLabel.setVisible(newValue.length() > 0);
@@ -422,11 +385,5 @@ public class GenresController extends BaseAwareController implements PagedContro
             contextMenuService.show(view, mouseEvent);
         }      
     }
-    
-    private void clearSelectionTable() {
-        genresTable.getSelectionModel().clearSelection();
-        selectedItem = null;
-    }
-    
-    
+  
 }

@@ -24,6 +24,8 @@ public abstract class PagedTableController<T extends Entity> extends BaseAwareCo
     protected PagedResources<Resource<T>> resources; 
     protected PaginatorPaneController paginatorPaneController;
     protected CrudRepository<T> pagedTableRepository;
+    protected int pagedTableSize = 5;
+    protected int pagedTableHeaderSize = 1;
     
     @Autowired
     protected FXMLControllerLoader fxmlLoader;
@@ -40,15 +42,14 @@ public abstract class PagedTableController<T extends Entity> extends BaseAwareCo
     public void initPagedTableController(CrudRepository<T> pagedTableRepository) {
         this.pagedTableRepository = pagedTableRepository;
         initPagedTable(); 
-        pagedTable.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> selectedItem = pagedTable.getSelectionModel().getSelectedItem()
-        );
+        pagedTable.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> selectedItem = pagedTable.getSelectionModel().getSelectedItem());
         initPaginatorPane();
     }
     
     private void initPaginatorPane() {
         paginatorPaneController = (PaginatorPaneController) fxmlLoader.load(PaginatorPaneController.class);
         tableContainer.getChildren().add(paginatorPaneController.getView());
-        paginatorPaneController.getPaginator().setSize(5);    
+        paginatorPaneController.getPaginator().setSize(pagedTableSize);    
         paginatorPaneController.getPaginator().setSort(getSort());
         paginatorPaneController.initPaginator(this);
     }
@@ -62,7 +63,7 @@ public abstract class PagedTableController<T extends Entity> extends BaseAwareCo
             //logger.info("Paged table resources: {}", resources);
             paginatorPaneController.getPaginator().setTotalElements((int) resources.getMetadata().getTotalElements());           
             pagedTable.setItems(FXCollections.observableArrayList(resources.getContent().parallelStream().collect(Collectors.toList())));           
-            Helper.setHeightTable(pagedTable, paginatorPaneController.getPaginator().getSize());        
+            Helper.setHeightTable(pagedTable, pagedTableSize, pagedTableHeaderSize);        
         } catch (URISyntaxException ex) {
             logger.error(ex.getMessage());
         }      
@@ -71,6 +72,30 @@ public abstract class PagedTableController<T extends Entity> extends BaseAwareCo
     public void clearSelectionTable() {
         pagedTable.getSelectionModel().clearSelection();
         selectedItem = null;
+    }
+
+    public CrudRepository<T> getPagedTableRepository() {
+        return pagedTableRepository;
+    }
+
+    public void setPagedTableRepository(CrudRepository<T> pagedTableRepository) {
+        this.pagedTableRepository = pagedTableRepository;
+    }
+
+    public int getPagedTableSize() {
+        return pagedTableSize;
+    }
+
+    public void setPagedTableSize(int pagedTableSize) {
+        this.pagedTableSize = pagedTableSize;
+    }
+
+    public int getPagedTableHeaderSize() {
+        return pagedTableHeaderSize;
+    }
+
+    public void setPagedTableHeaderSize(int pagedTableHeaderSize) {
+        this.pagedTableHeaderSize = pagedTableHeaderSize;
     }
 
 }

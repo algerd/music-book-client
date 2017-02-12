@@ -13,7 +13,7 @@
 
 <AnchorPane id="AnchorPane" fx:id="view" onMouseClicked="#showContextMenu" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8.0.60" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ru.javafx.musicbook.client.controller.genres.GenresController">
     <children>
-        <VBox fx:id="genresTableVBox" spacing="20.0" AnchorPane.bottomAnchor="10.0" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="10.0">
+        <VBox fx:id="tableContainer" spacing="20.0" AnchorPane.bottomAnchor="10.0" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="10.0">
             <children>
                 <Label text="Genres" />
                 <GridPane>
@@ -37,7 +37,7 @@
                         </AnchorPane>
                     </children>
                 </GridPane>
-                <TableView fx:id="genresTable" onMouseClicked="#onMouseClickTable">
+                <TableView fx:id="pagedTable" onMouseClicked="#onMouseClickTable">
                     <columns>
                         <TableColumn fx:id="genreColumn" maxWidth="1000.0" minWidth="-Infinity" prefWidth="200.0" text="Genre" />
                         <TableColumn maxWidth="-1.0" minWidth="-1.0" prefWidth="-1.0" text="Artists">

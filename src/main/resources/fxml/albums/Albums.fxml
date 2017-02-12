@@ -20,7 +20,7 @@
 <AnchorPane id="AnchorPane" fx:id="view" onMouseClicked="#showContextMenu" prefHeight="400.0" prefWidth="600.0" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/8.0.111" fx:controller="ru.javafx.musicbook.client.controller.albums.AlbumsController">
     
     <children>
-        <VBox fx:id="albumsTableVBox" prefHeight="200.0" prefWidth="100.0" spacing="10.0" AnchorPane.bottomAnchor="10.0" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="10.0">
+        <VBox fx:id="tableContainer" prefHeight="200.0" prefWidth="100.0" spacing="10.0" AnchorPane.bottomAnchor="10.0" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="10.0">
             <children>
                 <GridPane prefHeight="150.0" prefWidth="432.0" AnchorPane.leftAnchor="10.0" AnchorPane.topAnchor="10.0">
                     <columnConstraints>
@@ -103,7 +103,7 @@
                   </HBox>
                     </children>
                 </GridPane>
-                <TableView fx:id="albumsTable" onMouseClicked="#onMouseClickTable" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="170.0">
+                <TableView fx:id="pagedTable" onMouseClicked="#onMouseClickTable" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="170.0">
                     <columns>
                         <TableColumn fx:id="rankColumn" prefWidth="75.0" text="Rank" />
                         <TableColumn fx:id="artistColumn" prefWidth="75.0" text="Artist" />

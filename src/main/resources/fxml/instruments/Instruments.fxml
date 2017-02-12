@@ -9,7 +9,7 @@
 <AnchorPane id="AnchorPane" fx:id="view" onMouseClicked="#showContextMenu" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8.0.60" xmlns:fx="http://javafx.com/fxml/1" 
             fx:controller="ru.javafx.musicbook.client.controller.instruments.InstrumentsController">   
     <children>
-        <VBox fx:id="instrumentsTableVBox" spacing="20.0" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="10.0">
+        <VBox fx:id="tableContainer" spacing="20.0" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="10.0">
             <children>
                 <Label text="Instruments" />
                 <GridPane>
@@ -34,7 +34,7 @@
                             </AnchorPane>
                         </children>
                 </GridPane>
-                <TableView fx:id="instrumentsTable" onMouseClicked="#onMouseClickTable">
+                <TableView fx:id="pagedTable" onMouseClicked="#onMouseClickTable">
                     <columns>
                         <TableColumn fx:id="instrumentColumn" minWidth="-Infinity" prefWidth="250.0" text="Instrument" />
                         <TableColumn fx:id="numberOfMusiciansColumn" maxWidth="2000.0" minWidth="-Infinity" prefWidth="100.0" text="Number of Musicians" />

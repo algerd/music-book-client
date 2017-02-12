@@ -10,32 +10,25 @@ import java.util.stream.Collectors;
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.value.ObservableValue;
-import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.Spinner;
 import javafx.scene.control.TableColumn;
-import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
-import javafx.scene.layout.VBox;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.hateoas.Link;
-import org.springframework.hateoas.PagedResources;
 import org.springframework.hateoas.Resource;
 import ru.javafx.musicbook.client.Params;
-import ru.javafx.musicbook.client.controller.BaseAwareController;
-import ru.javafx.musicbook.client.controller.paginator.PagedController;
-import ru.javafx.musicbook.client.controller.paginator.PaginatorPaneController;
+import ru.javafx.musicbook.client.controller.PagedTableController;
 import ru.javafx.musicbook.client.controller.paginator.Sort;
 import ru.javafx.musicbook.client.entity.Genre;
 import ru.javafx.musicbook.client.entity.Instrument;
 import ru.javafx.musicbook.client.entity.Musician;
 import ru.javafx.musicbook.client.fxintegrity.FXMLController;
-import ru.javafx.musicbook.client.fxintegrity.FXMLControllerLoader;
 import ru.javafx.musicbook.client.repository.GenreRepository;
 import ru.javafx.musicbook.client.repository.InstrumentRepository;
 import ru.javafx.musicbook.client.repository.MusicianRepository;
@@ -49,12 +42,8 @@ import ru.javafx.musicbook.client.utils.Helper;
     value = "/fxml/musicians/Musicians.fxml",    
     title = "Musicians")
 @Scope("prototype")
-public class MusiciansController extends BaseAwareController implements PagedController {
-    
-    private Resource<Musician> selectedItem;
-    private PagedResources<Resource<Musician>> resources; 
-    private PaginatorPaneController paginatorPaneController;
-    // filter 
+public class MusiciansController extends PagedTableController<Musician> {
+
     private Resource<Genre> resorceGenre;
     private Resource<Instrument> resorceInstrument;
     private String searchString = ""; 
@@ -62,9 +51,7 @@ public class MusiciansController extends BaseAwareController implements PagedCon
     private String order;
     private final IntegerProperty minRating = new SimpleIntegerProperty();
     private final IntegerProperty maxRating = new SimpleIntegerProperty();
-    
-    @Autowired
-    private FXMLControllerLoader fxmlLoader; 
+
     @Autowired
     private MusicianRepository musicianRepository;
     @Autowired
@@ -91,10 +78,6 @@ public class MusiciansController extends BaseAwareController implements PagedCon
     private ChoiceBox<String> orderChoiceBox;
     /* ************ musiciansTable *************** */   
     @FXML
-    private VBox musiciansTableVBox;
-    @FXML
-    private TableView<Resource<Musician>> musiciansTable;
-    @FXML
     private TableColumn<Resource<Musician>, Integer> rankColumn;  
     @FXML
     private TableColumn<Resource<Musician>, String> nameColumn;
@@ -115,8 +98,7 @@ public class MusiciansController extends BaseAwareController implements PagedCon
         initGenreChoiceBox();
         initInstrumentChoiceBox();
         initFilters();
-        initMusiciansTable();
-        initPaginatorPane();
+        super.initPagedTableController(musicianRepository); 
         initRepositoryListeners();
         initFilterListeners();      
     }
@@ -174,29 +156,18 @@ public class MusiciansController extends BaseAwareController implements PagedCon
         resetSearchLabel.setVisible(false);
     }
     
-    private void initMusiciansTable() { 
+    @Override
+    protected void initPagedTable() { 
         rankColumn.setCellValueFactory(
-            cellData -> new SimpleIntegerProperty(musiciansTable.getItems().indexOf(cellData.getValue()) + 1).asObject()
+            cellData -> new SimpleIntegerProperty(pagedTable.getItems().indexOf(cellData.getValue()) + 1).asObject()
         );
         nameColumn.setCellValueFactory(cellData -> cellData.getValue().getContent().nameProperty());
         dobColumn.setCellValueFactory(cellData -> cellData.getValue().getContent().dateOfBirthProperty());
         dodColumn.setCellValueFactory(cellData -> cellData.getValue().getContent().dateOfDeathProperty());
         countryColumn.setCellValueFactory(cellData -> cellData.getValue().getContent().countryProperty());
         ratingColumn.setCellValueFactory(cellData -> cellData.getValue().getContent().ratingProperty().asObject());        
-    
-        musiciansTable.getSelectionModel().selectedItemProperty().addListener(
-            (observable, oldValue, newValue) -> selectedItem = musiciansTable.getSelectionModel().getSelectedItem()
-        );
     }
-    
-    private void initPaginatorPane() {
-        paginatorPaneController = (PaginatorPaneController) fxmlLoader.load(PaginatorPaneController.class);
-        musiciansTableVBox.getChildren().add(paginatorPaneController.getView());
-        paginatorPaneController.getPaginator().setSize(5);    
-        paginatorPaneController.getPaginator().setSort(getSort());
-        paginatorPaneController.initPaginator(this);
-    }
-    
+   
     private void initRepositoryListeners() {
         //clear listeners
         musicianRepository.clearChangeListeners(this);                                                
@@ -249,22 +220,9 @@ public class MusiciansController extends BaseAwareController implements PagedCon
             filter();
         });              
     }
-    
+   
     @Override
-    public void setPageValue() {
-        clearSelectionTable();
-        musiciansTable.getItems().clear();        
-        try {                       
-            resources = musicianRepository.getPagedResources(createParamString());
-            paginatorPaneController.getPaginator().setTotalElements((int) resources.getMetadata().getTotalElements());           
-            musiciansTable.setItems(FXCollections.observableArrayList(resources.getContent().parallelStream().collect(Collectors.toList())));           
-            Helper.setHeightTable(musiciansTable, paginatorPaneController.getPaginator().getSize());        
-        } catch (URISyntaxException ex) {
-            logger.error(ex.getMessage());
-        }
-    }
-    
-    private String createParamString() {
+    protected String createParamString() {
         List<String> params = new ArrayList<>();       
         if (getMinRating() != Params.MIN_RATING || getMaxRating() != Params.MAX_RATING) {
             params.add("rating=" + getMinRating());
@@ -309,18 +267,14 @@ public class MusiciansController extends BaseAwareController implements PagedCon
         resetSearchLabel.setVisible(false);
     }
     
-    private Sort getSort() {
+    @Override
+    protected Sort getSort() {
         return new Sort(new Sort.Order(
            order.equals("Asc") ? Sort.Direction.ASC : Sort.Direction.DESC,
            sort.toLowerCase()
         ));
     }
-    
-    private void clearSelectionTable() {
-        musiciansTable.getSelectionModel().clearSelection();
-        selectedItem = null;
-    }
-    
+
     @FXML
     private void onMouseClickTable(MouseEvent mouseEvent) {
         boolean isShowingContextMenu = contextMenuService.getContextMenu().isShowing();     

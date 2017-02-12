@@ -6,30 +6,22 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.ResourceBundle;
-import java.util.stream.Collectors;
 import javafx.beans.property.SimpleObjectProperty;
-import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
 import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
-import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
-import javafx.scene.layout.VBox;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
-import org.springframework.hateoas.PagedResources;
 import org.springframework.hateoas.Resource;
-import ru.javafx.musicbook.client.controller.BaseAwareController;
-import ru.javafx.musicbook.client.controller.paginator.PagedController;
-import ru.javafx.musicbook.client.controller.paginator.PaginatorPaneController;
+import ru.javafx.musicbook.client.controller.PagedTableController;
 import ru.javafx.musicbook.client.controller.paginator.Sort;
 import ru.javafx.musicbook.client.entity.Instrument;
 import ru.javafx.musicbook.client.entity.Musician;
 import ru.javafx.musicbook.client.fxintegrity.FXMLController;
-import ru.javafx.musicbook.client.fxintegrity.FXMLControllerLoader;
 import ru.javafx.musicbook.client.repository.InstrumentRepository;
 import ru.javafx.musicbook.client.repository.MusicianInstrumentRepository;
 import ru.javafx.musicbook.client.repository.MusicianRepository;
@@ -37,37 +29,27 @@ import ru.javafx.musicbook.client.repository.operators.StringOperator;
 import static ru.javafx.musicbook.client.service.ContextMenuItemType.ADD_INSTRUMENT;
 import static ru.javafx.musicbook.client.service.ContextMenuItemType.DELETE_INSTRUMENT;
 import static ru.javafx.musicbook.client.service.ContextMenuItemType.EDIT_INSTRUMENT;
-import ru.javafx.musicbook.client.utils.Helper;
 
 @FXMLController(
     value = "/fxml/instruments/Instruments.fxml",    
     title = "Instruments")
 @Scope("prototype")
-public class InstrumentsController extends BaseAwareController implements PagedController {
-    
-    private Resource<Instrument> selectedItem;
-    private PagedResources<Resource<Instrument>> resources;
-    private PaginatorPaneController paginatorPaneController;
+public class InstrumentsController extends PagedTableController<Instrument> {
+
     private String searchString = "";
     
-    @Autowired
-    private FXMLControllerLoader fxmlLoader;  
     @Autowired
     private InstrumentRepository instrumentRepository; 
     @Autowired
     private MusicianRepository musicianRepository; 
     @Autowired
     private MusicianInstrumentRepository musicianInstrumentRepository;
-    
-    @FXML
-    private VBox instrumentsTableVBox;
+
     @FXML
     private TextField searchField;
     @FXML
     private Label resetSearchLabel; 
     //table
-    @FXML
-    private TableView<Resource<Instrument>> instrumentsTable;
     @FXML
     private TableColumn<Resource<Instrument>, String> instrumentColumn;
     @FXML
@@ -79,28 +61,14 @@ public class InstrumentsController extends BaseAwareController implements PagedC
     
     @Override
     public void initialize(URL url, ResourceBundle rb) { 
-        initInstrumentsTable();
         initFilters();
-        initPaginatorPane();
+        super.initPagedTableController(instrumentRepository); 
         initRepositoryListeners();
         initFilterListeners();
     }
     
     @Override
-    public void setPageValue() {
-        clearSelectionTable();
-        instrumentsTable.getItems().clear();
-        try {
-            resources = instrumentRepository.getPagedResources(createParamString());
-            paginatorPaneController.getPaginator().setTotalElements((int) resources.getMetadata().getTotalElements());
-            instrumentsTable.setItems(FXCollections.observableArrayList(resources.getContent().parallelStream().collect(Collectors.toList())));           
-            Helper.setHeightTable(instrumentsTable, paginatorPaneController.getPaginator().getSize());        
-        } catch (URISyntaxException ex) {
-            logger.error(ex.getMessage());
-        }      
-    }
-    
-    private String createParamString() {
+    protected String createParamString() {
         List<String> params = new ArrayList<>();              
         if (!searchString.equals("")) {
             params.add("name=" + StringOperator.STARTS_WITH_IGNORE_CASE);
@@ -108,11 +76,12 @@ public class InstrumentsController extends BaseAwareController implements PagedC
         }
         params.addAll(paginatorPaneController.getPaginator().getParameterList());
         String paramStr = params.isEmpty()? "" : String.join("&", params);
-        logger.info("paramStr :{}", paramStr);
+        //logger.info("paramStr :{}", paramStr);
         return paramStr;
     }
     
-    private void initInstrumentsTable() { 
+    @Override
+    protected void initPagedTable() { 
         instrumentColumn.setCellValueFactory(cellData -> cellData.getValue().getContent().nameProperty());       
         numberOfMusiciansColumn.setCellValueFactory(cellData -> new SimpleObjectProperty<>(cellData.getValue()));
         numberOfMusiciansColumn.setCellFactory(col -> {
@@ -159,20 +128,13 @@ public class InstrumentsController extends BaseAwareController implements PagedC
             };
 			return cell;
         });
-        
-        instrumentsTable.getSelectionModel().selectedItemProperty().addListener(
-            (observable, oldValue, newValue) -> selectedItem = instrumentsTable.getSelectionModel().getSelectedItem()
-        );
     }
     
-    private void initPaginatorPane() {
-        paginatorPaneController = (PaginatorPaneController) fxmlLoader.load(PaginatorPaneController.class);
-        instrumentsTableVBox.getChildren().add(paginatorPaneController.getView());
-        paginatorPaneController.getPaginator().setSize(5);
-        paginatorPaneController.getPaginator().setSort(new Sort(new Sort.Order(Sort.Direction.ASC, "name")));
-        paginatorPaneController.initPaginator(this);
+    @Override
+    protected Sort getSort() {
+        return new Sort(new Sort.Order(Sort.Direction.ASC, "name"));
     }
-    
+   
     private void initFilters() {
         resetSearchLabel.setVisible(false);
     }
@@ -198,11 +160,6 @@ public class InstrumentsController extends BaseAwareController implements PagedC
         //add listeners
         instrumentRepository.addChangeListener((observable, oldVal, newVal) -> filter(), this);
         musicianRepository.addChangeListener((observable, oldVal, newVal) -> filter(), this);       
-    }
-    
-    private void clearSelectionTable() {
-        instrumentsTable.getSelectionModel().clearSelection();
-        selectedItem = null;
     }
     
     @FXML

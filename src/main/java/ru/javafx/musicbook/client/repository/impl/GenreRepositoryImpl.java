@@ -15,6 +15,7 @@ import ru.javafx.musicbook.client.entity.Artist;
 import ru.javafx.musicbook.client.entity.Genre;
 import ru.javafx.musicbook.client.repository.GenreRepository;
 import org.springframework.core.ParameterizedTypeReference;
+import ru.javafx.musicbook.client.entity.Entity;
 import ru.javafx.musicbook.client.entity.Musician;
 import ru.javafx.musicbook.client.entity.Song;
 
@@ -33,6 +34,15 @@ public class GenreRepositoryImpl extends CrudRepositoryImpl<Genre> implements Ge
         parameters.put("projection", "get_name"); 
         parameters.put("sort", "name,asc"); 
         return getParameterizedResources(parameters);     
+    }
+    
+    @Override
+    public Resources<Resource<Genre>> findByResource(Resource<? extends Entity> resource) throws URISyntaxException {
+        return resource.getContent() instanceof Artist ? findByArtist((Resource<Artist>) resource)
+                : resource.getContent() instanceof Album ? findByAlbum((Resource<Album>) resource)
+                : resource.getContent() instanceof Song ? findBySong((Resource<Song>) resource)
+                : resource.getContent() instanceof Musician ? findByMusician((Resource<Musician>) resource)
+                : null;    
     }
     
     @Override

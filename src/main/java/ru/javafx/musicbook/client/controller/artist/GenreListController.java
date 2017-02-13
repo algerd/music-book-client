@@ -12,13 +12,13 @@ import javafx.scene.control.ListView;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
-import javafx.beans.value.ObservableValue;
 import javafx.scene.control.ListCell;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.hateoas.Link;
 import org.springframework.hateoas.Resource;
 import ru.javafx.musicbook.client.controller.BaseAwareController;
+import ru.javafx.musicbook.client.entity.Entity;
 import ru.javafx.musicbook.client.entity.Genre;
 import ru.javafx.musicbook.client.fxintegrity.FXMLController;
 import ru.javafx.musicbook.client.repository.GenreRepository;
@@ -28,16 +28,11 @@ import ru.javafx.musicbook.client.utils.Helper;
 @Scope("prototype")
 public class GenreListController extends BaseAwareController {
     
-    protected ArtistPaneController paneController;
-    
+    private Resource<? extends Entity> resource;
+
     @Autowired
     private GenreRepository genreRepository;
-    
-    public void setPaneController(ArtistPaneController paneController) {
-        this.paneController = paneController;
-        bootstrap();
-    }
-    
+   
     @FXML
     private AnchorPane genreList;
     @FXML
@@ -54,18 +49,19 @@ public class GenreListController extends BaseAwareController {
                 }
             }
         });
+        initRepositoryListeners();
     }
     
-    public void bootstrap() {
-        setListValue();
-        initRepositoryListeners();     
+    public void bootstrap(Resource<? extends Entity> resource) {
+        this.resource = resource;
+        setListValue();     
     }
     
     private void setListValue() {               
         List <Resource<Genre>> genreResources = new ArrayList<>();
         genreListView.getItems().clear();
         try {
-            genreResources.addAll(genreRepository.findByArtist(paneController.getResource()).getContent().parallelStream().collect(Collectors.toList()));                     
+            genreResources.addAll(genreRepository.findByResource(resource).getContent().parallelStream().collect(Collectors.toList()));
             if (!genreResources.isEmpty()) {
                 genreListView.getItems().addAll(genreResources);
                 sort();
@@ -82,16 +78,16 @@ public class GenreListController extends BaseAwareController {
     }
     
     private void initRepositoryListeners() {
-        //repositoryService.getArtistGenreRepository().clearChangeListeners(this);
-        genreRepository.clearChangeListeners(this);
+        genreRepository.clearUpdateListeners(this);
+        genreRepository.clearDeleteListeners(this);
         
-        //repositoryService.getArtistGenreRepository().addChangeListener((observable, oldVal, newVal) -> setListValue(), this);
-        genreRepository.addChangeListener((observable, oldVal, newVal) -> setListValue(), this);
+        genreRepository.addUpdateListener((observable, oldVal, newVal) -> setListValue(), this);
+        genreRepository.addDeleteListener((observable, oldVal, newVal) -> setListValue(), this);
     }
    
     private void sort() {
         genreListView.getSelectionModel().clearSelection();
-        genreListView.getItems().sort(Comparator.comparing(resource -> resource.getContent().getName()));
+        genreListView.getItems().sort(Comparator.comparing(res -> res.getContent().getName()));
     }  
    
     @FXML

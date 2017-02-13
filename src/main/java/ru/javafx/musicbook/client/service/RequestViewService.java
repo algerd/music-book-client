@@ -11,6 +11,7 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.hateoas.Resource;
 import org.springframework.stereotype.Service;
 import ru.javafx.musicbook.client.controller.DialogController;
+import ru.javafx.musicbook.client.controller.EntityController;
 import ru.javafx.musicbook.client.controller.MainController;
 import ru.javafx.musicbook.client.fxintegrity.BaseFxmlController;
 import ru.javafx.musicbook.client.fxintegrity.FXMLControllerLoader;
@@ -33,6 +34,13 @@ public class RequestViewService {
    
     public void show(Class<? extends BaseFxmlController> controllerClass) {
         mainController.show(fxmlLoader.load(controllerClass));        
+    }
+    
+    public void show(Class<? extends EntityController> controllerClass, Resource<? extends Entity> resource) {
+        EntityController controller = (EntityController) fxmlLoader.load(controllerClass);
+        controller.setResource(resource);
+        mainController.show(controller);
+        controller.show();
     }
     
     // вызов диалогового окна

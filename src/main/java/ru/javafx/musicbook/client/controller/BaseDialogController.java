@@ -29,16 +29,6 @@ public abstract class BaseDialogController<T extends Entity> extends BaseAwareCo
             dialogStage.setTitle("Edit"); 
             edit();
         }      
-        /*
-        if (resource != null) {           
-            dialogStage.setTitle("Edit"); 
-            edit();
-        } 
-        else {
-            dialogStage.setTitle("Add");
-            add();
-        }
-        */
     }
     
     protected void errorMessage(String errorMessage) {

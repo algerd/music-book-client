@@ -24,6 +24,7 @@ import org.springframework.hateoas.Link;
 import org.springframework.hateoas.Resource;
 import ru.javafx.musicbook.client.Params;
 import ru.javafx.musicbook.client.controller.PagedTableController;
+import ru.javafx.musicbook.client.controller.artist.ArtistPaneController;
 import ru.javafx.musicbook.client.entity.Artist;
 import ru.javafx.musicbook.client.fxintegrity.FXMLController;
 import ru.javafx.musicbook.client.controller.paginator.Sort;
@@ -34,6 +35,7 @@ import ru.javafx.musicbook.client.repository.ArtistRepository;
 import ru.javafx.musicbook.client.repository.GenreRepository;
 import ru.javafx.musicbook.client.repository.operators.StringOperator;
 import static ru.javafx.musicbook.client.service.ContextMenuItemType.*;
+import ru.javafx.musicbook.client.service.RequestViewService;
 import ru.javafx.musicbook.client.utils.Helper;
 
 @FXMLController(
@@ -49,6 +51,8 @@ public class ArtistsController extends PagedTableController<Artist> {
     private final IntegerProperty minRating = new SimpleIntegerProperty();
     private final IntegerProperty maxRating = new SimpleIntegerProperty();
    
+    @Autowired
+    private RequestViewService requestViewService;
     @Autowired
     private ArtistRepository artistRepository;
     @Autowired
@@ -233,7 +237,7 @@ public class ArtistsController extends PagedTableController<Artist> {
             }
             // если лкм выбрана запись - показать её
             if (selectedItem != null) {
-                //requestPageService.artistPane(selectedItem);
+                requestViewService.show(ArtistPaneController.class ,selectedItem);
             }           
         }      
         else if (mouseEvent.getButton() == MouseButton.SECONDARY) { 

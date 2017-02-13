@@ -10,7 +10,6 @@ import javafx.scene.layout.Pane;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.hateoas.PagedResources;
 import org.springframework.hateoas.Resource;
-import ru.javafx.musicbook.client.controller.paginator.PagedController;
 import ru.javafx.musicbook.client.controller.paginator.PaginatorPaneController;
 import ru.javafx.musicbook.client.controller.paginator.Sort;
 import ru.javafx.musicbook.client.entity.Entity;
@@ -18,7 +17,7 @@ import ru.javafx.musicbook.client.fxintegrity.FXMLControllerLoader;
 import ru.javafx.musicbook.client.repository.CrudRepository;
 import ru.javafx.musicbook.client.utils.Helper;
 
-public abstract class PagedTableController<T extends Entity> extends BaseAwareController implements PagedController {
+public abstract class PagedTableController<T extends Entity> extends BaseAwareController {
     
     protected Resource<T> selectedItem;
     protected PagedResources<Resource<T>> resources; 
@@ -54,7 +53,6 @@ public abstract class PagedTableController<T extends Entity> extends BaseAwareCo
         paginatorPaneController.initPaginator(this);
     }
     
-    @Override
     public void setPageValue() {      
         clearSelectionTable();
         pagedTable.getItems().clear();                      
@@ -63,7 +61,7 @@ public abstract class PagedTableController<T extends Entity> extends BaseAwareCo
             //logger.info("Paged table resources: {}", resources);
             paginatorPaneController.getPaginator().setTotalElements((int) resources.getMetadata().getTotalElements());           
             pagedTable.setItems(FXCollections.observableArrayList(resources.getContent().parallelStream().collect(Collectors.toList())));           
-            Helper.setHeightTable(pagedTable, pagedTableSize, pagedTableHeaderSize);        
+            Helper.setHeightTable(pagedTable, paginatorPaneController.getPaginator().getSize(), pagedTableHeaderSize);        
         } catch (URISyntaxException ex) {
             logger.error(ex.getMessage());
         }      

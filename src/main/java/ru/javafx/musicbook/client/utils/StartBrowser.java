@@ -2,12 +2,8 @@
 package ru.javafx.musicbook.client.utils;
 
 public class StartBrowser {
-    
-    public StartBrowser(String url) {
-        launch(url);      
-    }
-    
-    public void launch(String url) {
+
+    public static void launch(String url) {
         String os = System.getProperty("os.name").toLowerCase();
         Runtime rt = Runtime.getRuntime();
         

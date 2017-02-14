@@ -15,14 +15,12 @@ import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.stage.Stage;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Scope;
 import org.springframework.hateoas.Link;
 import org.springframework.hateoas.Resource;
 import ru.javafx.musicbook.client.controller.PagedTableController;
 import ru.javafx.musicbook.client.controller.paginator.Sort;
 import ru.javafx.musicbook.client.entity.ArtistReference;
-import ru.javafx.musicbook.client.entity.Genre;
 import ru.javafx.musicbook.client.fxintegrity.FXMLController;
 import ru.javafx.musicbook.client.repository.ArtistReferenceRepository;
 import static ru.javafx.musicbook.client.service.ContextMenuItemType.ADD_ARTIST_REFERENCE;
@@ -102,14 +100,10 @@ public class ArtistReferenceTableController extends PagedTableController<ArtistR
                              errorMessage += "Сбой при попытке открытия ссылки.";  
                         }                      
                     } else {  
-                        errorMessage += "На вашей платформе просмотр ссылок из браузера не поддерживается";
+                        StartBrowser.launch(selectedItem.getContent().getReference());
                     }
                 } else {
-                    
-                    errorMessage += "На вашей платформе просмотр ссылок не из приложения не поддерживается";
-                    
-                    new StartBrowser(selectedItem.getContent().getReference());
-                    
+                    StartBrowser.launch(selectedItem.getContent().getReference());            
                 }              
                 if (!errorMessage.equals("")) {
                     Alert alert = new Alert(Alert.AlertType.ERROR);
@@ -120,12 +114,10 @@ public class ArtistReferenceTableController extends PagedTableController<ArtistR
                 }               
             }           
         }
-        else if (mouseEvent.getButton() == MouseButton.SECONDARY) { 
-            
+        else if (mouseEvent.getButton() == MouseButton.SECONDARY) {            
             ArtistReference newArtistReference = new ArtistReference();
-            newArtistReference.setArtist(paneController.getResource().getId().getHref());
-            Resource<ArtistReference> newResource = new Resource<>(newArtistReference, new Link("null"));         
-            contextMenuService.add(ADD_ARTIST_REFERENCE, newResource);    
+            newArtistReference.setArtist(paneController.getResource().getId().getHref());        
+            contextMenuService.add(ADD_ARTIST_REFERENCE, new Resource<>(newArtistReference, new Link("null")));    
             if (selectedItem != null) {
                 selectedItem.getContent().setArtist(paneController.getResource().getId().getHref());
                 contextMenuService.add(EDIT_ARTIST_REFERENCE, selectedItem);

@@ -17,24 +17,34 @@ import javafx.stage.Stage;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Scope;
+import org.springframework.hateoas.Link;
 import org.springframework.hateoas.Resource;
 import ru.javafx.musicbook.client.controller.PagedTableController;
 import ru.javafx.musicbook.client.controller.paginator.Sort;
 import ru.javafx.musicbook.client.entity.ArtistReference;
+import ru.javafx.musicbook.client.entity.Genre;
 import ru.javafx.musicbook.client.fxintegrity.FXMLController;
 import ru.javafx.musicbook.client.repository.ArtistReferenceRepository;
+import static ru.javafx.musicbook.client.service.ContextMenuItemType.ADD_ARTIST_REFERENCE;
+import static ru.javafx.musicbook.client.service.ContextMenuItemType.DELETE_ARTIST_REFERENCE;
+import static ru.javafx.musicbook.client.service.ContextMenuItemType.EDIT_ARTIST_REFERENCE;
+import ru.javafx.musicbook.client.utils.StartBrowser;
 
 @FXMLController(value = "/fxml/artist/ArtistReferenceTable.fxml")
 @Scope("prototype")
 public class ArtistReferenceTableController extends PagedTableController<ArtistReference>  {
-       
+      
+    protected ArtistPaneController paneController;
+    
+    public void setPaneController(ArtistPaneController paneController) {
+        this.paneController = paneController;
+    }
+    
     @Autowired
     private ArtistReferenceRepository artistReferenceRepository; 
     
-    //@Autowired
-    //private Stage primaryStage;
     @Autowired
-    private ApplicationContext applicationContext;
+    private Stage primaryStage;
 
     @FXML
     private TableColumn<Resource<ArtistReference>, String> nameReferenceColumn;
@@ -82,21 +92,28 @@ public class ArtistReferenceTableController extends PagedTableController<ArtistR
             }
             // если лкм выбрана запись - показать веб-страницу ссылки
             if (selectedItem != null) {
-                String errorMessage = "";                
-                Desktop desktop = Desktop.getDesktop();  
-                if (desktop.isSupported(Desktop.Action.BROWSE)) {  
-                    try {  
-                         desktop.browse(new URI(selectedItem.getContent().getReference()));  
-                    } catch (URISyntaxException | IOException ex) {  
-                         errorMessage += "Сбой при попытке открытия ссылки.";  
-                    }  
-                } else {  
+                String errorMessage = "";
+                if (Desktop.isDesktopSupported()) {
+                    Desktop desktop = Desktop.getDesktop();  
+                    if (desktop.isSupported(Desktop.Action.BROWSE)) {                        
+                        try {  
+                             desktop.browse(new URI(selectedItem.getContent().getReference()));  
+                        } catch (URISyntaxException | IOException ex) {  
+                             errorMessage += "Сбой при попытке открытия ссылки.";  
+                        }                      
+                    } else {  
+                        errorMessage += "На вашей платформе просмотр ссылок из браузера не поддерживается";
+                    }
+                } else {
+                    
                     errorMessage += "На вашей платформе просмотр ссылок не из приложения не поддерживается";
+                    
+                    new StartBrowser(selectedItem.getContent().getReference());
+                    
                 }              
                 if (!errorMessage.equals("")) {
                     Alert alert = new Alert(Alert.AlertType.ERROR);
-                    //alert.initOwner(primaryStage);
-                    alert.initOwner(applicationContext.getBean("primaryStage", Stage.class));
+                    alert.initOwner(primaryStage);
                     alert.setTitle("ERROR");
                     alert.setContentText(errorMessage);           
                     alert.showAndWait();    
@@ -104,15 +121,17 @@ public class ArtistReferenceTableController extends PagedTableController<ArtistR
             }           
         }
         else if (mouseEvent.getButton() == MouseButton.SECONDARY) { 
-            /*
-            contextMenuService.add(ADD_ARTIST_REFERENCE, null);    
+            
+            ArtistReference newArtistReference = new ArtistReference();
+            newArtistReference.setArtist(paneController.getResource().getId().getHref());
+            Resource<ArtistReference> newResource = new Resource<>(newArtistReference, new Link("null"));         
+            contextMenuService.add(ADD_ARTIST_REFERENCE, newResource);    
             if (selectedItem != null) {
+                selectedItem.getContent().setArtist(paneController.getResource().getId().getHref());
                 contextMenuService.add(EDIT_ARTIST_REFERENCE, selectedItem);
                 contextMenuService.add(DELETE_ARTIST_REFERENCE, selectedItem);                           
-            }
-            */
-            //contextMenuService.show(paneController.getView(), mouseEvent);
-            contextMenuService.show(view, mouseEvent);
+            }    
+            contextMenuService.show(paneController.getView(), mouseEvent);
         }
     }
     

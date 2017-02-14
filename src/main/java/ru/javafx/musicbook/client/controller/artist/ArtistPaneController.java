@@ -51,7 +51,7 @@ public class ArtistPaneController extends EntityController<Artist> {
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        
+        includedArtistReferenceTableController.setPaneController(this);
     }
     
     @Override

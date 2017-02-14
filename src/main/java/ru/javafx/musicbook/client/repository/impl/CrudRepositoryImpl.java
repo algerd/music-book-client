@@ -41,9 +41,13 @@ public abstract class CrudRepositoryImpl<T extends Entity> extends ChangeReposit
     
     @Override
     public URI save(String rel, T entity) throws URISyntaxException {
-        URI uri = new URI(basePath + rel);           
+        URI uri = new URI(basePath + rel); 
+        
+        logger.info("{}", uri.getPath());
+        logger.info("{}", entity);
+        
         HttpEntity<Entity> request = new HttpEntity<>(entity, sessionManager.createSessionHeaders());
-        RestTemplate restTemplate = new RestTemplate();
+        RestTemplate restTemplate = new RestTemplate();  
         return restTemplate.exchange(uri, HttpMethod.POST, request, String.class).getHeaders().getLocation();
     }
     
@@ -58,8 +62,8 @@ public abstract class CrudRepositoryImpl<T extends Entity> extends ChangeReposit
     }
      
     @Override
-    public Resource<T> update(Resource<T> resource) throws URISyntaxException {    
-        URI uri = new URI(resource.getLink("self").getHref());           
+    public Resource<T> update(Resource<T> resource) throws URISyntaxException {  
+        URI uri = new URI(resource.getLink("self").getHref()); 
         HttpEntity request = new HttpEntity(resource.getContent(), sessionManager.createSessionHeaders());
         RestTemplate restTemplate = new RestTemplate();
         restTemplate.put(uri, request); 

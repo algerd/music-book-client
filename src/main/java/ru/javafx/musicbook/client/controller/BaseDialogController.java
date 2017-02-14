@@ -22,7 +22,7 @@ public abstract class BaseDialogController<T extends Entity> extends BaseAwareCo
     @Override
     public void setResource(Resource<T> resource) { 
         this.resource = resource;
-        if (resource == null || !resource.hasLink("self")) {
+        if (resource == null || !resource.hasLink("self") || resource.getLink("self").getHref().equals("null")) {
             dialogStage.setTitle("Add");
             add();
         } else {

@@ -35,6 +35,8 @@ public class ArtistPaneController extends EntityController<Artist> {
     @FXML
     private GenreListController includedGenreListController;  
     @FXML
+    private ArtistReferenceTableController includedArtistReferenceTableController;
+    @FXML
     private TabPane artistTabPane;
     @FXML
     private Tab detailsTab;         

@@ -153,11 +153,9 @@ public class InstrumentsController extends PagedTableController<Instrument> {
     }
     
     private void initRepositoryListeners() {       
-        //clear listeners
         instrumentRepository.clearChangeListeners(this); 
         musicianRepository.clearChangeListeners(this);                         
         
-        //add listeners
         instrumentRepository.addChangeListener((observable, oldVal, newVal) -> filter(), this);
         musicianRepository.addChangeListener((observable, oldVal, newVal) -> filter(), this);       
     }

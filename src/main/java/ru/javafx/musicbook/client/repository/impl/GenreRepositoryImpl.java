@@ -37,15 +37,6 @@ public class GenreRepositoryImpl extends CrudRepositoryImpl<Genre> implements Ge
     }
     
     @Override
-    public Resources<Resource<Genre>> findByResource(Resource<? extends Entity> resource) throws URISyntaxException {
-        return resource.getContent() instanceof Artist ? findByArtist((Resource<Artist>) resource)
-                : resource.getContent() instanceof Album ? findByAlbum((Resource<Album>) resource)
-                : resource.getContent() instanceof Song ? findBySong((Resource<Song>) resource)
-                : resource.getContent() instanceof Musician ? findByMusician((Resource<Musician>) resource)
-                : null;    
-    }
-    
-    @Override
     public Resources<Resource<Genre>> findByArtist(Resource<Artist> resource) throws URISyntaxException {
         Map<String, Object> parameters = new HashMap<>();
         parameters.put("artist", resource.getId().getHref());

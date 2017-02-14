@@ -47,7 +47,7 @@
                                                                 <Label text="Rating" GridPane.rowIndex="1" />
                                                                 <Label fx:id="nameLabel" text="Label" GridPane.columnIndex="1" />
                                                                 <Label fx:id="ratingLabel" text="Label" GridPane.columnIndex="1" GridPane.rowIndex="1" />
-                                                                <fx:include fx:id="includedGenreList" source="GenreList.fxml" GridPane.columnIndex="1" GridPane.rowIndex="2" />                         
+                                                                <fx:include fx:id="includedGenreList" source="../genre/GenreList.fxml" GridPane.columnIndex="1" GridPane.rowIndex="2" />                         
                                                             </children>
                                                         </GridPane>
                                                     </children>

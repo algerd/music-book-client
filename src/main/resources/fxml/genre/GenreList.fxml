@@ -7,7 +7,7 @@
 <?import javafx.scene.layout.*?>
 
 <AnchorPane id="AnchorPane" xmlns="http://javafx.com/javafx/8.0.60" xmlns:fx="http://javafx.com/fxml/1" 
-            fx:controller="ru.javafx.musicbook.client.controller.artist.GenreListController">
+            fx:controller="ru.javafx.musicbook.client.controller.genre.GenreListController">
     
     <ListView fx:id="genreListView" onMouseClicked="#onMouseClickGenreList" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
         <cursor>

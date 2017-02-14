@@ -1,4 +1,4 @@
-package ru.javafx.musicbook.client.controller.artist;
+package ru.javafx.musicbook.client.controller.genre;
 
 import java.net.URISyntaxException;
 import java.net.URL;
@@ -17,9 +17,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.hateoas.Link;
 import org.springframework.hateoas.Resource;
+import org.springframework.hateoas.Resources;
 import ru.javafx.musicbook.client.controller.BaseAwareController;
+import ru.javafx.musicbook.client.entity.Album;
+import ru.javafx.musicbook.client.entity.Artist;
 import ru.javafx.musicbook.client.entity.Entity;
 import ru.javafx.musicbook.client.entity.Genre;
+import ru.javafx.musicbook.client.entity.Musician;
+import ru.javafx.musicbook.client.entity.Song;
 import ru.javafx.musicbook.client.fxintegrity.FXMLController;
 import ru.javafx.musicbook.client.repository.GenreRepository;
 import ru.javafx.musicbook.client.utils.Helper;
@@ -61,17 +66,26 @@ public class GenreListController extends BaseAwareController {
         List <Resource<Genre>> genreResources = new ArrayList<>();
         genreListView.getItems().clear();
         try {
-            genreResources.addAll(genreRepository.findByResource(resource).getContent().parallelStream().collect(Collectors.toList()));
-            if (!genreResources.isEmpty()) {
-                genreListView.getItems().addAll(genreResources);
-                sort();
+            Resources<Resource<Genre>> resources = resource.getContent() instanceof Artist ? genreRepository.findByArtist((Resource<Artist>) resource)
+                    : resource.getContent() instanceof Album ? genreRepository.findByAlbum((Resource<Album>) resource)
+                    : resource.getContent() instanceof Song ? genreRepository.findBySong((Resource<Song>) resource)
+                    : resource.getContent() instanceof Musician ? genreRepository.findByMusician((Resource<Musician>) resource)
+                    : null;           
+            if (resources != null) {
+                genreResources.addAll(resources.getContent().parallelStream().collect(Collectors.toList()));
+                if (!genreResources.isEmpty()) {
+                    genreListView.getItems().addAll(genreResources);
+                    sort();
+                } else {
+                    Genre emptyGenre = new Genre();
+                    emptyGenre.setName("Unknown");
+                    Resource<Genre> resorceGenre = new Resource<>(emptyGenre, new Link(Genre.DEFAULT_GENRE));
+                    genreListView.getItems().add(resorceGenre);
+                }                     
+                Helper.setHeightList(genreListView, 8); 
             } else {
-                Genre emptyGenre = new Genre();
-                emptyGenre.setName("Unknown");
-                Resource<Genre> resorceGenre = new Resource<>(emptyGenre, new Link(Genre.DEFAULT_GENRE));
-                genreListView.getItems().add(resorceGenre);
-            }                     
-            Helper.setHeightList(genreListView, 8);  
+                throw new NullPointerException();
+            }  
         } catch (URISyntaxException ex) {
             logger.error(ex.getMessage());
         }     

@@ -1,6 +1,7 @@
 
 package ru.javafx.musicbook.client.controller.artist;
 
+import ru.javafx.musicbook.client.controller.genre.GenreListController;
 import java.net.URL;
 import java.util.ResourceBundle;
 import javafx.beans.value.ObservableValue;

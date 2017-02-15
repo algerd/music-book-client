@@ -1,16 +1,20 @@
 package ru.javafx.musicbook.client.controller.musician;
 
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.ResourceBundle;
+import java.util.stream.Collectors;
 import javafx.fxml.FXML;
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.DatePicker;
 import javafx.scene.layout.AnchorPane;
+import javafx.util.StringConverter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
+import org.springframework.hateoas.Resource;
 import ru.javafx.musicbook.client.controller.BaseDialogController;
 import ru.javafx.musicbook.client.entity.Artist;
 import ru.javafx.musicbook.client.entity.Musician;
@@ -19,6 +23,7 @@ import ru.javafx.musicbook.client.fxintegrity.FXMLController;
 import ru.javafx.musicbook.client.repository.ArtistRepository;
 import ru.javafx.musicbook.client.repository.MusicianGroupRepository;
 import ru.javafx.musicbook.client.repository.MusicianRepository;
+import ru.javafx.musicbook.client.repository.impl.WrapChangedEntity;
 import ru.javafx.musicbook.client.utils.Helper;
 
 @FXMLController(
@@ -40,9 +45,9 @@ public class MusicianGroupDialogController extends BaseDialogController<Musician
     @FXML
     private AnchorPane view;
     @FXML
-    private ChoiceBox<Musician> musicianChoiceBox;
+    private ChoiceBox<Resource<Musician>> musicianChoiceBox;
     @FXML
-    private ChoiceBox<Artist> artistChoiceBox;
+    private ChoiceBox<Resource<Artist>> artistChoiceBox;
     @FXML
     private DatePicker startDatePicker;
     @FXML
@@ -51,40 +56,138 @@ public class MusicianGroupDialogController extends BaseDialogController<Musician
     @Override
     public void initialize(URL url, ResourceBundle rb) {
         Helper.initDatePicker(startDatePicker, true);
-        Helper.initDatePicker(endDatePicker, true);       
+        Helper.initDatePicker(endDatePicker, true); 
+        initMusicianChoiceBox();
+        initArtistChoiceBox();
     }  
     
+    private void initMusicianChoiceBox() {
+        musicianChoiceBox.setConverter(new StringConverter<Resource<Musician>>() {
+            @Override
+            public String toString(Resource<Musician> res) {
+                return res == null? null : res.getContent().getName();
+            }
+            @Override
+            public Resource<Musician> fromString(String string) {
+                return null;
+            }
+        });      
+        List <Resource<Musician>> musicianResources = new ArrayList<>();
+        try {
+            musicianResources.addAll(musicianRepository.findAllNames().getContent().parallelStream().collect(Collectors.toList()));         
+            musicianChoiceBox.getItems().addAll(musicianResources);          
+        } catch (URISyntaxException ex) {
+            logger.error(ex.getMessage());
+        }
+    }
+    
+    private void selectMusicianChoiceBox(String path) {
+        musicianChoiceBox.getItems().forEach(res -> {             
+            if (res.getId().getHref().equals(path)) {
+                musicianChoiceBox.getSelectionModel().select(res);
+                return;
+            }              
+        });
+    }
+    
+    private void initArtistChoiceBox() {
+        artistChoiceBox.setConverter(new StringConverter<Resource<Artist>>() {
+            @Override
+            public String toString(Resource<Artist> res) {
+                return res == null? null : res.getContent().getName();
+            }
+            @Override
+            public Resource<Artist> fromString(String string) {
+                return null;
+            }
+        });        
+        List <Resource<Artist>> artistResources = new ArrayList<>();
+        try {
+            artistResources.addAll(artistRepository.findAllNames().getContent().parallelStream().collect(Collectors.toList()));         
+            artistChoiceBox.getItems().addAll(artistResources);           
+        } catch (URISyntaxException ex) {
+            logger.error(ex.getMessage());
+        }      
+    }
+    
+    private void selectArtistChoiceBox(String path) {
+        artistChoiceBox.getItems().forEach(res -> {             
+            if (res.getId().getHref().equals(path)) {
+                artistChoiceBox.getSelectionModel().select(res);
+                return;
+            }              
+        });
+    }
+       
     @FXML
+    @Override
     protected void handleOkButton() {
         if (isInputValid()) {
-           
+            musicianGroup.setStartDate(startDatePicker.getEditor().getText());
+            musicianGroup.setEndDate(endDatePicker.getEditor().getText());
+            musicianGroup.setArtist(artistChoiceBox.getValue().getId().getHref());
+            musicianGroup.setMusician(musicianChoiceBox.getValue().getId().getHref());
+            
+            try { 
+                if (edit) {
+                    musicianGroupRepository.update(resource);
+                    musicianGroupRepository.setUpdated(new WrapChangedEntity<>(oldResource, resource));
+                } else {
+                    musicianGroupRepository.save(musicianGroup);
+                    musicianGroupRepository.setAdded(new WrapChangedEntity<>(null, resource));
+                }  
+            } catch (URISyntaxException ex) {
+                logger.error(ex.getMessage());
+            } 
+            
             dialogStage.close();
         }
     }
     
     @Override
-    protected void edit() {     
-       
-        //startDatePicker.setValue(startDatePicker.getConverter().fromString(musicianGroup.getStart_date()));
-        //endDatePicker.setValue(endDatePicker.getConverter().fromString(musicianGroup.getEnd_date()));            
+    protected void add() {     
+          if (resource == null) {
+            musicianGroup = new MusicianGroup();
+            selectArtistChoiceBox(Artist.DEFAULT_ARTIST);         
+        } else {
+            musicianGroup = resource.getContent();           
+            selectArtistChoiceBox(musicianGroup.getArtist());
+        }
+        selectMusicianChoiceBox(Musician.DEFAULT_MUSICIAN);  
     }
     
     @Override
-    protected void add() {     
-          
+    protected void edit() {     
+        edit = true;
+        musicianGroup = musicianGroupRepository.getResource(path) resource.getContent();
+        oldResource = new Resource<>(musicianGroup.clone(), resource.getLinks());       
+        try {
+            selectArtistChoiceBox(artistRepository.getResource(resource.getLink("artist").getHref()).getId().getHref());
+            selectMusicianChoiceBox(musicianRepository.getResource(resource.getLink("musician").getHref()).getId().getHref());
+        } catch (URISyntaxException ex) {
+            logger.error(ex.getMessage());
+        }      
+        startDatePicker.setValue(startDatePicker.getConverter().fromString(musicianGroup.getStartDate()));
+        endDatePicker.setValue(endDatePicker.getConverter().fromString(musicianGroup.getEndDate()));            
     }
-    
+      
     @Override
     protected boolean isInputValid() {
         String errorMessage = "";
-        
-        if (musicianChoiceBox.getValue() == null) {
-            errorMessage += "Выберите музыканта из списка \n";
-        }       
-        if (artistChoiceBox.getValue() == null) {
-            errorMessage += "Выберите группу из списка \n";
+        if (musicianChoiceBox.getValue().getId().getHref().equals(Musician.DEFAULT_MUSICIAN) 
+                && artistChoiceBox.getValue().getId().getHref().equals(Artist.DEFAULT_ARTIST)) {
+            errorMessage += "Выберите группу или музыканта из списка \n";
+        }   
+        /*
+        try {
+            logger.info("valid: {}", musicianGroupRepository.findByMusicianAndArtist(musicianChoiceBox.getValue(), artistChoiceBox.getValue()));
+            if (!edit) {
+
+            }
+        } catch (URISyntaxException ex) {
+            logger.error(ex.getMessage());
         }
-        
+        */
         try { 
             startDatePicker.getConverter().fromString(startDatePicker.getEditor().getText());
         } catch (DateTimeParseException e) {

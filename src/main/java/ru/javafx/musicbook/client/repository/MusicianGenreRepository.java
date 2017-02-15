@@ -9,7 +9,7 @@ import ru.javafx.musicbook.client.entity.MusicianGenre;
 
 public interface MusicianGenreRepository extends CrudRepository<MusicianGenre> {
     
-    Resource<MusicianGenre> findByMusicianAndGenre(Resource<Musician> artist, Resource<Genre> genre) throws URISyntaxException;
+    Resource<MusicianGenre> findByMusicianAndGenre(Resource<Musician> musician, Resource<Genre> genre) throws URISyntaxException;
     
     long countMusiciansByGenre(Resource<Genre> genreResource) throws URISyntaxException;
     

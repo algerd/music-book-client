@@ -78,6 +78,16 @@ public class MusicianGroup  implements Entity {
         }
         return true;
     }
+    
+    @Override
+    public MusicianGroup clone() {
+        MusicianGroup musicianGroup = new MusicianGroup();
+        musicianGroup.setStartDate(getStartDate());
+        musicianGroup.setEndDate(getEndDate());
+        musicianGroup.setArtist(artist);
+        musicianGroup.setMusician(musician);
+        return musicianGroup;
+    }
 
     @Override
     public String toString() {

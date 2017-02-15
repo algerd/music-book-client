@@ -181,6 +181,7 @@ public class MusicianTableController extends PagedTableController<Musician> {
             contextMenuService.add(ADD_MUSICIAN_GROUP, new Resource<>(musicianGroup, new Link("null")));
 
             if (selectedItem != null) {
+                //selectedItem надо перевести в MusicianGroup
                 contextMenuService.add(EDIT_MUSICIAN_GROUP, selectedItem);
                 contextMenuService.add(DELETE_MUSICIAN_GROUP, selectedItem);                       
             }

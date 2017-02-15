@@ -37,4 +37,12 @@ public class MusicianRepositoryImpl extends CrudRepositoryImpl<Musician> impleme
         return getParameterizedResources(parameters, new String[]{relPath, "search", "by_genre"});       
     }
     
+    @Override
+    public Resources<Resource<Musician>> findAllNames() throws URISyntaxException {
+        Map<String, Object> parameters = new HashMap<>();
+        parameters.put("projection", "get_name"); 
+        parameters.put("sort", "name,asc"); 
+        return getParameterizedResources(parameters);
+    }
+    
 }

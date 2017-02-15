@@ -32,9 +32,8 @@ public enum ContextMenuItemType {
         
         ADD_ARTIST_REFERENCE(new MenuItem("Add Artist Reference")),
         EDIT_ARTIST_REFERENCE(new MenuItem("Edit Artist Reference")),
-        DELETE_ARTIST_REFERENCE(new MenuItem("Delete Artist Reference"));
-        
-        /*
+        DELETE_ARTIST_REFERENCE(new MenuItem("Delete Artist Reference")),
+               
         ADD_MUSICIAN_ALBUM(new MenuItem("Add Musician To Album")),
         EDIT_MUSICIAN_ALBUM(new MenuItem("Edit Musician In Album")),
         DELETE_MUSICIAN_ALBUM(new MenuItem("Delete Musician From Album")),
@@ -45,10 +44,10 @@ public enum ContextMenuItemType {
         
         ADD_MUSICIAN_SONG(new MenuItem("Add Musician To Song")),
         EDIT_MUSICIAN_SONG(new MenuItem("Edit Musician In Song")),
-        DELETE_MUSICIAN_SONG(new MenuItem("Delete Musician From Song")),        
+        DELETE_MUSICIAN_SONG(new MenuItem("Delete Musician From Song"));       
                       
-        SEPARATOR(new SeparatorMenuItem());
-        */
+        //SEPARATOR(new SeparatorMenuItem());
+        
         private final MenuItem item;
         
         private ContextMenuItemType(MenuItem item) {

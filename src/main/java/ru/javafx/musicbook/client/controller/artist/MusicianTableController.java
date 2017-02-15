@@ -14,15 +14,20 @@ import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
+import org.springframework.hateoas.Link;
 import org.springframework.hateoas.Resource;
 import ru.javafx.musicbook.client.controller.PagedTableController;
 import ru.javafx.musicbook.client.controller.paginator.Sort;
 import ru.javafx.musicbook.client.entity.Instrument;
 import ru.javafx.musicbook.client.entity.Musician;
+import ru.javafx.musicbook.client.entity.MusicianGroup;
 import ru.javafx.musicbook.client.fxintegrity.FXMLController;
 import ru.javafx.musicbook.client.repository.InstrumentRepository;
 import ru.javafx.musicbook.client.repository.MusicianGroupRepository;
 import ru.javafx.musicbook.client.repository.MusicianRepository;
+import static ru.javafx.musicbook.client.service.ContextMenuItemType.ADD_MUSICIAN_GROUP;
+import static ru.javafx.musicbook.client.service.ContextMenuItemType.DELETE_MUSICIAN_GROUP;
+import static ru.javafx.musicbook.client.service.ContextMenuItemType.EDIT_MUSICIAN_GROUP;
 import ru.javafx.musicbook.client.utils.Helper;
 
 @FXMLController(value = "/fxml/artist/MusicianTable.fxml")
@@ -145,17 +150,14 @@ public class MusicianTableController extends PagedTableController<Musician> {
     }
     
     private void initRepositoryListeners() {
-        /*
-        repositoryService.getMusicianGroupRepository().clearChangeListeners(this);                
-        repositoryService.getMusicianRepository().clearDeleteListeners(this);           
-        repositoryService.getMusicianRepository().clearUpdateListeners(this);   
-        repositoryService.getMusicianInstrumentRepository().clearChangeListeners(this);          
+        musicianGroupRepository.clearChangeListeners(this);
+        musicianRepository.clearChangeListeners(this);
+        instrumentRepository.clearChangeListeners(this);
         
-        repositoryService.getMusicianGroupRepository().addChangeListener(this::changed, this);                
-        repositoryService.getMusicianRepository().addDeleteListener(this::changed, this);           
-        repositoryService.getMusicianRepository().addUpdateListener(this::changed, this);   
-        repositoryService.getMusicianInstrumentRepository().addChangeListener(this::changed, this);
-        */
+        musicianGroupRepository.addChangeListener((observable, oldVal, newVal) -> setPageValue(), this);
+        musicianRepository.addUpdateListener((observable, oldVal, newVal) -> setPageValue(), this);
+        instrumentRepository.addUpdateListener((observable, oldVal, newVal) -> setPageValue(), this);
+        instrumentRepository.addDeleteListener((observable, oldVal, newVal) -> setPageValue(), this);
     }
     
     @FXML
@@ -174,17 +176,15 @@ public class MusicianTableController extends PagedTableController<Musician> {
             }           
         }
         else if (mouseEvent.getButton() == MouseButton.SECONDARY) { 
-            /*
-            MusicianGroupEntity newMusicianGroup = new MusicianGroupEntity();
-            newMusicianGroup.setId_artist(paneController.getArtist().getId());       
-            contextMenuService.add(ADD_MUSICIAN_GROUP, newMusicianGroup);
+            MusicianGroup musicianGroup = new MusicianGroup();
+            musicianGroup.setArtist(paneController.getResource().getId().getHref());      
+            contextMenuService.add(ADD_MUSICIAN_GROUP, new Resource<>(musicianGroup, new Link("null")));
 
             if (selectedItem != null) {
                 contextMenuService.add(EDIT_MUSICIAN_GROUP, selectedItem);
                 contextMenuService.add(DELETE_MUSICIAN_GROUP, selectedItem);                       
             }
-            contextMenuService.show(paneController.getView(), mouseEvent);
-            */
+            contextMenuService.show(paneController.getView(), mouseEvent);      
         }
     }
 

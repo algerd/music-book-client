@@ -26,17 +26,14 @@ import ru.javafx.musicbook.client.repository.ArtistReferenceRepository;
 import static ru.javafx.musicbook.client.service.ContextMenuItemType.ADD_ARTIST_REFERENCE;
 import static ru.javafx.musicbook.client.service.ContextMenuItemType.DELETE_ARTIST_REFERENCE;
 import static ru.javafx.musicbook.client.service.ContextMenuItemType.EDIT_ARTIST_REFERENCE;
+import ru.javafx.musicbook.client.utils.Helper;
 import ru.javafx.musicbook.client.utils.StartBrowser;
 
 @FXMLController(value = "/fxml/artist/ArtistReferenceTable.fxml")
 @Scope("prototype")
-public class ArtistReferenceTableController extends PagedTableController<ArtistReference>  {
+public class ArtistReferenceTableController extends PagedTableController<ArtistReference> {
       
     protected ArtistPaneController paneController;
-    
-    public void setPaneController(ArtistPaneController paneController) {
-        this.paneController = paneController;
-    }
     
     @Autowired
     private ArtistReferenceRepository artistReferenceRepository; 
@@ -50,9 +47,13 @@ public class ArtistReferenceTableController extends PagedTableController<ArtistR
     private TableColumn<Resource<ArtistReference>, String> referenceColumn;   
     
     @Override
-    public void initialize(URL url, ResourceBundle rb) {
+    public void initialize(URL url, ResourceBundle rb) {                        
+    }
+    
+    public void bootstrap(ArtistPaneController paneController) {
+        this.paneController = paneController;
         super.initPagedTableController(artistReferenceRepository); 
-        initRepositoryListeners();                          
+        initRepositoryListeners();
     }
     
     @Override
@@ -63,7 +64,8 @@ public class ArtistReferenceTableController extends PagedTableController<ArtistR
     
     @Override
     protected String createParamString() {
-        List<String> params = new ArrayList<>();              
+        List<String> params = new ArrayList<>();  
+        params.add("artist.id=" + Helper.getId(paneController.getResource()));
         params.addAll(paginatorPaneController.getPaginator().getParameterList());
         String paramStr = params.isEmpty()? "" : String.join("&", params);
         return paramStr;

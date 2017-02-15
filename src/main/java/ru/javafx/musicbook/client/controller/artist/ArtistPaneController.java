@@ -37,6 +37,8 @@ public class ArtistPaneController extends EntityController<Artist> {
     @FXML
     private ArtistReferenceTableController includedArtistReferenceTableController;
     @FXML
+    private AlbumTableController includedAlbumTableController;
+    @FXML
     private TabPane artistTabPane;
     @FXML
     private Tab detailsTab;         
@@ -51,7 +53,6 @@ public class ArtistPaneController extends EntityController<Artist> {
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        includedArtistReferenceTableController.setPaneController(this);
     }
     
     @Override
@@ -59,6 +60,8 @@ public class ArtistPaneController extends EntityController<Artist> {
         showDetails();
         initRepositoryListeners();
         includedGenreListController.bootstrap(resource);
+        includedArtistReferenceTableController.bootstrap(this);
+        includedAlbumTableController.bootstrap(this);
         
         artistTabPane.getSelectionModel().select(detailsTab);
     }

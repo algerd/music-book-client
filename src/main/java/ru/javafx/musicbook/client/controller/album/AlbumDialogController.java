@@ -160,26 +160,19 @@ public class AlbumDialogController extends BaseDialogController<Album> {
     
     @Override
     protected void add() {
-        try {
-            Resource<Artist> artistResource;
-            if (resource == null) {
-                album = new Album();
-                artistResource = artistRepository.getResource(album.getArtist());           
-            } else {
-                album = resource.getContent();
-                oldResource = new Resource<>(album.clone(), resource.getLinks());               
-                artistResource = artistRepository.getResource(resource.getLink("artist").getHref());                                                                                     
-            }
-            selectArtist(artistResource);
-        } catch (URISyntaxException ex) {
-            logger.error(ex.getMessage());
+        if (resource == null) {
+            album = new Album();
+            selectArtist(Artist.DEFAULT_ARTIST);            
+        } else {
+            album = resource.getContent();            
+            selectArtist(album.getArtist());
         }
         initGenreChoiceCheckBox();
     }
     
-    private void selectArtist(Resource<Artist> artistResource) {
+    private void selectArtist(String path) {
         artistField.getItems().forEach(res -> {             
-            if (res.getContent().getName().equals(artistResource.getContent().getName())) {
+            if (res.getId().getHref().equals(path)) {
                 artistField.getSelectionModel().select(res);
                 return;
             }              
@@ -192,8 +185,7 @@ public class AlbumDialogController extends BaseDialogController<Album> {
         album = resource.getContent();
         oldResource = new Resource<>(album.clone(), resource.getLinks());      
         try {
-            Resource<Artist> artistResource = artistRepository.getResource(resource.getLink("artist").getHref());    
-            selectArtist(artistResource);
+            selectArtist(artistRepository.getResource(resource.getLink("artist").getHref()).getId().getHref());
         } catch (URISyntaxException ex) {
             logger.error(ex.getMessage());
         }        

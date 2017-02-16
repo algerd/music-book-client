@@ -229,6 +229,18 @@ public abstract class CrudRepositoryImpl<T extends Entity> extends ChangeReposit
     }
     
     @Override
+    public Long countQuery(String[] rels) throws URISyntaxException {
+        return countQuery(basePath, rels);
+    }    
+    @Override
+    public Long countQuery(String path, String... rels) throws URISyntaxException {
+        return new Traverson(new URI(path), MediaTypes.HAL_JSON)
+                .follow(rels)
+                .withHeaders(sessionManager.createSessionHeaders())
+                .toObject(Long.class);       
+    }
+    
+    @Override
     public Long countParameterizedQuery(Map<String, Object> parameters, String... rels) throws URISyntaxException {
         return CrudRepositoryImpl.this.countParameterizedQuery(basePath, parameters, rels);
     }

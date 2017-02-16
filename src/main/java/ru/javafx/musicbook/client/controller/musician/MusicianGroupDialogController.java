@@ -146,14 +146,9 @@ public class MusicianGroupDialogController extends BaseDialogController<Musician
     
     @Override
     protected void add() {     
-          if (resource == null) {
-            musicianGroup = new MusicianGroup();
-            selectArtistChoiceBox(Artist.DEFAULT_ARTIST);         
-        } else {
-            musicianGroup = resource.getContent();           
-            selectArtistChoiceBox(musicianGroup.getArtist());
-        }
-        selectMusicianChoiceBox(Musician.DEFAULT_MUSICIAN);  
+        musicianGroup = (resource == null) ? new MusicianGroup() : resource.getContent();      
+        selectArtistChoiceBox(musicianGroup.getArtist());
+        selectMusicianChoiceBox(musicianGroup.getMusician()); 
     }
     
     @Override

@@ -12,4 +12,8 @@ public interface MusicianGroupRepository extends CrudRepository<MusicianGroup> {
         
     Resource<MusicianGroup> findByMusicianAndArtist(Resource<Musician> musician, Resource<Artist> artist) throws URISyntaxException;
     
+    Resource<MusicianGroup> findByMusician(Resource<Musician> musician) throws URISyntaxException;
+    
+    Resource<MusicianGroup> findByArtist(Resource<Artist> artist) throws URISyntaxException;
+        
 }

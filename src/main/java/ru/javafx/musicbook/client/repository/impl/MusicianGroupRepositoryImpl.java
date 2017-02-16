@@ -28,5 +28,19 @@ public class MusicianGroupRepositoryImpl extends CrudRepositoryImpl<MusicianGrou
         parameters.put("artist", artist.getId().getHref());
         return getParameterizedResource(parameters, new String[]{relPath, "search", "findByMusicianAndArtist"});
     }
+    
+    @Override
+    public Resource<MusicianGroup> findByMusician(Resource<Musician> musician) throws URISyntaxException {
+        Map<String, Object> parameters = new HashMap<>();
+        parameters.put("musician", musician.getId().getHref());
+        return getParameterizedResource(parameters, new String[]{relPath, "search", "findByMusician"});
+    }
+    
+    @Override
+    public Resource<MusicianGroup> findByArtist(Resource<Artist> artist) throws URISyntaxException {
+        Map<String, Object> parameters = new HashMap<>();
+        parameters.put("artist", artist.getId().getHref());
+        return getParameterizedResource(parameters, new String[]{relPath, "search", "findByArtist"});
+    }
   
 }

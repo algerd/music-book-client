@@ -77,7 +77,7 @@ public class MusicianTableController extends PagedTableController<Musician> {
                     this.setText(null);
                     if (!empty) {                                               
                         try {     
-                            this.setText(musicianGroupRepository.getResource(item.getLink("musicianGroups").getHref()).getContent().getStartDate());                           
+                            this.setText(musicianGroupRepository.findByMusician(item).getContent().getStartDate());                           
                         } catch (URISyntaxException ex) {
                             logger.error(ex.getMessage());
                         }  
@@ -96,7 +96,7 @@ public class MusicianTableController extends PagedTableController<Musician> {
                     this.setText(null);
                     if (!empty) {  
                         try {     
-                            this.setText(musicianGroupRepository.getResource(item.getLink("musicianGroups").getHref()).getContent().getEndDate());                           
+                            this.setText(musicianGroupRepository.findByMusician(item).getContent().getEndDate());                           
                         } catch (URISyntaxException ex) {
                             logger.error(ex.getMessage());
                         }  
@@ -161,7 +161,7 @@ public class MusicianTableController extends PagedTableController<Musician> {
     }
     
     @FXML
-    private void onMouseClickMusicianTable(MouseEvent mouseEvent) { 
+    private void onMouseClickMusicianTable(MouseEvent mouseEvent) throws URISyntaxException { 
         boolean isShowingContextMenu = contextMenuService.getContextMenu().isShowing();       
         contextMenuService.clear();   
         if (mouseEvent.getButton() == MouseButton.PRIMARY) {
@@ -179,11 +179,10 @@ public class MusicianTableController extends PagedTableController<Musician> {
             MusicianGroup musicianGroup = new MusicianGroup();
             musicianGroup.setArtist(paneController.getResource().getId().getHref());      
             contextMenuService.add(ADD_MUSICIAN_GROUP, new Resource<>(musicianGroup, new Link("null")));
-
             if (selectedItem != null) {
-                //selectedItem надо перевести в MusicianGroup
-                contextMenuService.add(EDIT_MUSICIAN_GROUP, selectedItem);
-                contextMenuService.add(DELETE_MUSICIAN_GROUP, selectedItem);                       
+                Resource<MusicianGroup> resMusicianGroup = musicianGroupRepository.findByMusician(selectedItem);
+                contextMenuService.add(EDIT_MUSICIAN_GROUP, resMusicianGroup);
+                contextMenuService.add(DELETE_MUSICIAN_GROUP, resMusicianGroup);                       
             }
             contextMenuService.show(paneController.getView(), mouseEvent);      
         }

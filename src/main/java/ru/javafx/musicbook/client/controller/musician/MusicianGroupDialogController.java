@@ -159,7 +159,7 @@ public class MusicianGroupDialogController extends BaseDialogController<Musician
     @Override
     protected void edit() {     
         edit = true;
-        musicianGroup = musicianGroupRepository.getResource(path) resource.getContent();
+        musicianGroup = resource.getContent();
         oldResource = new Resource<>(musicianGroup.clone(), resource.getLinks());       
         try {
             selectArtistChoiceBox(artistRepository.getResource(resource.getLink("artist").getHref()).getId().getHref());

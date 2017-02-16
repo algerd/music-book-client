@@ -39,4 +39,11 @@ public interface CrudRepository<T extends Entity> extends ChangeRepository<T> {
     PagedResources<Resource<T>> getPagedResources(String path, Map<String, Object> parameters, String... rels) throws URISyntaxException;
     
     PagedResources<Resource<T>> getPagedResources(String rel) throws URISyntaxException;
+    
+    Long countParameterizedQuery(Map<String, Object> parameters, String... rels) throws URISyntaxException;
+    Long countParameterizedQuery(String path, Map<String, Object> parameters, String... rels) throws URISyntaxException;
+
+    Boolean existsParameterizedQuery(Map<String, Object> parameters, String... rels) throws URISyntaxException;
+    Boolean existsParameterizedQuery(String path, Map<String, Object> parameters, String... rels) throws URISyntaxException;
+
 }

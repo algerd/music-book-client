@@ -177,17 +177,14 @@ public class MusicianGroupDialogController extends BaseDialogController<Musician
         if (musicianChoiceBox.getValue().getId().getHref().equals(Musician.DEFAULT_MUSICIAN) 
                 && artistChoiceBox.getValue().getId().getHref().equals(Artist.DEFAULT_ARTIST)) {
             errorMessage += "Выберите группу или музыканта из списка \n";
-        }   
-        /*
-        try {
-            logger.info("valid: {}", musicianGroupRepository.findByMusicianAndArtist(musicianChoiceBox.getValue(), artistChoiceBox.getValue()));
-            if (!edit) {
-
+        }         
+        try {           
+            if (!edit && musicianGroupRepository.countByMusicianAndArtist(musicianChoiceBox.getValue(), artistChoiceBox.getValue()) > 0) {
+                errorMessage += "Такой музыкант уже есть в группе \n";
             }
         } catch (URISyntaxException ex) {
             logger.error(ex.getMessage());
-        }
-        */
+        }        
         try { 
             startDatePicker.getConverter().fromString(startDatePicker.getEditor().getText());
         } catch (DateTimeParseException e) {

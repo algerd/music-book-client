@@ -30,6 +30,14 @@ public class MusicianGroupRepositoryImpl extends CrudRepositoryImpl<MusicianGrou
     }
     
     @Override
+    public Long countByMusicianAndArtist(Resource<Musician> musician, Resource<Artist> artist) throws URISyntaxException {
+        Map<String, Object> parameters = new HashMap<>();
+        parameters.put("musician", musician.getId().getHref());
+        parameters.put("artist", artist.getId().getHref());
+        return countParameterizedQuery(parameters, new String[]{relPath, "search", "countByMusicianAndArtist"});
+    }
+    
+    @Override
     public Resource<MusicianGroup> findByMusician(Resource<Musician> musician) throws URISyntaxException {
         Map<String, Object> parameters = new HashMap<>();
         parameters.put("musician", musician.getId().getHref());

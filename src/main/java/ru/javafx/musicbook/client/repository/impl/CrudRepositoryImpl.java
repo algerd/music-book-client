@@ -228,4 +228,30 @@ public abstract class CrudRepositoryImpl<T extends Entity> extends ChangeReposit
         return restTemplate.exchange(uri, HttpMethod.GET, new HttpEntity<>(headers), pagedResourcesType).getBody();           
     }
     
+    @Override
+    public Long countParameterizedQuery(Map<String, Object> parameters, String... rels) throws URISyntaxException {
+        return CrudRepositoryImpl.this.countParameterizedQuery(basePath, parameters, rels);
+    }
+    @Override
+    public Long countParameterizedQuery(String path, Map<String, Object> parameters, String... rels) throws URISyntaxException {
+        return new Traverson(new URI(path), MediaTypes.HAL_JSON)
+                .follow(rels)
+                .withHeaders(sessionManager.createSessionHeaders())
+                .withTemplateParameters(parameters)
+                .toObject(new ParameterizedTypeReference<Long>() {});       
+    }
+    
+    @Override
+    public Boolean existsParameterizedQuery(Map<String, Object> parameters, String... rels) throws URISyntaxException {
+        return existsParameterizedQuery(basePath, parameters, rels);
+    }
+    @Override
+    public Boolean existsParameterizedQuery(String path, Map<String, Object> parameters, String... rels) throws URISyntaxException {
+        return new Traverson(new URI(path), MediaTypes.HAL_JSON)
+                .follow(rels)
+                .withHeaders(sessionManager.createSessionHeaders())
+                .withTemplateParameters(parameters)
+                .toObject(new ParameterizedTypeReference<Boolean>() {});       
+    }
+       
 }

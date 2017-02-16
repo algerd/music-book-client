@@ -29,7 +29,7 @@ public class ImageHelper {
     
     @Autowired
     private SessionManager sessionManager;
-    
+    /*
     public String writeImage2(Image image, String imageFormat) {
         try {
             BufferedImage bImage = SwingFXUtils.fromFXImage(image, null);            
@@ -46,7 +46,7 @@ public class ImageHelper {
         }
         return null;
     }
-    
+    */
     public HttpStatus postImage(String ref, Image image, String imageFormat) {
         try {             
             BufferedImage bImage = SwingFXUtils.fromFXImage(image, null);            

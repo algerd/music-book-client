@@ -9,16 +9,19 @@ import javafx.fxml.FXML;
 import javafx.scene.control.Label;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
+import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.text.Text;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
+import org.springframework.hateoas.Resource;
 import ru.javafx.musicbook.client.controller.EntityController;
 import ru.javafx.musicbook.client.entity.Artist;
 import ru.javafx.musicbook.client.fxintegrity.FXMLController;
 import ru.javafx.musicbook.client.repository.ArtistRepository;
+import ru.javafx.musicbook.client.repository.impl.WrapChangedEntity;
 import static ru.javafx.musicbook.client.service.ContextMenuItemType.ADD_ARTIST;
 import static ru.javafx.musicbook.client.service.ContextMenuItemType.DELETE_ARTIST;
 import static ru.javafx.musicbook.client.service.ContextMenuItemType.EDIT_ARTIST;
@@ -71,8 +74,14 @@ public class ArtistPaneController extends EntityController<Artist> {
     private void showDetails() {   
         nameLabel.textProperty().bind(resource.getContent().nameProperty());                                 
         ratingLabel.textProperty().bind(resource.getContent().ratingProperty().asString());
-        commentText.textProperty().bind(resource.getContent().descriptionProperty());  
-        //artistImageView.setImage(ImageUtil.readImage(file));      
+        commentText.textProperty().bind(resource.getContent().descriptionProperty());       
+        showImage();       
+    }
+    
+    private void showImage() {
+        if (resource.hasLink("get_image")) {
+            artistImageView.setImage(new Image(resource.getLink("get_image").getHref()));  
+        } 
     }
     
     private void initRepositoryListeners() {
@@ -83,23 +92,19 @@ public class ArtistPaneController extends EntityController<Artist> {
         artistRepository.addUpdateListener(this::updatedArtist, this);
     }
     
-    private void deletedArtist(ObservableValue observable, Object oldVal, Object newVal) {
-        /*
-        ArtistEntity newEntity = ((WrapChangedEntity<ArtistEntity>) newVal).getNew();
-        if (newEntity.getId() == artist.getId()) {
+    private void deletedArtist(ObservableValue observable, Object oldVal, Object newVal) {    
+        Resource<Artist> oldResource = ((WrapChangedEntity<Resource<Artist>>) oldVal).getOld();
+        if (oldResource.getId().equals(resource.getId())) {
             view.setVisible(false);
-        }
-        */
+        }    
     }
     
-    private void updatedArtist(ObservableValue observable, Object oldVal, Object newVal) {
-        /*
-        if (file.lastModified() != imageLastModified) {
-            artistImageView.setImage(ImageUtil.readImage(file));
-            imageLastModified = file.lastModified();
-        }
-        */
-        includedGenreListController.bootstrap(resource);       
+    private void updatedArtist(ObservableValue observable, Object oldVal, Object newVal) {       
+        Resource<Artist> newResource = ((WrapChangedEntity<Resource<Artist>>) newVal).getNew();
+        if (newResource.getId().equals(resource.getId())) {         
+            includedGenreListController.bootstrap(resource);
+            showImage();
+        }     
     }
     
     @FXML

@@ -26,7 +26,7 @@
                                             <children>
                                                 <StackPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="204.0" prefWidth="204.0" style="-fx-border-width: 1; -fx-border-color: silver;">
                                                     <children>
-                                                       <ImageView fx:id="artistImageView" fitHeight="200.0" fitWidth="200.0" pickOnBounds="true" preserveRatio="true" />
+                                                        <ImageView fx:id="artistImageView" fitHeight="200.0" fitWidth="200.0" pickOnBounds="true" preserveRatio="true" />
                                                     </children>
                                                 </StackPane>
                                                 <AnchorPane>

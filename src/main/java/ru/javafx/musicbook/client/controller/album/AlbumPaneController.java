@@ -4,8 +4,6 @@ package ru.javafx.musicbook.client.controller.album;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.ResourceBundle;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javafx.beans.value.ObservableValue;
 import javafx.fxml.FXML;
 import javafx.scene.control.Hyperlink;
@@ -52,6 +50,8 @@ public class AlbumPaneController extends EntityController<Album>  {
     @FXML
     private GenreListController includedGenreListController;  
     @FXML
+    private MusicianTableController includedMusicianTableController;
+    @FXML
     private TabPane albumTabPane;
     @FXML
     private Tab detailsTab; 
@@ -79,6 +79,7 @@ public class AlbumPaneController extends EntityController<Album>  {
         showDetails();
         initRepositoryListeners();
         includedGenreListController.bootstrap(resource);
+        includedMusicianTableController.bootstrap(this);
         albumTabPane.getSelectionModel().select(detailsTab);
     }
     

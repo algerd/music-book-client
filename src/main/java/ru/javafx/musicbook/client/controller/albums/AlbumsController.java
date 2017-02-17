@@ -27,6 +27,8 @@ import org.springframework.hateoas.Link;
 import org.springframework.hateoas.Resource;
 import ru.javafx.musicbook.client.Params;
 import ru.javafx.musicbook.client.controller.PagedTableController;
+import ru.javafx.musicbook.client.controller.album.AlbumPaneController;
+import ru.javafx.musicbook.client.controller.artist.ArtistPaneController;
 import ru.javafx.musicbook.client.controller.paginator.Sort;
 import ru.javafx.musicbook.client.entity.Album;
 import ru.javafx.musicbook.client.entity.Genre;
@@ -38,6 +40,7 @@ import ru.javafx.musicbook.client.repository.operators.StringOperator;
 import static ru.javafx.musicbook.client.service.ContextMenuItemType.ADD_ALBUM;
 import static ru.javafx.musicbook.client.service.ContextMenuItemType.DELETE_ALBUM;
 import static ru.javafx.musicbook.client.service.ContextMenuItemType.EDIT_ALBUM;
+import ru.javafx.musicbook.client.service.RequestViewService;
 import ru.javafx.musicbook.client.utils.Helper;
 
 @FXMLController(
@@ -56,6 +59,8 @@ public class AlbumsController extends PagedTableController<Album> {
     private final IntegerProperty minYear = new SimpleIntegerProperty();
     private final IntegerProperty maxYear = new SimpleIntegerProperty();
     
+    @Autowired
+    private RequestViewService requestViewService;
     @Autowired
     private ArtistRepository artistRepository;
     @Autowired
@@ -313,7 +318,7 @@ public class AlbumsController extends PagedTableController<Album> {
             }
             // если лкм выбрана запись - показать её
             if (selectedItem != null) {
-                //requestPageService.albumPane(selectedItem);
+                requestViewService.show(AlbumPaneController.class, selectedItem);
             }           
         }
         else if (mouseEvent.getButton() == MouseButton.SECONDARY) { 

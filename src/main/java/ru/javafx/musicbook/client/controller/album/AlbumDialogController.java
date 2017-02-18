@@ -160,13 +160,8 @@ public class AlbumDialogController extends BaseDialogController<Album> {
     
     @Override
     protected void add() {
-        if (resource == null) {
-            album = new Album();
-            selectArtist(Artist.DEFAULT_ARTIST);            
-        } else {
-            album = resource.getContent();            
-            selectArtist(album.getArtist());
-        }
+        album = (resource == null) ? new Album() : resource.getContent();
+        selectArtist(album.getArtist());
         initGenreChoiceCheckBox();
     }
     

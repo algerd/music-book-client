@@ -202,37 +202,30 @@ public class SongDialogController extends BaseDialogController<Song> {
     @Override
     protected void add() {
         try {
-            Resource<Artist> artistResource;
-            Resource<Album> albumResource;
-            if (resource == null) {
-                song = new Song();
-                albumResource = albumRepository.getResource(song.getAlbum());
-            } else {
-                song = resource.getContent();
-                oldResource = new Resource<>(song.clone(), resource.getLinks()); 
-                albumResource = albumRepository.getResource(resource.getLink("album").getHref());
-            }
-            artistResource = artistRepository.getResource(albumResource.getLink("artist").getHref()); 
+            song = (resource == null) ? new Song() : resource.getContent();
+            Resource<Album> albumResource = albumRepository.getResource(song.getAlbum());           
+            Resource<Artist> artistResource = artistRepository.getResource(albumResource.getLink("artist").getHref()); 
             selectArtist(artistResource);
-            selectAlbum(albumResource);
+            selectAlbum(song.getAlbum());
         } catch (URISyntaxException ex) {
             logger.error(ex.getMessage());
         }
         initGenreChoiceCheckBox();
     }
-    
-    private void selectAlbum(Resource<Album> albumResource) {
+
+    private void selectAlbum(String path) {
         albumField.getItems().forEach(res -> {             
-            if (res.getContent().getName().equals(albumResource.getContent().getName())) {
+            if (res.getId().getHref().equals(path)) {
                 albumField.getSelectionModel().select(res);
                 return;
             }              
         });
     }
-    
+
     private void selectArtist(Resource<Artist> artistResource) {
+        String path = artistResource.getId().getHref();
         artistField.getItems().forEach(res -> {             
-            if (res.getContent().getName().equals(artistResource.getContent().getName())) {
+            if (res.getId().getHref().equals(path)) {
                 artistField.getSelectionModel().select(res);
                 return;
             }              
@@ -248,7 +241,7 @@ public class SongDialogController extends BaseDialogController<Song> {
             Resource<Album> albumResource = albumRepository.getResource(resource.getLink("album").getHref());    
             Resource<Artist> artistResource = artistRepository.getResource(albumResource.getLink("artist").getHref());                        
             selectArtist(artistResource);
-            selectAlbum(albumResource);
+            selectAlbum(albumResource.getId().getHref());
         } catch (URISyntaxException ex) {
             logger.error(ex.getMessage());
         }        

@@ -52,6 +52,9 @@ public class AlbumPaneController extends EntityController<Album>  {
     @FXML
     private MusicianTableController includedMusicianTableController;
     @FXML
+    private SongTableController includedSongTableController;
+    
+    @FXML
     private TabPane albumTabPane;
     @FXML
     private Tab detailsTab; 
@@ -80,6 +83,7 @@ public class AlbumPaneController extends EntityController<Album>  {
         initRepositoryListeners();
         includedGenreListController.bootstrap(resource);
         includedMusicianTableController.bootstrap(this);
+        includedSongTableController.bootstrap(this);
         albumTabPane.getSelectionModel().select(detailsTab);
     }
     

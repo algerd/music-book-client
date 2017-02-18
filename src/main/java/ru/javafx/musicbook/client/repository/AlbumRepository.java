@@ -13,4 +13,6 @@ public interface AlbumRepository extends CrudRepository<Album> {
     Resources<Resource<Album>> findByArtist(Resource<Artist> resource) throws URISyntaxException;
            
     Resources<Resource<Album>> findByGenre(Resource<Genre> resource) throws URISyntaxException;
+    
+    Resources<Resource<Album>> findAllNames() throws URISyntaxException;
 }

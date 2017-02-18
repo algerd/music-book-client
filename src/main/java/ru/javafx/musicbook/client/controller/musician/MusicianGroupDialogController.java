@@ -33,7 +33,6 @@ import ru.javafx.musicbook.client.utils.Helper;
 public class MusicianGroupDialogController extends BaseDialogController<MusicianGroup> {
    
     private MusicianGroup musicianGroup;  
-    private final List<Artist> artists = new ArrayList<>();
     
     @Autowired
     private MusicianRepository musicianRepository;

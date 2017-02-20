@@ -18,30 +18,34 @@ import ru.javafx.musicbook.client.controller.BaseDialogController;
 import ru.javafx.musicbook.client.entity.Album;
 import ru.javafx.musicbook.client.entity.Artist;
 import ru.javafx.musicbook.client.entity.Musician;
-import ru.javafx.musicbook.client.entity.MusicianAlbum;
+import ru.javafx.musicbook.client.entity.MusicianSong;
+import ru.javafx.musicbook.client.entity.Song;
 import ru.javafx.musicbook.client.fxintegrity.FXMLController;
 import ru.javafx.musicbook.client.repository.AlbumRepository;
 import ru.javafx.musicbook.client.repository.ArtistRepository;
-import ru.javafx.musicbook.client.repository.MusicianAlbumRepository;
 import ru.javafx.musicbook.client.repository.MusicianRepository;
+import ru.javafx.musicbook.client.repository.MusicianSongRepository;
+import ru.javafx.musicbook.client.repository.SongRepository;
 import ru.javafx.musicbook.client.repository.impl.WrapChangedEntity;
 
 @FXMLController(
-    value = "/fxml/musician/MusicianAlbumDialog.fxml",    
-    title = "Musician Album Dialog Window")
+    value = "/fxml/musician/MusicianSongDialog.fxml",    
+    title = "Musician Song Dialog Window")
 @Scope("prototype")
-public class MusicianAlbumDialogController extends BaseDialogController<MusicianAlbum> {
+public class MusicianSongDialogController extends BaseDialogController<MusicianSong> {
     
-    private MusicianAlbum musicianAlbum;  
+    private MusicianSong musicianSong;
     
     @Autowired
     private MusicianRepository musicianRepository;
     @Autowired
     private ArtistRepository artistRepository;
     @Autowired
-    private AlbumRepository albumRepository;    
+    private AlbumRepository albumRepository; 
     @Autowired
-    private MusicianAlbumRepository musicianAlbumRepository;
+    private SongRepository songRepository;     
+    @Autowired
+    private MusicianSongRepository musicianSongRepository;
     
     @FXML
     private ChoiceBox<Resource<Musician>> musicianChoiceBox;
@@ -49,14 +53,19 @@ public class MusicianAlbumDialogController extends BaseDialogController<Musician
     private ChoiceBox<Resource<Artist>> artistChoiceBox;
     @FXML
     private ChoiceBox<Resource<Album>> albumChoiceBox;
+    @FXML
+    private ChoiceBox<Resource<Song>> songChoiceBox;
     
     @Override
     public void initialize(URL url, ResourceBundle rb) {
         initMusicianChoiceBox();
         initArtistChoiceBox();
         initAlbumChoiceBox();
+        initSongChoiceBox();
         // При выборе другого артиста - обновить список альбомов в ChoiceBox
-        artistChoiceBox.getSelectionModel().selectedItemProperty().addListener(this::changeAlbumChoiceCheckBox);    
+        artistChoiceBox.getSelectionModel().selectedItemProperty().addListener(this::changeAlbumChoiceCheckBox);   
+        // При выборе другого альбома - обновить список песен в ChoiceBox
+        albumChoiceBox.getSelectionModel().selectedItemProperty().addListener(this::changeSongChoiceCheckBox);   
     }
     
     private void initMusicianChoiceBox() {
@@ -138,7 +147,29 @@ public class MusicianAlbumDialogController extends BaseDialogController<Musician
             }              
         });
     }
-
+    
+    private void initSongChoiceBox() {       
+        songChoiceBox.setConverter(new StringConverter<Resource<Song>>() {
+            @Override
+            public String toString(Resource<Song> res) {
+                return res == null? null : res.getContent().getName();
+            }
+            @Override
+            public Resource<Song> fromString(String string) {
+                return null;
+            }
+        });              
+    }
+    
+    private void selectSongChoiceBox(String path) {
+        songChoiceBox.getItems().forEach(res -> {             
+            if (res.getId().getHref().equals(path)) {
+                songChoiceBox.getSelectionModel().select(res);
+                return;
+            }              
+        });
+    }
+    
     private void changeAlbumChoiceCheckBox(ObservableValue<? extends Object> observable, Resource<Artist> oldValue, Resource<Artist> newValue) {
         try { 
             Resource<Artist> resArtist = artistChoiceBox.getSelectionModel().getSelectedItem();
@@ -149,50 +180,68 @@ public class MusicianAlbumDialogController extends BaseDialogController<Musician
             logger.error(ex.getMessage());
         }      
     }
-   
+    
+    private void changeSongChoiceCheckBox(ObservableValue<? extends Object> observable, Resource<Album> oldValue, Resource<Album> newValue) {
+        songChoiceBox.getItems().clear();
+        if (!albumChoiceBox.getItems().isEmpty()) {
+            try { 
+                Resource<Album> resAlbum = albumChoiceBox.getSelectionModel().getSelectedItem();            
+                songChoiceBox.getItems().addAll(songRepository.findByAlbum(resAlbum).getContent().parallelStream().collect(Collectors.toList()));        
+                songChoiceBox.getSelectionModel().selectFirst();
+            } catch (URISyntaxException ex) {
+                logger.error(ex.getMessage());
+            } 
+        }
+    }
+    
     @FXML
     @Override
     protected void handleOkButton() {
         if (isInputValid()) {
-            musicianAlbum.setAlbum(albumChoiceBox.getValue().getId().getHref());
-            musicianAlbum.setMusician(musicianChoiceBox.getValue().getId().getHref());           
+            musicianSong.setSong(songChoiceBox.getValue().getId().getHref());
+            musicianSong.setMusician(musicianChoiceBox.getValue().getId().getHref());           
             try { 
                 if (edit) {
-                    musicianAlbumRepository.update(resource);
-                    musicianAlbumRepository.setUpdated(new WrapChangedEntity<>(oldResource, resource));
+                    musicianSongRepository.update(resource);
+                    musicianSongRepository.setUpdated(new WrapChangedEntity<>(oldResource, resource));
                 } else {
-                    musicianAlbumRepository.save(musicianAlbum);
-                    musicianAlbumRepository.setAdded(new WrapChangedEntity<>(null, resource));
+                    musicianSongRepository.save(musicianSong);
+                    musicianSongRepository.setAdded(new WrapChangedEntity<>(null, resource));
                 }  
             } catch (URISyntaxException ex) {
                 logger.error(ex.getMessage());
-            }        
+            }           
             dialogStage.close();
         }
     }
     
     @Override
     protected void add() {     
-        musicianAlbum = (resource == null) ? new MusicianAlbum() : resource.getContent();      
+        musicianSong = (resource == null) ? new MusicianSong() : resource.getContent();      
         try {
-            Resource<Album> resAlbum = albumRepository.getResource(musicianAlbum.getAlbum());
-            selectArtistChoiceBox(artistRepository.getResource(resAlbum.getLink("artist").getHref()).getId().getHref());
+            Resource<Song> resSong = songRepository.getResource(musicianSong.getSong());
+            Resource<Album> resAlbum = albumRepository.getResource(resSong.getLink("album").getHref());
+            Resource<Artist> resArtist = artistRepository.getResource(resAlbum.getLink("artist").getHref());
+            selectArtistChoiceBox(resArtist.getId().getHref());
+            selectAlbumChoiceBox(resAlbum.getId().getHref());
         } catch (URISyntaxException ex) {
             logger.error(ex.getMessage());
         }           
-        selectAlbumChoiceBox(musicianAlbum.getAlbum());
-        selectMusicianChoiceBox(musicianAlbum.getMusician()); 
+        selectMusicianChoiceBox(musicianSong.getMusician()); 
     }
     
     @Override
     protected void edit() {     
         edit = true;
-        musicianAlbum = resource.getContent();
-        oldResource = new Resource<>(musicianAlbum.clone(), resource.getLinks());       
+        musicianSong = resource.getContent();
+        oldResource = new Resource<>(musicianSong.clone(), resource.getLinks());       
         try {
-            Resource<Album> resAlbum = albumRepository.getResource(resource.getLink("album").getHref());
-            selectArtistChoiceBox(artistRepository.getResource(resAlbum.getLink("artist").getHref()).getId().getHref());          
+            Resource<Song> resSong = songRepository.getResource(resource.getLink("song").getHref());
+            Resource<Album> resAlbum = albumRepository.getResource(resSong.getLink("album").getHref());
+            Resource<Artist> resArtist = artistRepository.getResource(resAlbum.getLink("artist").getHref());
+            selectArtistChoiceBox(resArtist.getId().getHref());          
             selectAlbumChoiceBox(resAlbum.getId().getHref());
+            selectSongChoiceBox(resSong.getId().getHref());
             selectMusicianChoiceBox(musicianRepository.getResource(resource.getLink("musician").getHref()).getId().getHref());
         } catch (URISyntaxException ex) {
             logger.error(ex.getMessage());
@@ -203,16 +252,11 @@ public class MusicianAlbumDialogController extends BaseDialogController<Musician
     protected boolean isInputValid() {
         String errorMessage = "";                        
         try {             
-            if (albumChoiceBox.getValue() == null) {
-                errorMessage += "Выберите группу c альбомом из списка \n";
-            }      
-            else if (musicianChoiceBox.getValue().getId().getHref().equals(Musician.DEFAULT_MUSICIAN) 
-                    && albumChoiceBox.getValue().getId().getHref().equals(Album.DEFAULT_ALBUM)
-                    && artistChoiceBox.getValue().getId().getHref().equals(Artist.DEFAULT_ARTIST)) {
-                errorMessage += "Выберите группу, альбом или музыканта из списка \n";
-            } 
-            else if (!edit && musicianAlbumRepository.countByMusicianAndAlbum(musicianChoiceBox.getValue(), albumChoiceBox.getValue()) > 0) {
-                errorMessage += "Такой музыкант уже есть в альбоме \n";
+            if (songChoiceBox.getValue() == null) {
+                errorMessage += "Выберите песню из списка \n";
+            }
+            else if (!edit && musicianSongRepository.countByMusicianAndSong(musicianChoiceBox.getValue(), songChoiceBox.getValue()) > 0) {
+                errorMessage += "Такой музыкант уже есть в песне \n";
             }
         } catch (URISyntaxException ex) {
             logger.error(ex.getMessage());
@@ -225,6 +269,6 @@ public class MusicianAlbumDialogController extends BaseDialogController<Musician
             errorMessage(errorMessage);          
             return false;
         }   
-    }    
-
+    } 
+    
 }

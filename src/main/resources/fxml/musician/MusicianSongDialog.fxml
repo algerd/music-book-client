@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.*?>
+<?import java.util.*?>
+<?import javafx.scene.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<AnchorPane id="AnchorPane" fx:id="view" xmlns="http://javafx.com/javafx/8.0.60" xmlns:fx="http://javafx.com/fxml/1" 
+            fx:controller="ru.javafx.musicbook.client.controller.musician.MusicianSongDialogController">
+    <children>
+        <VBox spacing="10.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="10.0">
+            <children>
+                <GridPane>
+                    <columnConstraints>
+                        <ColumnConstraints hgrow="SOMETIMES" prefWidth="75.0" />
+                        <ColumnConstraints hgrow="SOMETIMES" prefWidth="250.0" />
+                    </columnConstraints>
+                    <rowConstraints>
+                        <RowConstraints prefHeight="30.0" vgrow="SOMETIMES" />
+                        <RowConstraints prefHeight="30.0" vgrow="SOMETIMES" />
+                        <RowConstraints prefHeight="30.0" vgrow="SOMETIMES" />
+                        <RowConstraints prefHeight="30.0" vgrow="SOMETIMES" />
+                    </rowConstraints>
+                    <children>
+                        <Label text="Musician" />
+                        <Label text="Artist" GridPane.rowIndex="1" />
+                        <Label text="Album" GridPane.rowIndex="2" />
+                        <Label text="Song" GridPane.rowIndex="3" />
+                        <ChoiceBox fx:id="musicianChoiceBox" prefWidth="250.0" GridPane.columnIndex="1" />
+                        <ChoiceBox fx:id="artistChoiceBox" prefWidth="250.0" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+                        <ChoiceBox fx:id="albumChoiceBox" prefWidth="250.0" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+                        <ChoiceBox fx:id="songChoiceBox" prefWidth="250.0" GridPane.columnIndex="1" GridPane.rowIndex="3" />
+                    </children>
+                </GridPane>
+                <ButtonBar prefHeight="40.0" prefWidth="200.0">
+                    <buttons>
+                        <Button mnemonicParsing="false" onMouseClicked="#handleOkButton" text="OK" />
+                        <Button mnemonicParsing="false" onMouseClicked="#handleCancelButton" text="Cancel" />
+                    </buttons>
+                </ButtonBar>
+            </children>
+        </VBox>
+    </children>
+</AnchorPane>
+   

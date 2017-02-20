@@ -1,5 +1,5 @@
 
-package ru.javafx.musicbook.client.controller.album;
+package ru.javafx.musicbook.client.controller.song;
 
 import java.net.URISyntaxException;
 import java.net.URL;
@@ -20,26 +20,27 @@ import ru.javafx.musicbook.client.controller.PagedTableController;
 import ru.javafx.musicbook.client.controller.paginator.Sort;
 import ru.javafx.musicbook.client.entity.Instrument;
 import ru.javafx.musicbook.client.entity.Musician;
-import ru.javafx.musicbook.client.entity.MusicianAlbum;
+import ru.javafx.musicbook.client.entity.MusicianSong;
+import ru.javafx.musicbook.client.entity.Song;
 import ru.javafx.musicbook.client.fxintegrity.FXMLController;
 import ru.javafx.musicbook.client.repository.InstrumentRepository;
 import ru.javafx.musicbook.client.repository.MusicianAlbumRepository;
 import ru.javafx.musicbook.client.repository.MusicianRepository;
-import static ru.javafx.musicbook.client.service.ContextMenuItemType.ADD_MUSICIAN_ALBUM;
-import static ru.javafx.musicbook.client.service.ContextMenuItemType.DELETE_MUSICIAN_ALBUM;
-import static ru.javafx.musicbook.client.service.ContextMenuItemType.EDIT_MUSICIAN_ALBUM;
+import static ru.javafx.musicbook.client.service.ContextMenuItemType.ADD_MUSICIAN_SONG;
+import static ru.javafx.musicbook.client.service.ContextMenuItemType.DELETE_MUSICIAN_SONG;
+import static ru.javafx.musicbook.client.service.ContextMenuItemType.EDIT_MUSICIAN_SONG;
 import ru.javafx.musicbook.client.utils.Helper;
 
-@FXMLController(value = "/fxml/album/MusicianTable.fxml")
+@FXMLController(value = "/fxml/song/MusicianTable.fxml")
 @Scope("prototype")
 public class MusicianTableController extends PagedTableController<Musician> {
     
-    protected AlbumPaneController paneController;
+    protected SongPaneController paneController;
     
     @Autowired
     private MusicianRepository musicianRepository;
     @Autowired
-    private MusicianAlbumRepository musicianAlbumRepository;
+    private MusicianSongRepository musicianSongRepository;
     @Autowired
     private InstrumentRepository instrumentRepository;
     
@@ -54,7 +55,7 @@ public class MusicianTableController extends PagedTableController<Musician> {
     public void initialize(URL url, ResourceBundle rb) {            
     }
     
-    public void bootstrap(AlbumPaneController paneController) {
+    public void bootstrap(SongPaneController paneController) {
         this.paneController = paneController;
         super.initPagedTableController(musicianRepository); 
         initRepositoryListeners();
@@ -97,7 +98,7 @@ public class MusicianTableController extends PagedTableController<Musician> {
     @Override
     protected String createParamString() {
         List<String> params = new ArrayList<>();  
-        params.add("album.id=" + Helper.getId(paneController.getResource()));
+        params.add("song.id=" + Helper.getId(paneController.getResource()));
         params.addAll(paginatorPaneController.getPaginator().getParameterList());
         String paramStr = params.isEmpty()? "" : String.join("&", params);
         return paramStr;
@@ -109,16 +110,16 @@ public class MusicianTableController extends PagedTableController<Musician> {
     }
     
     private void initRepositoryListeners() {
-        musicianAlbumRepository.clearChangeListeners(this);
+        musicianSongRepository.clearChangeListeners(this);
         musicianRepository.clearChangeListeners(this);
         instrumentRepository.clearChangeListeners(this);
         
-        musicianAlbumRepository.addChangeListener((observable, oldVal, newVal) -> setPageValue(), this);
+        musicianSongRepository.addChangeListener((observable, oldVal, newVal) -> setPageValue(), this);
         musicianRepository.addUpdateListener((observable, oldVal, newVal) -> setPageValue(), this);
         instrumentRepository.addUpdateListener((observable, oldVal, newVal) -> setPageValue(), this);
         instrumentRepository.addDeleteListener((observable, oldVal, newVal) -> setPageValue(), this);
     }
-   
+    
     @FXML
     private void onMouseClickTable(MouseEvent mouseEvent) throws URISyntaxException { 
         boolean isShowingContextMenu = contextMenuService.getContextMenu().isShowing();       
@@ -135,13 +136,13 @@ public class MusicianTableController extends PagedTableController<Musician> {
             }           
         }
         else if (mouseEvent.getButton() == MouseButton.SECONDARY) { 
-            MusicianAlbum musicianAlbum = new MusicianAlbum();
-            musicianAlbum.setAlbum(paneController.getResource().getId().getHref());      
-            contextMenuService.add(ADD_MUSICIAN_ALBUM, new Resource<>(musicianAlbum, new Link("null")));
+            MusicianSong musicianSong = new MusicianSong();
+            musicianSong.setSong(paneController.getResource().getId().getHref());      
+            contextMenuService.add(ADD_MUSICIAN_SONG, new Resource<>(musicianSong, new Link("null")));
             if (selectedItem != null) {
-                Resource<MusicianAlbum> resMusicianAlbum = musicianAlbumRepository.findByMusician(selectedItem);
-                contextMenuService.add(EDIT_MUSICIAN_ALBUM, resMusicianAlbum);
-                contextMenuService.add(DELETE_MUSICIAN_ALBUM, resMusicianAlbum);                       
+                Resource<MusicianSong> resMusicianSong = musicianSongRepository.findByMusician(selectedItem);
+                contextMenuService.add(EDIT_MUSICIAN_SONG, resMusicianSong);
+                contextMenuService.add(DELETE_MUSICIAN_SONG, resMusicianSong);                       
             }
             contextMenuService.show(paneController.getView(), mouseEvent);      
         }

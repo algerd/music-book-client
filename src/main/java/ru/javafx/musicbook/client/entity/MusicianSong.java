@@ -3,34 +3,36 @@ package ru.javafx.musicbook.client.entity;
 
 import java.util.Objects;
 
-@RelPath("musician_albums")
-public class MusicianAlbum implements Entity {
-
-    private String musician = Musician.DEFAULT_MUSICIAN;
-    private String album = Album.DEFAULT_ALBUM;
+@RelPath("musician_songs")
+public class MusicianSong implements Entity {
     
-    public MusicianAlbum() {        
+    private String musician = Musician.DEFAULT_MUSICIAN;
+    private String song;
+    
+    public MusicianSong() {      
     }
 
     public String getMusician() {
         return musician;
     }
+
     public void setMusician(String musician) {
         this.musician = musician;
     }
 
-    public String getAlbum() {
-        return album;
+    public String getSong() {
+        return song;
     }
-    public void setAlbum(String album) {
-        this.album = album;
+
+    public void setSong(String song) {
+        this.song = song;
     }
 
     @Override
     public int hashCode() {
-        int hash = 3;
-        hash = 71 * hash + Objects.hashCode(this.musician);
-        hash = 71 * hash + Objects.hashCode(this.album);
+        int hash = 7;
+        hash = 97 * hash + Objects.hashCode(this.musician);
+        hash = 97 * hash + Objects.hashCode(this.song);
         return hash;
     }
 
@@ -45,27 +47,27 @@ public class MusicianAlbum implements Entity {
         if (getClass() != obj.getClass()) {
             return false;
         }
-        final MusicianAlbum other = (MusicianAlbum) obj;
+        final MusicianSong other = (MusicianSong) obj;
         if (!Objects.equals(this.musician, other.musician)) {
             return false;
         }
-        if (!Objects.equals(this.album, other.album)) {
+        if (!Objects.equals(this.song, other.song)) {
             return false;
         }
         return true;
     }
     
     @Override
-    public MusicianAlbum clone() {
-        MusicianAlbum musicianAlbum = new MusicianAlbum();
-        musicianAlbum.setAlbum(album);
-        musicianAlbum.setMusician(musician);
-        return musicianAlbum;
+    public MusicianSong clone() {
+        MusicianSong musicianSong = new MusicianSong();
+        musicianSong.setSong(song);
+        musicianSong.setMusician(musician);
+        return musicianSong;
     }
 
     @Override
     public String toString() {
-        return "MusicianAlbum{" + "musician=" + musician + ", album=" + album + '}';
+        return "MusicianSong{" + "musician=" + musician + ", song=" + song + '}';
     }
-   
+
 }

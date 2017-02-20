@@ -68,7 +68,7 @@
                                                 </AnchorPane>
                                             </children>
                                         </HBox>
-                                        <!--<fx:include fx:id="includedMusicianTable" source="MusicianTable.fxml" />-->
+                                        <fx:include fx:id="includedMusicianTable" source="MusicianTable.fxml" />
                                         <TextFlow style="-fx-border-width: 1; -fx-border-color: silver;">
                                             <children>
                                                 <Text fx:id="commentText" strokeType="OUTSIDE" strokeWidth="0.0" text="Comment" />

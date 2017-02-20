@@ -28,6 +28,7 @@ import org.springframework.hateoas.Resource;
 import ru.javafx.musicbook.client.Params;
 import ru.javafx.musicbook.client.controller.PagedTableController;
 import ru.javafx.musicbook.client.controller.paginator.Sort;
+import ru.javafx.musicbook.client.controller.song.SongPaneController;
 import ru.javafx.musicbook.client.entity.Genre;
 import ru.javafx.musicbook.client.entity.Song;
 import ru.javafx.musicbook.client.fxintegrity.FXMLController;
@@ -39,6 +40,7 @@ import ru.javafx.musicbook.client.repository.operators.StringOperator;
 import static ru.javafx.musicbook.client.service.ContextMenuItemType.ADD_SONG;
 import static ru.javafx.musicbook.client.service.ContextMenuItemType.DELETE_SONG;
 import static ru.javafx.musicbook.client.service.ContextMenuItemType.EDIT_SONG;
+import ru.javafx.musicbook.client.service.RequestViewService;
 import ru.javafx.musicbook.client.utils.Helper;
 
 @FXMLController(
@@ -55,6 +57,8 @@ public class SongsController extends PagedTableController<Song> {
     private final IntegerProperty minRating = new SimpleIntegerProperty();
     private final IntegerProperty maxRating = new SimpleIntegerProperty();
     
+    @Autowired
+    private RequestViewService requestViewService;
     @Autowired
     private ArtistRepository artistRepository;
     @Autowired
@@ -339,7 +343,7 @@ public class SongsController extends PagedTableController<Song> {
             }
             // если лкм выбрана запись - показать её
             if (selectedItem != null) {
-                //requestPageService.songPane(selectedItem);
+                requestViewService.show(SongPaneController.class, selectedItem);
             }           
         }
         else if (mouseEvent.getButton() == MouseButton.SECONDARY) { 

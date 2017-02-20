@@ -37,7 +37,7 @@ import ru.javafx.musicbook.client.service.RequestViewService;
     value = "/fxml/album/AlbumPane.fxml",    
     title = "Album")
 @Scope("prototype")
-public class AlbumPaneController extends EntityController<Album>  {
+public class AlbumPaneController extends EntityController<Album> {
     
     private Resource<Artist> artistResource; 
     @Autowired

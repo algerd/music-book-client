@@ -28,7 +28,6 @@ import org.springframework.hateoas.Resource;
 import ru.javafx.musicbook.client.Params;
 import ru.javafx.musicbook.client.controller.PagedTableController;
 import ru.javafx.musicbook.client.controller.album.AlbumPaneController;
-import ru.javafx.musicbook.client.controller.artist.ArtistPaneController;
 import ru.javafx.musicbook.client.controller.paginator.Sort;
 import ru.javafx.musicbook.client.entity.Album;
 import ru.javafx.musicbook.client.entity.Genre;

@@ -85,8 +85,7 @@ public class ContextMenuServiceImpl implements ContextMenuService {
         menuMap.put(ContextMenuItemType.ADD_ALBUM, e -> requestViewService.showDialog(AlbumDialogController.class, valueMap.get(ADD_ALBUM)));
         menuMap.put(ContextMenuItemType.EDIT_ALBUM, e -> requestViewService.showDialog(AlbumDialogController.class, valueMap.get(EDIT_ALBUM)));
         menuMap.put(ContextMenuItemType.DELETE_ALBUM, e -> albumRepository.deleteWithAlert(valueMap.get(DELETE_ALBUM)));   
-       
-        
+             
         menuMap.put(ContextMenuItemType.ADD_SONG, e -> requestViewService.showDialog(SongDialogController.class, valueMap.get(ADD_SONG)));       
         menuMap.put(ContextMenuItemType.EDIT_SONG, e -> requestViewService.showDialog(SongDialogController.class, valueMap.get(EDIT_SONG)));        
         menuMap.put(ContextMenuItemType.DELETE_SONG, e -> songRepository.deleteWithAlert(valueMap.get(DELETE_SONG)));       

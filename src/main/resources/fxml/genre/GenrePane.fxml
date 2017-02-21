@@ -66,7 +66,7 @@
                 </Tab>
                 <Tab closable="false" text="Artists">
                     <content>
-                        <!--<fx:include fx:id="includedArtistGenreTable" source="ArtistGenreTable.fxml" />-->
+                        <fx:include fx:id="includedArtistGenreTable" source="ArtistGenreTable.fxml" />
                     </content>
                 </Tab>    
                 <Tab closable="false" text="Albums">

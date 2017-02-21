@@ -18,6 +18,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.hateoas.Resource;
 import ru.javafx.musicbook.client.controller.PagedTableController;
+import ru.javafx.musicbook.client.controller.genre.GenrePaneController;
 import ru.javafx.musicbook.client.controller.paginator.Sort;
 import ru.javafx.musicbook.client.entity.Album;
 import ru.javafx.musicbook.client.entity.Artist;
@@ -36,6 +37,7 @@ import ru.javafx.musicbook.client.repository.SongGenreRepository;
 import ru.javafx.musicbook.client.repository.SongRepository;
 import ru.javafx.musicbook.client.repository.operators.StringOperator;
 import static ru.javafx.musicbook.client.service.ContextMenuItemType.*;
+import ru.javafx.musicbook.client.service.RequestViewService;
 
 @FXMLController(
     value = "/fxml/genres/Genres.fxml",    
@@ -45,6 +47,8 @@ public class GenresController extends PagedTableController<Genre> {
 
     private String searchString = "";
      
+    @Autowired
+    private RequestViewService requestViewService;
     @Autowired
     private GenreRepository genreRepository;   
     @Autowired
@@ -362,8 +366,7 @@ public class GenresController extends PagedTableController<Genre> {
             }
             // если лкм выбрана запись - показать её
             if (selectedItem != null) {
-                //GenreEntity genre = repositoryService.getGenreRepository().selectById(selectedItem.getId());
-                //requestPageService.genrePane(genre);
+                requestViewService.show(GenrePaneController.class, selectedItem);
             }           
         }
         else if (mouseEvent.getButton() == MouseButton.SECONDARY) { 

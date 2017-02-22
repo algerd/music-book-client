@@ -55,6 +55,14 @@ public class ArtistGenre implements Entity {
         }
         return true;
     }
+    
+    @Override
+    public ArtistGenre clone() {
+        ArtistGenre artistGenre = new ArtistGenre();
+        artistGenre.setArtist(artist);
+        artistGenre.setGenre(genre);
+        return artistGenre;
+    }
 
     @Override
     public String toString() {

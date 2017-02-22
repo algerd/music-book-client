@@ -17,6 +17,7 @@ import org.springframework.stereotype.Service;
 import ru.javafx.musicbook.client.controller.album.AlbumDialogController;
 import ru.javafx.musicbook.client.controller.artist.ArtistDialogController;
 import ru.javafx.musicbook.client.controller.artist.ArtistReferenceDialogController;
+import ru.javafx.musicbook.client.controller.genre.ArtistGenreDialogController;
 import ru.javafx.musicbook.client.controller.genre.GenreDialogController;
 import ru.javafx.musicbook.client.controller.instrument.InstrumentDialogController;
 import ru.javafx.musicbook.client.controller.musician.MusicianAlbumDialogController;
@@ -30,6 +31,7 @@ import ru.javafx.musicbook.client.service.RequestViewService;
 import static ru.javafx.musicbook.client.service.ContextMenuItemType.*;
 import ru.javafx.musicbook.client.entity.Entity;
 import ru.javafx.musicbook.client.repository.AlbumRepository;
+import ru.javafx.musicbook.client.repository.ArtistGenreRepository;
 import ru.javafx.musicbook.client.repository.ArtistReferenceRepository;
 import ru.javafx.musicbook.client.repository.ArtistRepository;
 import ru.javafx.musicbook.client.repository.GenreRepository;
@@ -67,6 +69,8 @@ public class ContextMenuServiceImpl implements ContextMenuService {
     private MusicianAlbumRepository musicianAlbumRepository;
     @Autowired
     private MusicianSongRepository musicianSongRepository;
+    @Autowired
+    private ArtistGenreRepository artistGenreRepository;
       
     private final ContextMenu contextMenu = new ContextMenu();
     private final Map<ContextMenuItemType, EventHandler<ActionEvent>> menuMap = new HashMap<>();
@@ -78,41 +82,45 @@ public class ContextMenuServiceImpl implements ContextMenuService {
         menuMap.put(EDIT_ARTIST, e -> requestViewService.showDialog(ArtistDialogController.class, valueMap.get(EDIT_ARTIST)));          
         menuMap.put(DELETE_ARTIST, e -> artistRepository.deleteWithAlert(valueMap.get(DELETE_ARTIST)));      
         
-        menuMap.put(ContextMenuItemType.ADD_GENRE, e -> requestViewService.showDialog(GenreDialogController.class, valueMap.get(ADD_GENRE)));
-        menuMap.put(ContextMenuItemType.EDIT_GENRE, e -> requestViewService.showDialog(GenreDialogController.class, valueMap.get(EDIT_GENRE)));
-        menuMap.put(ContextMenuItemType.DELETE_GENRE, e -> genreRepository.deleteWithAlert(valueMap.get(DELETE_GENRE)));      
+        menuMap.put(ADD_GENRE, e -> requestViewService.showDialog(GenreDialogController.class, valueMap.get(ADD_GENRE)));
+        menuMap.put(EDIT_GENRE, e -> requestViewService.showDialog(GenreDialogController.class, valueMap.get(EDIT_GENRE)));
+        menuMap.put(DELETE_GENRE, e -> genreRepository.deleteWithAlert(valueMap.get(DELETE_GENRE)));      
      
-        menuMap.put(ContextMenuItemType.ADD_ALBUM, e -> requestViewService.showDialog(AlbumDialogController.class, valueMap.get(ADD_ALBUM)));
-        menuMap.put(ContextMenuItemType.EDIT_ALBUM, e -> requestViewService.showDialog(AlbumDialogController.class, valueMap.get(EDIT_ALBUM)));
-        menuMap.put(ContextMenuItemType.DELETE_ALBUM, e -> albumRepository.deleteWithAlert(valueMap.get(DELETE_ALBUM)));   
+        menuMap.put(ADD_ALBUM, e -> requestViewService.showDialog(AlbumDialogController.class, valueMap.get(ADD_ALBUM)));
+        menuMap.put(EDIT_ALBUM, e -> requestViewService.showDialog(AlbumDialogController.class, valueMap.get(EDIT_ALBUM)));
+        menuMap.put(DELETE_ALBUM, e -> albumRepository.deleteWithAlert(valueMap.get(DELETE_ALBUM)));   
              
-        menuMap.put(ContextMenuItemType.ADD_SONG, e -> requestViewService.showDialog(SongDialogController.class, valueMap.get(ADD_SONG)));       
-        menuMap.put(ContextMenuItemType.EDIT_SONG, e -> requestViewService.showDialog(SongDialogController.class, valueMap.get(EDIT_SONG)));        
-        menuMap.put(ContextMenuItemType.DELETE_SONG, e -> songRepository.deleteWithAlert(valueMap.get(DELETE_SONG)));       
+        menuMap.put(ADD_SONG, e -> requestViewService.showDialog(SongDialogController.class, valueMap.get(ADD_SONG)));       
+        menuMap.put(EDIT_SONG, e -> requestViewService.showDialog(SongDialogController.class, valueMap.get(EDIT_SONG)));        
+        menuMap.put(DELETE_SONG, e -> songRepository.deleteWithAlert(valueMap.get(DELETE_SONG)));       
                        
-        menuMap.put(ContextMenuItemType.ADD_MUSICIAN, e -> requestViewService.showDialog(MusicianDialogController.class, valueMap.get(ADD_MUSICIAN))); 
-        menuMap.put(ContextMenuItemType.EDIT_MUSICIAN, e -> requestViewService.showDialog(MusicianDialogController.class, valueMap.get(EDIT_MUSICIAN)));
-        menuMap.put(ContextMenuItemType.DELETE_MUSICIAN, e -> musicianRepository.deleteWithAlert(valueMap.get(DELETE_MUSICIAN)));       
+        menuMap.put(ADD_MUSICIAN, e -> requestViewService.showDialog(MusicianDialogController.class, valueMap.get(ADD_MUSICIAN))); 
+        menuMap.put(EDIT_MUSICIAN, e -> requestViewService.showDialog(MusicianDialogController.class, valueMap.get(EDIT_MUSICIAN)));
+        menuMap.put(DELETE_MUSICIAN, e -> musicianRepository.deleteWithAlert(valueMap.get(DELETE_MUSICIAN)));       
        
-        menuMap.put(ContextMenuItemType.ADD_MUSICIAN_ALBUM, e -> requestViewService.showDialog(MusicianAlbumDialogController.class, valueMap.get(ADD_MUSICIAN_ALBUM)));
-        menuMap.put(ContextMenuItemType.EDIT_MUSICIAN_ALBUM, e -> requestViewService.showDialog(MusicianAlbumDialogController.class, valueMap.get(EDIT_MUSICIAN_ALBUM)));
-        menuMap.put(ContextMenuItemType.DELETE_MUSICIAN_ALBUM, e -> musicianAlbumRepository.deleteWithAlert(valueMap.get(DELETE_MUSICIAN_ALBUM)));
+        menuMap.put(ADD_MUSICIAN_ALBUM, e -> requestViewService.showDialog(MusicianAlbumDialogController.class, valueMap.get(ADD_MUSICIAN_ALBUM)));
+        menuMap.put(EDIT_MUSICIAN_ALBUM, e -> requestViewService.showDialog(MusicianAlbumDialogController.class, valueMap.get(EDIT_MUSICIAN_ALBUM)));
+        menuMap.put(DELETE_MUSICIAN_ALBUM, e -> musicianAlbumRepository.deleteWithAlert(valueMap.get(DELETE_MUSICIAN_ALBUM)));
        
-        menuMap.put(ContextMenuItemType.ADD_MUSICIAN_SONG, e -> requestViewService.showDialog(MusicianSongDialogController.class, valueMap.get(ADD_MUSICIAN_SONG)));
-        menuMap.put(ContextMenuItemType.EDIT_MUSICIAN_SONG, e -> requestViewService.showDialog(MusicianSongDialogController.class, valueMap.get(EDIT_MUSICIAN_SONG)));
-        menuMap.put(ContextMenuItemType.DELETE_MUSICIAN_SONG, e -> musicianSongRepository.deleteWithAlert(valueMap.get(DELETE_MUSICIAN_SONG)));
+        menuMap.put(ADD_MUSICIAN_SONG, e -> requestViewService.showDialog(MusicianSongDialogController.class, valueMap.get(ADD_MUSICIAN_SONG)));
+        menuMap.put(EDIT_MUSICIAN_SONG, e -> requestViewService.showDialog(MusicianSongDialogController.class, valueMap.get(EDIT_MUSICIAN_SONG)));
+        menuMap.put(DELETE_MUSICIAN_SONG, e -> musicianSongRepository.deleteWithAlert(valueMap.get(DELETE_MUSICIAN_SONG)));
        
-        menuMap.put(ContextMenuItemType.ADD_MUSICIAN_GROUP, e -> requestViewService.showDialog(MusicianGroupDialogController.class, valueMap.get(ADD_MUSICIAN_GROUP)));
-        menuMap.put(ContextMenuItemType.EDIT_MUSICIAN_GROUP, e -> requestViewService.showDialog(MusicianGroupDialogController.class, valueMap.get(EDIT_MUSICIAN_GROUP)));
-        menuMap.put(ContextMenuItemType.DELETE_MUSICIAN_GROUP, e -> musicianGroupRepository.deleteWithAlert(valueMap.get(DELETE_MUSICIAN_GROUP))); 
+        menuMap.put(ADD_MUSICIAN_GROUP, e -> requestViewService.showDialog(MusicianGroupDialogController.class, valueMap.get(ADD_MUSICIAN_GROUP)));
+        menuMap.put(EDIT_MUSICIAN_GROUP, e -> requestViewService.showDialog(MusicianGroupDialogController.class, valueMap.get(EDIT_MUSICIAN_GROUP)));
+        menuMap.put(DELETE_MUSICIAN_GROUP, e -> musicianGroupRepository.deleteWithAlert(valueMap.get(DELETE_MUSICIAN_GROUP))); 
         
-        menuMap.put(ContextMenuItemType.ADD_ARTIST_REFERENCE, e -> requestViewService.showDialog(ArtistReferenceDialogController.class, valueMap.get(ADD_ARTIST_REFERENCE)));
-        menuMap.put(ContextMenuItemType.EDIT_ARTIST_REFERENCE, e -> requestViewService.showDialog(ArtistReferenceDialogController.class, valueMap.get(EDIT_ARTIST_REFERENCE)));
-        menuMap.put(ContextMenuItemType.DELETE_ARTIST_REFERENCE, e -> artistReferenceRepository.deleteWithAlert(valueMap.get(DELETE_ARTIST_REFERENCE))); 
+        menuMap.put(ADD_ARTIST_REFERENCE, e -> requestViewService.showDialog(ArtistReferenceDialogController.class, valueMap.get(ADD_ARTIST_REFERENCE)));
+        menuMap.put(EDIT_ARTIST_REFERENCE, e -> requestViewService.showDialog(ArtistReferenceDialogController.class, valueMap.get(EDIT_ARTIST_REFERENCE)));
+        menuMap.put(DELETE_ARTIST_REFERENCE, e -> artistReferenceRepository.deleteWithAlert(valueMap.get(DELETE_ARTIST_REFERENCE))); 
         
-        menuMap.put(ContextMenuItemType.ADD_INSTRUMENT, e -> requestViewService.showDialog(InstrumentDialogController.class, valueMap.get(ADD_INSTRUMENT)));
-        menuMap.put(ContextMenuItemType.EDIT_INSTRUMENT, e -> requestViewService.showDialog(InstrumentDialogController.class, valueMap.get(EDIT_INSTRUMENT)));
-        menuMap.put(ContextMenuItemType.DELETE_INSTRUMENT, e -> instrumentRepository.deleteWithAlert(valueMap.get(DELETE_INSTRUMENT)));
+        menuMap.put(ADD_INSTRUMENT, e -> requestViewService.showDialog(InstrumentDialogController.class, valueMap.get(ADD_INSTRUMENT)));
+        menuMap.put(EDIT_INSTRUMENT, e -> requestViewService.showDialog(InstrumentDialogController.class, valueMap.get(EDIT_INSTRUMENT)));
+        menuMap.put(DELETE_INSTRUMENT, e -> instrumentRepository.deleteWithAlert(valueMap.get(DELETE_INSTRUMENT)));
+        
+        menuMap.put(ADD_GENRE_ARTIST, e -> requestViewService.showDialog(ArtistGenreDialogController.class, valueMap.get(ADD_GENRE_ARTIST)));
+        menuMap.put(EDIT_GENRE_ARTIST, e -> requestViewService.showDialog(ArtistGenreDialogController.class, valueMap.get(EDIT_GENRE_ARTIST)));
+        menuMap.put(DELETE_GENRE_ARTIST, e -> artistGenreRepository.deleteWithAlert(valueMap.get(DELETE_GENRE_ARTIST)));
         
     }
     

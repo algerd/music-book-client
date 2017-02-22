@@ -1,6 +1,7 @@
 
 package ru.javafx.musicbook.client.controller.genre;
 
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
@@ -13,14 +14,19 @@ import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
+import org.springframework.hateoas.Link;
 import org.springframework.hateoas.Resource;
 import ru.javafx.musicbook.client.controller.PagedTableController;
 import ru.javafx.musicbook.client.controller.artist.ArtistPaneController;
 import ru.javafx.musicbook.client.controller.paginator.Sort;
 import ru.javafx.musicbook.client.entity.Artist;
+import ru.javafx.musicbook.client.entity.ArtistGenre;
+import ru.javafx.musicbook.client.entity.Genre;
 import ru.javafx.musicbook.client.fxintegrity.FXMLController;
+import ru.javafx.musicbook.client.repository.ArtistGenreRepository;
 import ru.javafx.musicbook.client.repository.ArtistRepository;
 import ru.javafx.musicbook.client.repository.GenreRepository;
+import ru.javafx.musicbook.client.service.ContextMenuItemType;
 import static ru.javafx.musicbook.client.service.ContextMenuItemType.ADD_ARTIST;
 import static ru.javafx.musicbook.client.service.ContextMenuItemType.DELETE_ARTIST;
 import static ru.javafx.musicbook.client.service.ContextMenuItemType.EDIT_ARTIST;
@@ -39,6 +45,8 @@ public class ArtistGenreTableController extends PagedTableController<Artist>  {
     private ArtistRepository artistRepository;
     @Autowired
     private GenreRepository genreRepository;
+    @Autowired
+    private ArtistGenreRepository artistGenreRepository;
     
     @FXML
     private Label titleLabel;
@@ -88,15 +96,17 @@ public class ArtistGenreTableController extends PagedTableController<Artist>  {
         artistRepository.clearUpdateListeners(this);        
         genreRepository.clearDeleteListeners(this);           
         genreRepository.clearUpdateListeners(this);
+        artistGenreRepository.clearChangeListeners(this);
                                 
         artistRepository.addDeleteListener((observable, oldVal, newVal) -> setPageValue(), this);           
         artistRepository.addUpdateListener((observable, oldVal, newVal) -> setPageValue(), this);        
         genreRepository.addDeleteListener((observable, oldVal, newVal) -> setPageValue(), this);           
         genreRepository.addUpdateListener((observable, oldVal, newVal) -> setPageValue(), this);
+        artistGenreRepository.addUpdateListener((observable, oldVal, newVal) -> setPageValue(), this);
     }
     
     @FXML
-    private void onMouseClickTable(MouseEvent mouseEvent) { 
+    private void onMouseClickTable(MouseEvent mouseEvent) throws URISyntaxException { 
         boolean isShowingContextMenu = contextMenuService.getContextMenu().isShowing();     
         contextMenuService.clear();        
         if (mouseEvent.getButton() == MouseButton.PRIMARY) {
@@ -110,11 +120,13 @@ public class ArtistGenreTableController extends PagedTableController<Artist>  {
             }           
         }      
         else if (mouseEvent.getButton() == MouseButton.SECONDARY) { 
-            contextMenuService.add(ADD_ARTIST, null);
-            // запретить удаление и редактирование записи с id = 1 (Unknown artist)
-            if (selectedItem != null && !selectedItem.getId().getHref().equals(Artist.DEFAULT_ARTIST)) {
-                contextMenuService.add(EDIT_ARTIST, selectedItem);
-                contextMenuService.add(DELETE_ARTIST, selectedItem);                       
+            ArtistGenre artistGenre = new ArtistGenre();
+            artistGenre.setGenre(paneController.getResource().getId().getHref());
+            contextMenuService.add(ContextMenuItemType.ADD_GENRE_ARTIST, new Resource<>(artistGenre, new Link("null")));
+            if (selectedItem != null) {
+                Resource<ArtistGenre> resArtistGenre = artistGenreRepository.findByArtistAndGenre(selectedItem, (Resource<Genre>) paneController.getResource());
+                contextMenuService.add(ContextMenuItemType.EDIT_GENRE_ARTIST, resArtistGenre);
+                contextMenuService.add(ContextMenuItemType.DELETE_GENRE_ARTIST, resArtistGenre);                       
             }
             contextMenuService.show(paneController.getView(), mouseEvent);         
         }    

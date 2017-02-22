@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.ResourceBundle;
 import javafx.beans.property.SimpleIntegerProperty;
+import javafx.beans.property.SimpleStringProperty;
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
 import javafx.scene.control.TableColumn;
@@ -17,22 +18,23 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.hateoas.Link;
 import org.springframework.hateoas.Resource;
 import ru.javafx.musicbook.client.controller.PagedTableController;
-import ru.javafx.musicbook.client.controller.artist.ArtistPaneController;
+import ru.javafx.musicbook.client.controller.album.AlbumPaneController;
 import ru.javafx.musicbook.client.controller.paginator.Sort;
-import ru.javafx.musicbook.client.entity.Artist;
-import ru.javafx.musicbook.client.entity.ArtistGenre;
+import ru.javafx.musicbook.client.entity.Album;
+import ru.javafx.musicbook.client.entity.AlbumGenre;
 import ru.javafx.musicbook.client.entity.Genre;
 import ru.javafx.musicbook.client.fxintegrity.FXMLController;
-import ru.javafx.musicbook.client.repository.ArtistGenreRepository;
+import ru.javafx.musicbook.client.repository.AlbumGenreRepository;
+import ru.javafx.musicbook.client.repository.AlbumRepository;
 import ru.javafx.musicbook.client.repository.ArtistRepository;
 import ru.javafx.musicbook.client.repository.GenreRepository;
 import ru.javafx.musicbook.client.service.ContextMenuItemType;
 import ru.javafx.musicbook.client.service.RequestViewService;
 import ru.javafx.musicbook.client.utils.Helper;
 
-@FXMLController(value = "/fxml/genre/ArtistGenreTable.fxml")
+@FXMLController(value = "/fxml/genre/AlbumGenreTable.fxml")
 @Scope("prototype")
-public class ArtistGenreTableController extends PagedTableController<Artist>  {
+public class AlbumGenreTableController extends PagedTableController<Album>  {
     
     protected GenrePaneController paneController;
     
@@ -41,18 +43,24 @@ public class ArtistGenreTableController extends PagedTableController<Artist>  {
     @Autowired
     private ArtistRepository artistRepository;
     @Autowired
+    private AlbumRepository albumRepository;   
+    @Autowired
     private GenreRepository genreRepository;
     @Autowired
-    private ArtistGenreRepository artistGenreRepository;
+    private AlbumGenreRepository albumGenreRepository;
     
     @FXML
     private Label titleLabel;
     @FXML
-    private TableColumn<Resource<Artist>, Integer> rankColumn;
+    private TableColumn<Resource<Album>, Integer> rankColumn;
     @FXML
-    private TableColumn<Resource<Artist>, String> artistColumn;
+    private TableColumn<Resource<Album>, String> albumColumn;
     @FXML
-    private TableColumn<Resource<Artist>, Integer> ratingColumn;
+    private TableColumn<Resource<Album>, Integer> yearColumn;
+    @FXML
+    private TableColumn<Resource<Album>, String> artistColumn;
+    @FXML
+    private TableColumn<Resource<Album>, Integer> ratingColumn;
     
     @Override
     public void initialize(URL url, ResourceBundle rb) {            
@@ -61,7 +69,7 @@ public class ArtistGenreTableController extends PagedTableController<Artist>  {
     public void bootstrap(GenrePaneController paneController) {
         this.paneController = paneController;
         titleLabel.textProperty().bind(this.paneController.getResource().getContent().nameProperty());
-        super.initPagedTableController(artistRepository); 
+        super.initPagedTableController(albumRepository); 
         initRepositoryListeners();
     }
     
@@ -69,9 +77,19 @@ public class ArtistGenreTableController extends PagedTableController<Artist>  {
     protected void initPagedTable() {       
         rankColumn.setCellValueFactory(
             cellData -> new SimpleIntegerProperty(pagedTable.getItems().indexOf(cellData.getValue()) + 1).asObject()
-        );      
-        artistColumn.setCellValueFactory(cellData -> cellData.getValue().getContent().nameProperty());
-        ratingColumn.setCellValueFactory(cellData -> cellData.getValue().getContent().ratingProperty().asObject());       
+        ); 
+        albumColumn.setCellValueFactory(cellData -> cellData.getValue().getContent().nameProperty());
+        yearColumn.setCellValueFactory(cellData -> cellData.getValue().getContent().yearProperty().asObject());
+        ratingColumn.setCellValueFactory(cellData -> cellData.getValue().getContent().ratingProperty().asObject());
+        artistColumn.setCellValueFactory(cellData -> {
+            try {
+                return artistRepository.getResource(cellData.getValue().getLink("artist").getHref()).getContent().nameProperty();
+            } catch (URISyntaxException ex) {
+                logger.error(ex.getMessage());
+            }
+            return new SimpleStringProperty("");
+        });
+        
     }
     
     @Override
@@ -89,17 +107,17 @@ public class ArtistGenreTableController extends PagedTableController<Artist>  {
     }
     
     private void initRepositoryListeners() {                         
-        artistRepository.clearDeleteListeners(this);           
-        artistRepository.clearUpdateListeners(this);        
+        albumRepository.clearDeleteListeners(this);           
+        albumRepository.clearUpdateListeners(this);        
         genreRepository.clearDeleteListeners(this);           
         genreRepository.clearUpdateListeners(this);
-        artistGenreRepository.clearChangeListeners(this);
+        albumGenreRepository.clearChangeListeners(this);
                                 
-        artistRepository.addDeleteListener((observable, oldVal, newVal) -> setPageValue(), this);           
-        artistRepository.addUpdateListener((observable, oldVal, newVal) -> setPageValue(), this);        
+        albumRepository.addDeleteListener((observable, oldVal, newVal) -> setPageValue(), this);           
+        albumRepository.addUpdateListener((observable, oldVal, newVal) -> setPageValue(), this);        
         genreRepository.addDeleteListener((observable, oldVal, newVal) -> setPageValue(), this);           
         genreRepository.addUpdateListener((observable, oldVal, newVal) -> setPageValue(), this);
-        artistGenreRepository.addChangeListener((observable, oldVal, newVal) -> setPageValue(), this);
+        albumGenreRepository.addChangeListener((observable, oldVal, newVal) -> setPageValue(), this);
     }
     
     @FXML
@@ -113,17 +131,17 @@ public class ArtistGenreTableController extends PagedTableController<Artist>  {
             }
             // если лкм выбрана запись - показать её
             if (selectedItem != null) {
-                requestViewService.show(ArtistPaneController.class ,selectedItem);
+                requestViewService.show(AlbumPaneController.class, selectedItem);
             }           
         }      
         else if (mouseEvent.getButton() == MouseButton.SECONDARY) { 
-            ArtistGenre artistGenre = new ArtistGenre();
-            artistGenre.setGenre(paneController.getResource().getId().getHref());
-            contextMenuService.add(ContextMenuItemType.ADD_GENRE_ARTIST, new Resource<>(artistGenre, new Link("null")));
+            AlbumGenre albumGenre = new AlbumGenre();
+            albumGenre.setGenre(paneController.getResource().getId().getHref());
+            contextMenuService.add(ContextMenuItemType.ADD_GENRE_ALBUM, new Resource<>(albumGenre, new Link("null")));
             if (selectedItem != null) {
-                Resource<ArtistGenre> resArtistGenre = artistGenreRepository.findByArtistAndGenre(selectedItem, (Resource<Genre>) paneController.getResource());
-                contextMenuService.add(ContextMenuItemType.EDIT_GENRE_ARTIST, resArtistGenre);
-                contextMenuService.add(ContextMenuItemType.DELETE_GENRE_ARTIST, resArtistGenre);                       
+                Resource<AlbumGenre> resAlbumGenre = albumGenreRepository.findByAlbumAndGenre(selectedItem, (Resource<Genre>) paneController.getResource());
+                contextMenuService.add(ContextMenuItemType.EDIT_GENRE_ALBUM, resAlbumGenre);
+                contextMenuService.add(ContextMenuItemType.DELETE_GENRE_ALBUM, resAlbumGenre);                       
             }
             contextMenuService.show(paneController.getView(), mouseEvent);         
         }    

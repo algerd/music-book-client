@@ -17,6 +17,7 @@ import org.springframework.stereotype.Service;
 import ru.javafx.musicbook.client.controller.album.AlbumDialogController;
 import ru.javafx.musicbook.client.controller.artist.ArtistDialogController;
 import ru.javafx.musicbook.client.controller.artist.ArtistReferenceDialogController;
+import ru.javafx.musicbook.client.controller.genre.AlbumGenreDialogController;
 import ru.javafx.musicbook.client.controller.genre.ArtistGenreDialogController;
 import ru.javafx.musicbook.client.controller.genre.GenreDialogController;
 import ru.javafx.musicbook.client.controller.instrument.InstrumentDialogController;
@@ -30,6 +31,7 @@ import ru.javafx.musicbook.client.service.ContextMenuService;
 import ru.javafx.musicbook.client.service.RequestViewService;
 import static ru.javafx.musicbook.client.service.ContextMenuItemType.*;
 import ru.javafx.musicbook.client.entity.Entity;
+import ru.javafx.musicbook.client.repository.AlbumGenreRepository;
 import ru.javafx.musicbook.client.repository.AlbumRepository;
 import ru.javafx.musicbook.client.repository.ArtistGenreRepository;
 import ru.javafx.musicbook.client.repository.ArtistReferenceRepository;
@@ -71,6 +73,8 @@ public class ContextMenuServiceImpl implements ContextMenuService {
     private MusicianSongRepository musicianSongRepository;
     @Autowired
     private ArtistGenreRepository artistGenreRepository;
+    @Autowired
+    private AlbumGenreRepository albumGenreRepository;
       
     private final ContextMenu contextMenu = new ContextMenu();
     private final Map<ContextMenuItemType, EventHandler<ActionEvent>> menuMap = new HashMap<>();
@@ -122,6 +126,9 @@ public class ContextMenuServiceImpl implements ContextMenuService {
         menuMap.put(EDIT_GENRE_ARTIST, e -> requestViewService.showDialog(ArtistGenreDialogController.class, valueMap.get(EDIT_GENRE_ARTIST)));
         menuMap.put(DELETE_GENRE_ARTIST, e -> artistGenreRepository.deleteWithAlert(valueMap.get(DELETE_GENRE_ARTIST)));
         
+        menuMap.put(ADD_GENRE_ALBUM, e -> requestViewService.showDialog(AlbumGenreDialogController.class, valueMap.get(ADD_GENRE_ALBUM)));
+        menuMap.put(EDIT_GENRE_ALBUM, e -> requestViewService.showDialog(AlbumGenreDialogController.class, valueMap.get(EDIT_GENRE_ALBUM)));
+        menuMap.put(DELETE_GENRE_ALBUM, e -> albumGenreRepository.deleteWithAlert(valueMap.get(DELETE_GENRE_ALBUM)));
     }
     
     @Override

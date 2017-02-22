@@ -55,6 +55,14 @@ public class AlbumGenre implements Entity {
         }
         return true;
     }
+    
+    @Override
+    public AlbumGenre clone() {
+        AlbumGenre albumGenre = new AlbumGenre();
+        albumGenre.setAlbum(album);
+        albumGenre.setGenre(genre);
+        return albumGenre;
+    }
 
     @Override
     public String toString() {

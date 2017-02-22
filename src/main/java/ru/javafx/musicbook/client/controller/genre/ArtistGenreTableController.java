@@ -102,7 +102,7 @@ public class ArtistGenreTableController extends PagedTableController<Artist>  {
         artistRepository.addUpdateListener((observable, oldVal, newVal) -> setPageValue(), this);        
         genreRepository.addDeleteListener((observable, oldVal, newVal) -> setPageValue(), this);           
         genreRepository.addUpdateListener((observable, oldVal, newVal) -> setPageValue(), this);
-        artistGenreRepository.addUpdateListener((observable, oldVal, newVal) -> setPageValue(), this);
+        artistGenreRepository.addChangeListener((observable, oldVal, newVal) -> setPageValue(), this);
     }
     
     @FXML

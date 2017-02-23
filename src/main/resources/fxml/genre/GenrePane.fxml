@@ -81,7 +81,7 @@
                 </Tab>              
                 <Tab closable="false" text="Musicians">
                     <content>
-                        <!--<fx:include fx:id="includedMusicianGenreTable" source="MusicianGenreTable.fxml" />-->
+                        <fx:include fx:id="includedMusicianGenreTable" source="MusicianGenreTable.fxml" />
                     </content>
                 </Tab>               
             </tabs>

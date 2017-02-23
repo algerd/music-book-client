@@ -31,6 +31,14 @@ public class MusicianGenreRepositoryImpl extends CrudRepositoryImpl<MusicianGenr
     }
     
     @Override
+    public long countByMusicianAndGenre(Resource<Musician> musician, Resource<Genre> genre) throws URISyntaxException {
+        Map<String, Object> parameters = new HashMap<>();
+        parameters.put("musician", musician.getId().getHref());
+        parameters.put("genre", genre.getId().getHref());
+        return countParameterizedQuery(parameters, new String[]{relPath, "search", "countByMusicianAndGenre"});
+    }
+    
+    @Override
     public long countMusiciansByGenre(Resource<Genre> genreResource) throws URISyntaxException {
         Resources<Resource<MusicianGenre>> resources = getResources(genreResource.getId().getHref(), "musicianGenres");          
         long i = 0;

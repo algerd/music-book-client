@@ -133,7 +133,7 @@ public class MusicianGenreTableController extends PagedTableController<Musician>
     @Override
     protected String createParamString() {
         List<String> params = new ArrayList<>();  
-        params.add("musician.id=" + Helper.getId(paneController.getResource()));
+        params.add("genre.id=" + Helper.getId(paneController.getResource()));
         params.addAll(paginatorPaneController.getPaginator().getParameterList());
         String paramStr = params.isEmpty()? "" : String.join("&", params);
         return paramStr;
@@ -169,14 +169,14 @@ public class MusicianGenreTableController extends PagedTableController<Musician>
             }
             // если лкм выбрана запись - показать её
             if (selectedItem != null) {
-                requestViewService.show(ArtistPaneController.class ,selectedItem);
+                //requestViewService.show(MusicianPaneController.class ,selectedItem);
             }           
         }      
         else if (mouseEvent.getButton() == MouseButton.SECONDARY) { 
             MusicianGenre musicianGenre = new MusicianGenre();
             musicianGenre.setGenre(paneController.getResource().getId().getHref());
             contextMenuService.add(ADD_GENRE_MUSICIAN, new Resource<>(musicianGenre, new Link("null")));
-            if (selectedItem != null) {
+            if (selectedItem != null) {              
                 Resource<MusicianGenre> resMusicianGenre = musicianGenreRepository.findByMusicianAndGenre(selectedItem, (Resource<Genre>) paneController.getResource());
                 contextMenuService.add(EDIT_GENRE_MUSICIAN, resMusicianGenre);
                 contextMenuService.add(DELETE_GENRE_MUSICIAN, resMusicianGenre);                       

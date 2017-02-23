@@ -20,6 +20,7 @@ import ru.javafx.musicbook.client.controller.artist.ArtistReferenceDialogControl
 import ru.javafx.musicbook.client.controller.genre.AlbumGenreDialogController;
 import ru.javafx.musicbook.client.controller.genre.ArtistGenreDialogController;
 import ru.javafx.musicbook.client.controller.genre.GenreDialogController;
+import ru.javafx.musicbook.client.controller.genre.MusicianGenreDialogController;
 import ru.javafx.musicbook.client.controller.genre.SongGenreDialogController;
 import ru.javafx.musicbook.client.controller.instrument.InstrumentDialogController;
 import ru.javafx.musicbook.client.controller.musician.MusicianAlbumDialogController;
@@ -40,9 +41,11 @@ import ru.javafx.musicbook.client.repository.ArtistRepository;
 import ru.javafx.musicbook.client.repository.GenreRepository;
 import ru.javafx.musicbook.client.repository.InstrumentRepository;
 import ru.javafx.musicbook.client.repository.MusicianAlbumRepository;
+import ru.javafx.musicbook.client.repository.MusicianGenreRepository;
 import ru.javafx.musicbook.client.repository.MusicianGroupRepository;
 import ru.javafx.musicbook.client.repository.MusicianRepository;
 import ru.javafx.musicbook.client.repository.MusicianSongRepository;
+import ru.javafx.musicbook.client.repository.SongGenreRepository;
 import ru.javafx.musicbook.client.repository.SongRepository;
 
 @Service
@@ -77,7 +80,9 @@ public class ContextMenuServiceImpl implements ContextMenuService {
     @Autowired
     private AlbumGenreRepository albumGenreRepository;
     @Autowired
-    private AlbumGenreRepository songGenreRepository;
+    private SongGenreRepository songGenreRepository;
+    @Autowired
+    private MusicianGenreRepository musicianGenreRepository;
          
     private final ContextMenu contextMenu = new ContextMenu();
     private final Map<ContextMenuItemType, EventHandler<ActionEvent>> menuMap = new HashMap<>();
@@ -136,6 +141,10 @@ public class ContextMenuServiceImpl implements ContextMenuService {
         menuMap.put(ADD_GENRE_SONG, e -> requestViewService.showDialog(SongGenreDialogController.class, valueMap.get(ADD_GENRE_SONG)));
         menuMap.put(EDIT_GENRE_SONG, e -> requestViewService.showDialog(SongGenreDialogController.class, valueMap.get(EDIT_GENRE_SONG)));
         menuMap.put(DELETE_GENRE_SONG, e -> songGenreRepository.deleteWithAlert(valueMap.get(DELETE_GENRE_SONG)));
+    
+        menuMap.put(ADD_GENRE_MUSICIAN, e -> requestViewService.showDialog(MusicianGenreDialogController.class, valueMap.get(ADD_GENRE_MUSICIAN)));
+        menuMap.put(EDIT_GENRE_MUSICIAN, e -> requestViewService.showDialog(MusicianGenreDialogController.class, valueMap.get(EDIT_GENRE_MUSICIAN)));
+        menuMap.put(DELETE_GENRE_MUSICIAN, e -> musicianGenreRepository.deleteWithAlert(valueMap.get(DELETE_GENRE_MUSICIAN)));
     }
     
     @Override

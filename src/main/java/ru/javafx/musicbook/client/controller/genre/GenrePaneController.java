@@ -24,7 +24,6 @@ import ru.javafx.musicbook.client.repository.impl.WrapChangedEntity;
 import static ru.javafx.musicbook.client.service.ContextMenuItemType.ADD_GENRE;
 import static ru.javafx.musicbook.client.service.ContextMenuItemType.DELETE_GENRE;
 import static ru.javafx.musicbook.client.service.ContextMenuItemType.EDIT_GENRE;
-import ru.javafx.musicbook.client.service.RequestViewService;
 
 @FXMLController(
     value = "/fxml/genre/GenrePane.fxml",    
@@ -34,8 +33,6 @@ public class GenrePaneController extends EntityController<Genre> {
     
     @Autowired
     private GenreRepository genreRepository;
-    @Autowired
-    private RequestViewService requestViewService;
     
     @FXML    
     private ArtistGenreTableController includedArtistGenreTableController;

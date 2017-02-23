@@ -39,4 +39,12 @@ public class SongGenreRepositoryImpl extends CrudRepositoryImpl<SongGenre> imple
         return getParameterizedResource(parameters, new String[]{relPath, "search", "findBySongAndGenre"});
     }
     
+    @Override
+    public long countBySongAndGenre(Resource<Song> song, Resource<Genre> genre) throws URISyntaxException {
+        Map<String, Object> parameters = new HashMap<>();
+        parameters.put("song", song.getId().getHref());
+        parameters.put("genre", genre.getId().getHref());
+        return countParameterizedQuery(parameters, new String[]{relPath, "search", "countBySongAndGenre"});
+    }
+    
 }

@@ -55,6 +55,14 @@ public class SongGenre implements Entity {
         }
         return true;
     }
+    
+    @Override
+    public SongGenre clone() {
+        SongGenre songGenre = new SongGenre();
+        songGenre.setSong(song);
+        songGenre.setGenre(genre);
+        return songGenre;
+    }
 
     @Override
     public String toString() {

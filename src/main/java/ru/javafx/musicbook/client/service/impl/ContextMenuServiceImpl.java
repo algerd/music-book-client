@@ -20,6 +20,7 @@ import ru.javafx.musicbook.client.controller.artist.ArtistReferenceDialogControl
 import ru.javafx.musicbook.client.controller.genre.AlbumGenreDialogController;
 import ru.javafx.musicbook.client.controller.genre.ArtistGenreDialogController;
 import ru.javafx.musicbook.client.controller.genre.GenreDialogController;
+import ru.javafx.musicbook.client.controller.genre.SongGenreDialogController;
 import ru.javafx.musicbook.client.controller.instrument.InstrumentDialogController;
 import ru.javafx.musicbook.client.controller.musician.MusicianAlbumDialogController;
 import ru.javafx.musicbook.client.controller.musician.MusicianDialogController;
@@ -75,7 +76,9 @@ public class ContextMenuServiceImpl implements ContextMenuService {
     private ArtistGenreRepository artistGenreRepository;
     @Autowired
     private AlbumGenreRepository albumGenreRepository;
-      
+    @Autowired
+    private AlbumGenreRepository songGenreRepository;
+         
     private final ContextMenu contextMenu = new ContextMenu();
     private final Map<ContextMenuItemType, EventHandler<ActionEvent>> menuMap = new HashMap<>();
     private Map<ContextMenuItemType, Resource<? extends Entity>> valueMap = new HashMap<>();
@@ -129,6 +132,10 @@ public class ContextMenuServiceImpl implements ContextMenuService {
         menuMap.put(ADD_GENRE_ALBUM, e -> requestViewService.showDialog(AlbumGenreDialogController.class, valueMap.get(ADD_GENRE_ALBUM)));
         menuMap.put(EDIT_GENRE_ALBUM, e -> requestViewService.showDialog(AlbumGenreDialogController.class, valueMap.get(EDIT_GENRE_ALBUM)));
         menuMap.put(DELETE_GENRE_ALBUM, e -> albumGenreRepository.deleteWithAlert(valueMap.get(DELETE_GENRE_ALBUM)));
+        
+        menuMap.put(ADD_GENRE_SONG, e -> requestViewService.showDialog(SongGenreDialogController.class, valueMap.get(ADD_GENRE_SONG)));
+        menuMap.put(EDIT_GENRE_SONG, e -> requestViewService.showDialog(SongGenreDialogController.class, valueMap.get(EDIT_GENRE_SONG)));
+        menuMap.put(DELETE_GENRE_SONG, e -> songGenreRepository.deleteWithAlert(valueMap.get(DELETE_GENRE_SONG)));
     }
     
     @Override

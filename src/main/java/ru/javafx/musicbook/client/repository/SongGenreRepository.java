@@ -13,4 +13,5 @@ public interface SongGenreRepository extends CrudRepository<SongGenre> {
     
     Resource<SongGenre> findBySongAndGenre(Resource<Song> song, Resource<Genre> genre) throws URISyntaxException;
 
+    long countBySongAndGenre(Resource<Song> song, Resource<Genre> genre) throws URISyntaxException;
 }

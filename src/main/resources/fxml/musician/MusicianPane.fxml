@@ -48,7 +48,7 @@
                                                                 <Label text="Name" />
                                                                 <Label fx:id="nameLabel" text="Label" GridPane.columnIndex="1" />
                                                                 <Label text="Instruments" GridPane.rowIndex="1" />
-                                                                <!--<fx:include fx:id="includedInstrumentList" source="InstrumentList.fxml" GridPane.columnIndex="1" GridPane.rowIndex="1" />--> 
+                                                                <fx:include fx:id="includedInstrumentList" source="InstrumentList.fxml" GridPane.columnIndex="1" GridPane.rowIndex="1" />
                                                                 <Label text="Date Of Birth" GridPane.rowIndex="2" />
                                                                 <Label fx:id="dobLabel" text="Label" GridPane.columnIndex="1" GridPane.rowIndex="2" />
                                                                 <Label text="Date Of Death" GridPane.rowIndex="3" />
@@ -84,7 +84,7 @@
                 </Tab>
                 <Tab text="Artists">
                     <content>
-                        <!--<fx:include fx:id="includedArtistTable" source="ArtistTable.fxml" />-->
+                        <fx:include fx:id="includedArtistTable" source="ArtistTable.fxml" />
                     </content>
                 </Tab>
                 <Tab text="Albums">

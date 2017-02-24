@@ -26,7 +26,6 @@ import ru.javafx.musicbook.client.repository.impl.WrapChangedEntity;
 import static ru.javafx.musicbook.client.service.ContextMenuItemType.ADD_MUSICIAN;
 import static ru.javafx.musicbook.client.service.ContextMenuItemType.DELETE_MUSICIAN;
 import static ru.javafx.musicbook.client.service.ContextMenuItemType.EDIT_MUSICIAN;
-import ru.javafx.musicbook.client.service.RequestViewService;
 
 @FXMLController(
     value = "/fxml/musician/MusicianPane.fxml",    
@@ -39,8 +38,10 @@ public class MusicianPaneController extends EntityController<Musician> {
 
     @FXML
     private GenreListController includedGenreListController;
-    //@FXML
-    //private InstrumentListController includedInstrumentListController;
+    @FXML
+    private InstrumentListController includedInstrumentListController;
+    @FXML
+    private ArtistTableController includedArtistTableController;
 
     @FXML
     private TabPane musicianTabPane;
@@ -70,7 +71,8 @@ public class MusicianPaneController extends EntityController<Musician> {
         showDetails();
         initRepositoryListeners();
         includedGenreListController.bootstrap(resource);
-        //includedInstrumentListController.bootstrap(resource);
+        includedInstrumentListController.bootstrap(resource);
+        includedArtistTableController.bootstrap(this);
         musicianTabPane.getSelectionModel().select(detailsTab);
     }
     

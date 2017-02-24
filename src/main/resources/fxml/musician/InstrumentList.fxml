@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.*?>
+<?import java.util.*?>
+<?import javafx.scene.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<AnchorPane id="AnchorPane" xmlns="http://javafx.com/javafx/8.0.60" xmlns:fx="http://javafx.com/fxml/1" 
+            fx:controller="ru.javafx.musicbook.client.controller.musician.InstrumentListController">
+    
+    <ListView fx:id="instrumentListView" onMouseClicked="#onMouseClickList" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
+    <cursor>
+        <Cursor fx:constant="HAND" />
+    </cursor>    
+</AnchorPane>

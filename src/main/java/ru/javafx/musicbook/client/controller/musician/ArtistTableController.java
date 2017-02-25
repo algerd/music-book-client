@@ -68,9 +68,7 @@ public class ArtistTableController extends PagedTableController<Artist> {
     protected void initPagedTable() { 
         artistColumn.setCellValueFactory(cellData -> cellData.getValue().getContent().nameProperty());
         ratingColumn.setCellValueFactory(cellData -> cellData.getValue().getContent().ratingProperty().asObject());              
-        startDateColumn.setCellValueFactory(cellData -> {
-            logger.info("musician: {}", paneController.getResource().getId().getHref());
-            logger.info("artist: {}", cellData.getValue().getId().getHref());        
+        startDateColumn.setCellValueFactory(cellData -> {      
             try {
                 return musicianGroupRepository.findByMusicianAndArtist(paneController.getResource(), cellData.getValue()).getContent().startDateProperty();
             } catch (URISyntaxException ex) {
@@ -131,7 +129,7 @@ public class ArtistTableController extends PagedTableController<Artist> {
             musicianGroup.setMusician(paneController.getResource().getId().getHref());      
             contextMenuService.add(ADD_MUSICIAN_GROUP, new Resource<>(musicianGroup, new Link("null")));
             if (selectedItem != null) {
-                Resource<MusicianGroup> resMusicianGroup = musicianGroupRepository.findByArtist(selectedItem);
+                Resource<MusicianGroup> resMusicianGroup = musicianGroupRepository.findByMusicianAndArtist(paneController.getResource(), selectedItem);
                 contextMenuService.add(EDIT_MUSICIAN_GROUP, resMusicianGroup);
                 contextMenuService.add(DELETE_MUSICIAN_GROUP, resMusicianGroup);                       
             }

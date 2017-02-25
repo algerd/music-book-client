@@ -17,6 +17,7 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.hateoas.Link;
 import org.springframework.hateoas.Resource;
 import ru.javafx.musicbook.client.controller.PagedTableController;
+import ru.javafx.musicbook.client.controller.musician.MusicianPaneController;
 import ru.javafx.musicbook.client.controller.paginator.Sort;
 import ru.javafx.musicbook.client.entity.Instrument;
 import ru.javafx.musicbook.client.entity.Musician;
@@ -28,6 +29,7 @@ import ru.javafx.musicbook.client.repository.MusicianRepository;
 import static ru.javafx.musicbook.client.service.ContextMenuItemType.ADD_MUSICIAN_GROUP;
 import static ru.javafx.musicbook.client.service.ContextMenuItemType.DELETE_MUSICIAN_GROUP;
 import static ru.javafx.musicbook.client.service.ContextMenuItemType.EDIT_MUSICIAN_GROUP;
+import ru.javafx.musicbook.client.service.RequestViewService;
 import ru.javafx.musicbook.client.utils.Helper;
 
 @FXMLController(value = "/fxml/artist/MusicianTable.fxml")
@@ -36,6 +38,8 @@ public class MusicianTableController extends PagedTableController<Musician> {
     
     protected ArtistPaneController paneController;
     
+    @Autowired
+    private RequestViewService requestViewService;
     @Autowired
     private MusicianRepository musicianRepository;
     @Autowired
@@ -77,7 +81,7 @@ public class MusicianTableController extends PagedTableController<Musician> {
                     this.setText(null);
                     if (!empty) {                                               
                         try {     
-                            this.setText(musicianGroupRepository.findByMusician(item).getContent().getStartDate());                           
+                            this.setText(musicianGroupRepository.findByMusicianAndArtist(item, paneController.getResource()).getContent().getStartDate());                           
                         } catch (URISyntaxException ex) {
                             logger.error(ex.getMessage());
                         }  
@@ -96,7 +100,7 @@ public class MusicianTableController extends PagedTableController<Musician> {
                     this.setText(null);
                     if (!empty) {  
                         try {     
-                            this.setText(musicianGroupRepository.findByMusician(item).getContent().getEndDate());                           
+                            this.setText(musicianGroupRepository.findByMusicianAndArtist(item, paneController.getResource()).getContent().getEndDate());                           
                         } catch (URISyntaxException ex) {
                             logger.error(ex.getMessage());
                         }  
@@ -171,8 +175,7 @@ public class MusicianTableController extends PagedTableController<Musician> {
             }
             // если лкм выбрана запись - показать её
             if (selectedItem != null) {
-                //MusicianEntity musician = repositoryService.getMusicianRepository().selectById(selectedItem.getMusician().getId());
-                //requestPageService.musicianPane(musician);
+                requestViewService.show(MusicianPaneController.class ,selectedItem);
             }           
         }
         else if (mouseEvent.getButton() == MouseButton.SECONDARY) { 
@@ -180,7 +183,7 @@ public class MusicianTableController extends PagedTableController<Musician> {
             musicianGroup.setArtist(paneController.getResource().getId().getHref());      
             contextMenuService.add(ADD_MUSICIAN_GROUP, new Resource<>(musicianGroup, new Link("null")));
             if (selectedItem != null) {
-                Resource<MusicianGroup> resMusicianGroup = musicianGroupRepository.findByMusician(selectedItem);
+                Resource<MusicianGroup> resMusicianGroup = musicianGroupRepository.findByMusicianAndArtist(selectedItem, paneController.getResource());
                 contextMenuService.add(EDIT_MUSICIAN_GROUP, resMusicianGroup);
                 contextMenuService.add(DELETE_MUSICIAN_GROUP, resMusicianGroup);                       
             }

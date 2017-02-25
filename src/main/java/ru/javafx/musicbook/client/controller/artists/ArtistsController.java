@@ -212,11 +212,9 @@ public class ArtistsController extends PagedTableController<Artist> {
     }
     
     private void initRepositoryListeners() {
-        //убрать и повесить слушателя на artistGenreRepository
         artistRepository.clearChangeListeners(this);       
         genreRepository.clearChangeListeners(this);
-       
-        //убрать и повесить слушателя на artistGenreRepository
+
         artistRepository.addChangeListener((observable, oldVal, newVal) -> filter(), this); 
         genreRepository.addChangeListener(this::changedGenre, this);
     }

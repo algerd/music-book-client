@@ -67,17 +67,19 @@ public class ArtistTableController extends PagedTableController<Artist> {
     @Override
     protected void initPagedTable() { 
         artistColumn.setCellValueFactory(cellData -> cellData.getValue().getContent().nameProperty());
-        ratingColumn.setCellValueFactory(cellData -> cellData.getValue().getContent().ratingProperty().asObject());       
+        ratingColumn.setCellValueFactory(cellData -> cellData.getValue().getContent().ratingProperty().asObject());              
         startDateColumn.setCellValueFactory(cellData -> {
-             try {
+            logger.info("musician: {}", paneController.getResource().getId().getHref());
+            logger.info("artist: {}", cellData.getValue().getId().getHref());        
+            try {
                 return musicianGroupRepository.findByMusicianAndArtist(paneController.getResource(), cellData.getValue()).getContent().startDateProperty();
             } catch (URISyntaxException ex) {
                 logger.error(ex.getMessage());
-            }
+            }           
             return new SimpleStringProperty("");            
         });
         endDateColumn.setCellValueFactory(cellData -> {
-             try {
+            try {
                 return musicianGroupRepository.findByMusicianAndArtist(paneController.getResource(), cellData.getValue()).getContent().endDateProperty();
             } catch (URISyntaxException ex) {
                 logger.error(ex.getMessage());

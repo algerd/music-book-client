@@ -37,7 +37,6 @@ import ru.javafx.musicbook.client.repository.operators.StringOperator;
 import static ru.javafx.musicbook.client.service.ContextMenuItemType.ADD_MUSICIAN;
 import static ru.javafx.musicbook.client.service.ContextMenuItemType.DELETE_MUSICIAN;
 import static ru.javafx.musicbook.client.service.ContextMenuItemType.EDIT_MUSICIAN;
-import ru.javafx.musicbook.client.service.RequestViewService;
 import ru.javafx.musicbook.client.utils.Helper;
 
 @FXMLController(
@@ -54,8 +53,6 @@ public class MusiciansController extends PagedTableController<Musician> {
     private final IntegerProperty minRating = new SimpleIntegerProperty();
     private final IntegerProperty maxRating = new SimpleIntegerProperty();
 
-    @Autowired
-    private RequestViewService requestViewService;
     @Autowired
     private MusicianRepository musicianRepository;
     @Autowired

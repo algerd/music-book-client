@@ -16,6 +16,7 @@ import org.springframework.hateoas.Link;
 import org.springframework.hateoas.Resource;
 import ru.javafx.musicbook.client.controller.PagedTableController;
 import ru.javafx.musicbook.client.controller.paginator.Sort;
+import ru.javafx.musicbook.client.controller.song.SongPaneController;
 import ru.javafx.musicbook.client.entity.Song;
 import ru.javafx.musicbook.client.fxintegrity.FXMLController;
 import ru.javafx.musicbook.client.repository.AlbumRepository;
@@ -103,7 +104,7 @@ public class SongTableController extends PagedTableController<Song> {
             }
             // если лкм выбрана запись - показать её
             if (selectedItem != null) {
-                //requestPageService.songPane(selectedItem);
+                requestViewService.show(SongPaneController.class ,selectedItem);
             }           
         }
         else if (mouseEvent.getButton() == MouseButton.SECONDARY) { 

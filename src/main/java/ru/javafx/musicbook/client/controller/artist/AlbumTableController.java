@@ -13,6 +13,7 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.hateoas.Link;
 import org.springframework.hateoas.Resource;
 import ru.javafx.musicbook.client.controller.PagedTableController;
+import ru.javafx.musicbook.client.controller.album.AlbumPaneController;
 import ru.javafx.musicbook.client.controller.paginator.Sort;
 import ru.javafx.musicbook.client.entity.Album;
 import ru.javafx.musicbook.client.fxintegrity.FXMLController;
@@ -88,7 +89,7 @@ public class AlbumTableController extends PagedTableController<Album> {
             }
             // если лкм выбрана запись - показать её
             if (selectedItem != null) {
-                //requestPageService.albumPane(selectedItem);
+                requestViewService.show(AlbumPaneController.class, selectedItem);
             }           
         }
         else if (mouseEvent.getButton() == MouseButton.SECONDARY) { 

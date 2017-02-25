@@ -39,7 +39,6 @@ import ru.javafx.musicbook.client.repository.operators.StringOperator;
 import static ru.javafx.musicbook.client.service.ContextMenuItemType.ADD_ALBUM;
 import static ru.javafx.musicbook.client.service.ContextMenuItemType.DELETE_ALBUM;
 import static ru.javafx.musicbook.client.service.ContextMenuItemType.EDIT_ALBUM;
-import ru.javafx.musicbook.client.service.RequestViewService;
 import ru.javafx.musicbook.client.utils.Helper;
 
 @FXMLController(
@@ -58,8 +57,6 @@ public class AlbumsController extends PagedTableController<Album> {
     private final IntegerProperty minYear = new SimpleIntegerProperty();
     private final IntegerProperty maxYear = new SimpleIntegerProperty();
     
-    @Autowired
-    private RequestViewService requestViewService;
     @Autowired
     private ArtistRepository artistRepository;
     @Autowired

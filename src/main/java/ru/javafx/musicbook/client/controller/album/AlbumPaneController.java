@@ -31,7 +31,6 @@ import ru.javafx.musicbook.client.repository.impl.WrapChangedEntity;
 import static ru.javafx.musicbook.client.service.ContextMenuItemType.ADD_ALBUM;
 import static ru.javafx.musicbook.client.service.ContextMenuItemType.DELETE_ALBUM;
 import static ru.javafx.musicbook.client.service.ContextMenuItemType.EDIT_ALBUM;
-import ru.javafx.musicbook.client.service.RequestViewService;
 
 @FXMLController(
     value = "/fxml/album/AlbumPane.fxml",    
@@ -44,8 +43,6 @@ public class AlbumPaneController extends EntityController<Album> {
     private AlbumRepository albumRepository;
     @Autowired
     private ArtistRepository artistRepository;
-    @Autowired
-    private RequestViewService requestViewService;
     
     @FXML
     private GenreListController includedGenreListController;  

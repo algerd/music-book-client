@@ -111,7 +111,7 @@ public class GenreListController extends BaseAwareController {
             Resource<Genre> selectedItem = genreListView.getSelectionModel().getSelectedItem();
             // если лкм выбрана запись - показать её
             if (selectedItem != null && !selectedItem.getId().getHref().equals(Genre.DEFAULT_GENRE)) {
-                //requestPageService.genrePane(genre);
+                requestViewService.show(GenrePaneController.class, selectedItem);
             }           
         }      
     }

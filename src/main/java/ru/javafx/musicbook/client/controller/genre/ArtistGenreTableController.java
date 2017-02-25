@@ -27,7 +27,6 @@ import ru.javafx.musicbook.client.repository.ArtistGenreRepository;
 import ru.javafx.musicbook.client.repository.ArtistRepository;
 import ru.javafx.musicbook.client.repository.GenreRepository;
 import ru.javafx.musicbook.client.service.ContextMenuItemType;
-import ru.javafx.musicbook.client.service.RequestViewService;
 import ru.javafx.musicbook.client.utils.Helper;
 
 @FXMLController(value = "/fxml/genre/ArtistGenreTable.fxml")
@@ -36,8 +35,6 @@ public class ArtistGenreTableController extends PagedTableController<Artist>  {
     
     protected GenrePaneController paneController;
     
-    @Autowired
-    private RequestViewService requestViewService;
     @Autowired
     private ArtistRepository artistRepository;
     @Autowired

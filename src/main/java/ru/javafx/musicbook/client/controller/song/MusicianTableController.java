@@ -17,6 +17,7 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.hateoas.Link;
 import org.springframework.hateoas.Resource;
 import ru.javafx.musicbook.client.controller.PagedTableController;
+import ru.javafx.musicbook.client.controller.musician.MusicianPaneController;
 import ru.javafx.musicbook.client.controller.paginator.Sort;
 import ru.javafx.musicbook.client.entity.Instrument;
 import ru.javafx.musicbook.client.entity.Musician;
@@ -28,6 +29,7 @@ import ru.javafx.musicbook.client.repository.MusicianSongRepository;
 import static ru.javafx.musicbook.client.service.ContextMenuItemType.ADD_MUSICIAN_SONG;
 import static ru.javafx.musicbook.client.service.ContextMenuItemType.DELETE_MUSICIAN_SONG;
 import static ru.javafx.musicbook.client.service.ContextMenuItemType.EDIT_MUSICIAN_SONG;
+import ru.javafx.musicbook.client.service.RequestViewService;
 import ru.javafx.musicbook.client.utils.Helper;
 
 @FXMLController(value = "/fxml/song/MusicianTable.fxml")
@@ -36,6 +38,8 @@ public class MusicianTableController extends PagedTableController<Musician> {
     
     protected SongPaneController paneController;
     
+    @Autowired
+    private RequestViewService requestViewService;
     @Autowired
     private MusicianRepository musicianRepository;
     @Autowired
@@ -130,8 +134,7 @@ public class MusicianTableController extends PagedTableController<Musician> {
             }
             // если лкм выбрана запись - показать её
             if (selectedItem != null) {
-                //MusicianEntity musician = repositoryService.getMusicianRepository().selectById(selectedItem.getMusician().getId());
-                //requestPageService.musicianPane(musician);
+                requestViewService.show(MusicianPaneController.class ,selectedItem);
             }           
         }
         else if (mouseEvent.getButton() == MouseButton.SECONDARY) { 
@@ -139,7 +142,7 @@ public class MusicianTableController extends PagedTableController<Musician> {
             musicianSong.setSong(paneController.getResource().getId().getHref());      
             contextMenuService.add(ADD_MUSICIAN_SONG, new Resource<>(musicianSong, new Link("null")));
             if (selectedItem != null) {
-                Resource<MusicianSong> resMusicianSong = musicianSongRepository.findByMusician(selectedItem);
+                Resource<MusicianSong> resMusicianSong = musicianSongRepository.findByMusicianAndSong(selectedItem, paneController.getResource());
                 contextMenuService.add(EDIT_MUSICIAN_SONG, resMusicianSong);
                 contextMenuService.add(DELETE_MUSICIAN_SONG, resMusicianSong);                       
             }

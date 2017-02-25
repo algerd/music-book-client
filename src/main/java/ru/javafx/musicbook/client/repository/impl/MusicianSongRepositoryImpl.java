@@ -36,19 +36,5 @@ public class MusicianSongRepositoryImpl extends CrudRepositoryImpl<MusicianSong>
         parameters.put("song", song.getId().getHref());
         return countParameterizedQuery(parameters, new String[]{relPath, "search", "countByMusicianAndSong"});
     }
-    
-    @Override
-    public Resource<MusicianSong> findByMusician(Resource<Musician> musician) throws URISyntaxException {
-        Map<String, Object> parameters = new HashMap<>();
-        parameters.put("musician", musician.getId().getHref());
-        return getParameterizedResource(parameters, new String[]{relPath, "search", "findByMusician"});
-    }
-    
-    @Override
-    public Resource<MusicianSong> findBySong(Resource<Song> song) throws URISyntaxException {
-        Map<String, Object> parameters = new HashMap<>();
-        parameters.put("song", song.getId().getHref());
-        return getParameterizedResource(parameters, new String[]{relPath, "search", "findBySong"});
-    }
   
 }

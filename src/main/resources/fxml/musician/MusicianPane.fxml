@@ -89,7 +89,7 @@
                 </Tab>
                 <Tab text="Albums">
                     <content>
-                        <!--<fx:include fx:id="includedAlbumTable" source="AlbumTable.fxml" />-->
+                        <fx:include fx:id="includedAlbumTable" source="AlbumTable.fxml" />
                     </content>
                 </Tab>
                 <Tab text="Songs">

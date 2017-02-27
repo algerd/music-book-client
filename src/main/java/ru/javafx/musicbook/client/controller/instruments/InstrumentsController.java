@@ -18,6 +18,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.hateoas.Resource;
 import ru.javafx.musicbook.client.controller.PagedTableController;
+import ru.javafx.musicbook.client.controller.instrument.InstrumentPaneController;
 import ru.javafx.musicbook.client.controller.paginator.Sort;
 import ru.javafx.musicbook.client.entity.Instrument;
 import ru.javafx.musicbook.client.entity.Musician;
@@ -177,8 +178,7 @@ public class InstrumentsController extends PagedTableController<Instrument> {
             }
             // если лкм выбрана запись - показать её
             if (selectedItem != null) {
-                //GenreEntity genre = repositoryService.getGenreRepository().selectById(selectedItem.getId());
-                //requestPageService.genrePane(genre);
+                requestViewService.show(InstrumentPaneController.class ,selectedItem);
             }           
         }
         else if (mouseEvent.getButton() == MouseButton.SECONDARY) { 

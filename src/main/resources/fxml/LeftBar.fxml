@@ -8,9 +8,9 @@
 <AnchorPane fx:id="leftBar" xmlns="http://javafx.com/javafx/8.0.60" xmlns:fx="http://javafx.com/fxml/1" 
             fx:controller="ru.javafx.musicbook.client.controller.LeftBarController">
     <children>
-        <VBox spacing="5.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+        <VBox fx:id="leftBarVBox" spacing="5.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
             <children>
-                    
+                <fx:include fx:id="includedExplorer" source="explorer/Explorer.fxml" />
             </children>
             <padding>
                <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />

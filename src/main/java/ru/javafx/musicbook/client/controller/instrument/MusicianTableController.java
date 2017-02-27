@@ -1,5 +1,5 @@
 
-package ru.javafx.musicbook.client.controller.genre;
+package ru.javafx.musicbook.client.controller.instrument;
 
 import java.net.URISyntaxException;
 import java.net.URL;
@@ -7,7 +7,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.ResourceBundle;
 import javafx.beans.property.SimpleIntegerProperty;
-import javafx.beans.property.SimpleStringProperty;
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
 import javafx.scene.control.TableColumn;
@@ -20,34 +19,30 @@ import org.springframework.hateoas.Resource;
 import ru.javafx.musicbook.client.controller.PagedTableController;
 import ru.javafx.musicbook.client.controller.musician.MusicianPaneController;
 import ru.javafx.musicbook.client.controller.paginator.Sort;
-import ru.javafx.musicbook.client.entity.Genre;
 import ru.javafx.musicbook.client.entity.Instrument;
 import ru.javafx.musicbook.client.entity.Musician;
-import ru.javafx.musicbook.client.entity.MusicianGenre;
+import ru.javafx.musicbook.client.entity.MusicianInstrument;
 import ru.javafx.musicbook.client.fxintegrity.FXMLController;
-import ru.javafx.musicbook.client.repository.GenreRepository;
 import ru.javafx.musicbook.client.repository.InstrumentRepository;
-import ru.javafx.musicbook.client.repository.MusicianGenreRepository;
+import ru.javafx.musicbook.client.repository.MusicianInstrumentRepository;
 import ru.javafx.musicbook.client.repository.MusicianRepository;
-import static ru.javafx.musicbook.client.service.ContextMenuItemType.ADD_GENRE_MUSICIAN;
-import static ru.javafx.musicbook.client.service.ContextMenuItemType.DELETE_GENRE_MUSICIAN;
-import static ru.javafx.musicbook.client.service.ContextMenuItemType.EDIT_GENRE_MUSICIAN;
+import static ru.javafx.musicbook.client.service.ContextMenuItemType.ADD_INSTRUMENT_MUSICIAN;
+import static ru.javafx.musicbook.client.service.ContextMenuItemType.DELETE_INSTRUMENT_MUSICIAN;
+import static ru.javafx.musicbook.client.service.ContextMenuItemType.EDIT_INSTRUMENT_MUSICIAN;
 import ru.javafx.musicbook.client.utils.Helper;
 
-@FXMLController(value = "/fxml/genre/MusicianGenreTable.fxml")
+@FXMLController(value = "/fxml/instrument/MusicianTable.fxml")
 @Scope("prototype")
-public class MusicianGenreTableController extends PagedTableController<Musician> {
+public class MusicianTableController extends PagedTableController<Musician> {
     
-    protected GenrePaneController paneController;
+    protected InstrumentPaneController paneController;
     
     @Autowired
     private MusicianRepository musicianRepository;
     @Autowired
-    private GenreRepository genreRepository;
+    private InstrumentRepository instrumentRepository;
     @Autowired
-    private MusicianGenreRepository musicianGenreRepository;
-    @Autowired
-    private InstrumentRepository instrumentRepository; 
+    private MusicianInstrumentRepository musicianInstrumentRepository;
     
     @FXML
     private Label titleLabel;
@@ -56,15 +51,13 @@ public class MusicianGenreTableController extends PagedTableController<Musician>
     @FXML
     private TableColumn<Resource<Musician>, String> musicianColumn;
     @FXML
-    private TableColumn<Resource<Musician>, String> instrumentColumn;   
-    @FXML
     private TableColumn<Resource<Musician>, Integer> ratingColumn;
     
     @Override
     public void initialize(URL url, ResourceBundle rb) {            
     }
     
-    public void bootstrap(GenrePaneController paneController) {
+    public void bootstrap(InstrumentPaneController paneController) {
         this.paneController = paneController;
         titleLabel.textProperty().bind(this.paneController.getResource().getContent().nameProperty());
         super.initPagedTableController(musicianRepository); 
@@ -75,29 +68,13 @@ public class MusicianGenreTableController extends PagedTableController<Musician>
     protected void initPagedTable() {       
         rankColumn.setCellValueFactory(cellData -> new SimpleIntegerProperty(pagedTable.getItems().indexOf(cellData.getValue()) + 1).asObject());      
         musicianColumn.setCellValueFactory(cellData -> cellData.getValue().getContent().nameProperty());
-        ratingColumn.setCellValueFactory(cellData -> cellData.getValue().getContent().ratingProperty().asObject());               
-        instrumentColumn.setCellValueFactory(cellData -> {    
-            List<Instrument> instruments = new ArrayList<>();
-            try {
-                instrumentRepository.findByMusician(cellData.getValue()).getContent().parallelStream().forEach(
-                    resource -> instruments.add(resource.getContent())
-                );
-            } catch (URISyntaxException ex) {
-                logger.error(ex.getMessage());
-            }
-            String str = "";
-            for (Instrument instrument : instruments){
-                str += (!str.equals("")) ? ", " : "";
-                str += instrument.getName();
-            }                          
-            return new SimpleStringProperty(str);
-        });
-    }
+        ratingColumn.setCellValueFactory(cellData -> cellData.getValue().getContent().ratingProperty().asObject());              
+    }    
     
     @Override
     protected String createParamString() {
         List<String> params = new ArrayList<>();  
-        params.add("genre.id=" + Helper.getId(paneController.getResource()));
+        params.add("instrument.id=" + Helper.getId(paneController.getResource()));
         params.addAll(paginatorPaneController.getPaginator().getParameterList());
         String paramStr = params.isEmpty()? "" : String.join("&", params);
         return paramStr;
@@ -111,15 +88,15 @@ public class MusicianGenreTableController extends PagedTableController<Musician>
     private void initRepositoryListeners() {                         
         musicianRepository.clearDeleteListeners(this);           
         musicianRepository.clearUpdateListeners(this);          
-        genreRepository.clearDeleteListeners(this);           
-        genreRepository.clearUpdateListeners(this);      
-        musicianGenreRepository.clearChangeListeners(this);
+        instrumentRepository.clearDeleteListeners(this);           
+        instrumentRepository.clearUpdateListeners(this);      
+        musicianInstrumentRepository.clearChangeListeners(this);
         
         musicianRepository.addDeleteListener((observable, oldVal, newVal) -> setPageValue(), this);           
         musicianRepository.addUpdateListener((observable, oldVal, newVal) -> setPageValue(), this);          
-        genreRepository.addDeleteListener((observable, oldVal, newVal) -> setPageValue(), this);           
-        genreRepository.addUpdateListener((observable, oldVal, newVal) -> setPageValue(), this);      
-        musicianGenreRepository.addChangeListener((observable, oldVal, newVal) -> setPageValue(), this);   
+        instrumentRepository.addDeleteListener((observable, oldVal, newVal) -> setPageValue(), this);           
+        instrumentRepository.addUpdateListener((observable, oldVal, newVal) -> setPageValue(), this);      
+        musicianInstrumentRepository.addChangeListener((observable, oldVal, newVal) -> setPageValue(), this);   
     }
     
     @FXML
@@ -137,16 +114,16 @@ public class MusicianGenreTableController extends PagedTableController<Musician>
             }           
         }      
         else if (mouseEvent.getButton() == MouseButton.SECONDARY) { 
-            MusicianGenre musicianGenre = new MusicianGenre();
-            musicianGenre.setGenre(paneController.getResource().getId().getHref());
-            contextMenuService.add(ADD_GENRE_MUSICIAN, new Resource<>(musicianGenre, new Link("null")));
+            MusicianInstrument musicianInstrument = new MusicianInstrument();
+            musicianInstrument.setInstrument(paneController.getResource().getId().getHref());
+            contextMenuService.add(ADD_INSTRUMENT_MUSICIAN, new Resource<>(musicianInstrument, new Link("null")));
             if (selectedItem != null) {              
-                Resource<MusicianGenre> resMusicianGenre = musicianGenreRepository.findByMusicianAndGenre(selectedItem, (Resource<Genre>) paneController.getResource());
-                contextMenuService.add(EDIT_GENRE_MUSICIAN, resMusicianGenre);
-                contextMenuService.add(DELETE_GENRE_MUSICIAN, resMusicianGenre);                       
+                Resource<MusicianInstrument> resMusicianInstrument = musicianInstrumentRepository.findByMusicianAndInstrument(selectedItem, (Resource<Instrument>) paneController.getResource());
+                contextMenuService.add(EDIT_INSTRUMENT_MUSICIAN, resMusicianInstrument);
+                contextMenuService.add(DELETE_INSTRUMENT_MUSICIAN, resMusicianInstrument);                       
             }
             contextMenuService.show(paneController.getView(), mouseEvent);
         }    
     }
-     
+
 }

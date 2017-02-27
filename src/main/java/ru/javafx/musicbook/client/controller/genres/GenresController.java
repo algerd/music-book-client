@@ -331,20 +331,12 @@ public class GenresController extends PagedTableController<Genre> {
     }
     
     private void initRepositoryListeners() {                    
-       //repositoryService.getAlbumGenreRepository().clearChangeListeners(this);                          
-       //repositoryService.getSongGenreRepository().clearChangeListeners(this);                       
-       //repositoryService.getMusicianGenreRepository().clearChangeListeners(this);                             
-       //repositoryService.getMusicianRepository().clearDeleteListeners(this);
-       musicianRepository.clearChangeListeners(this);
-       songRepository.clearChangeListeners(this);
-       albumRepository.clearChangeListeners(this);
-       artistRepository.clearChangeListeners(this);
-       genreRepository.clearChangeListeners(this);     
+        musicianRepository.clearChangeListeners(this);
+        songRepository.clearChangeListeners(this);
+        albumRepository.clearChangeListeners(this);
+        artistRepository.clearChangeListeners(this);
+        genreRepository.clearChangeListeners(this);     
                              
-        //repositoryService.getAlbumGenreRepository().addChangeListener(this::changed, this);                          
-        //repositoryService.getSongGenreRepository().addChangeListener(this::changed, this);                       
-        //repositoryService.getMusicianGenreRepository().addChangeListener(this::changed, this);                            
-        //repositoryService.getMusicianRepository().addDeleteListener(this::changed, this);
         musicianRepository.addChangeListener((observable, oldVal, newVal) -> filter(), this);
         songRepository.addChangeListener((observable, oldVal, newVal) -> filter(), this);
         albumRepository.addChangeListener((observable, oldVal, newVal) -> filter(), this);

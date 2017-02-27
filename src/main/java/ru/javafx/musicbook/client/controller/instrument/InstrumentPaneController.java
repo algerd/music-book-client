@@ -36,6 +36,8 @@ public class InstrumentPaneController extends EntityController<Instrument> {
     private InstrumentRepository instrumentRepository;
     
     @FXML
+    private MusicianTableController includedMusicianTableController;
+    @FXML
     private TabPane instrumentTabPane; 
     @FXML
     private Tab detailsTab; 
@@ -54,7 +56,7 @@ public class InstrumentPaneController extends EntityController<Instrument> {
     public void show() {
         showDetails();
         initRepositoryListeners();
-        
+        includedMusicianTableController.bootstrap(this);
         instrumentTabPane.getSelectionModel().select(detailsTab);
     }
     

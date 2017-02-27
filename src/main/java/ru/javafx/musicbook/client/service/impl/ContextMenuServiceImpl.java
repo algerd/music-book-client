@@ -23,6 +23,7 @@ import ru.javafx.musicbook.client.controller.genre.GenreDialogController;
 import ru.javafx.musicbook.client.controller.genre.MusicianGenreDialogController;
 import ru.javafx.musicbook.client.controller.genre.SongGenreDialogController;
 import ru.javafx.musicbook.client.controller.instrument.InstrumentDialogController;
+import ru.javafx.musicbook.client.controller.instrument.MusicianInstrumentDialogController;
 import ru.javafx.musicbook.client.controller.musician.MusicianAlbumDialogController;
 import ru.javafx.musicbook.client.controller.musician.MusicianDialogController;
 import ru.javafx.musicbook.client.controller.musician.MusicianGroupDialogController;
@@ -43,6 +44,7 @@ import ru.javafx.musicbook.client.repository.InstrumentRepository;
 import ru.javafx.musicbook.client.repository.MusicianAlbumRepository;
 import ru.javafx.musicbook.client.repository.MusicianGenreRepository;
 import ru.javafx.musicbook.client.repository.MusicianGroupRepository;
+import ru.javafx.musicbook.client.repository.MusicianInstrumentRepository;
 import ru.javafx.musicbook.client.repository.MusicianRepository;
 import ru.javafx.musicbook.client.repository.MusicianSongRepository;
 import ru.javafx.musicbook.client.repository.SongGenreRepository;
@@ -83,6 +85,8 @@ public class ContextMenuServiceImpl implements ContextMenuService {
     private SongGenreRepository songGenreRepository;
     @Autowired
     private MusicianGenreRepository musicianGenreRepository;
+    @Autowired
+    private MusicianInstrumentRepository musicianInstrumentRepository;
          
     private final ContextMenu contextMenu = new ContextMenu();
     private final Map<ContextMenuItemType, EventHandler<ActionEvent>> menuMap = new HashMap<>();
@@ -146,6 +150,9 @@ public class ContextMenuServiceImpl implements ContextMenuService {
         menuMap.put(EDIT_GENRE_MUSICIAN, e -> requestViewService.showDialog(MusicianGenreDialogController.class, valueMap.get(EDIT_GENRE_MUSICIAN)));
         menuMap.put(DELETE_GENRE_MUSICIAN, e -> musicianGenreRepository.deleteWithAlert(valueMap.get(DELETE_GENRE_MUSICIAN)));
     
+        menuMap.put(ADD_INSTRUMENT_MUSICIAN, e -> requestViewService.showDialog(MusicianInstrumentDialogController.class, valueMap.get(ADD_INSTRUMENT_MUSICIAN)));
+        menuMap.put(EDIT_INSTRUMENT_MUSICIAN, e -> requestViewService.showDialog(MusicianInstrumentDialogController.class, valueMap.get(EDIT_INSTRUMENT_MUSICIAN)));
+        menuMap.put(DELETE_INSTRUMENT_MUSICIAN, e -> musicianInstrumentRepository.deleteWithAlert(valueMap.get(DELETE_INSTRUMENT_MUSICIAN)));
     }
     
     @Override

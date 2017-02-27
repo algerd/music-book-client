@@ -60,7 +60,11 @@ public enum ContextMenuItemType {
         
         ADD_GENRE_MUSICIAN(new MenuItem("Add Genre To Musician")),
         EDIT_GENRE_MUSICIAN(new MenuItem("Edit Genre In Musician")),
-        DELETE_GENRE_MUSICIAN(new MenuItem("Delete Genre From Musician"));
+        DELETE_GENRE_MUSICIAN(new MenuItem("Delete Genre From Musician")),
+        
+        ADD_INSTRUMENT_MUSICIAN(new MenuItem("Add Instrument To Musician")),
+        EDIT_INSTRUMENT_MUSICIAN(new MenuItem("Edit Instrument In Musician")),
+        DELETE_INSTRUMENT_MUSICIAN(new MenuItem("Delete Instrument From Musician"));
                       
         //SEPARATOR(new SeparatorMenuItem());
         

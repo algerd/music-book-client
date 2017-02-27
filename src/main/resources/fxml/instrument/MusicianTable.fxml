@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.*?>
+<?import java.util.*?>
+<?import javafx.scene.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<AnchorPane id="AnchorPane" fx:id="musicianTable" xmlns="http://javafx.com/javafx/8.0.60" xmlns:fx="http://javafx.com/fxml/1" 
+            fx:controller="ru.javafx.musicbook.client.controller.instrument.MusicianTableController">
+            
+    <children>
+        <VBox fx:id="tableContainer" prefHeight="200.0" prefWidth="100.0" spacing="10.0" AnchorPane.bottomAnchor="10.0" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="10.0">        
+            <children>
+                <Label fx:id="titleLabel" text="Label" AnchorPane.leftAnchor="10.0" AnchorPane.topAnchor="10.0" />
+                <TableView fx:id="pagedTable" onMouseClicked="#onMouseClickTable" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="40.0">
+                    <columns>
+                        <TableColumn fx:id="rankColumn" maxWidth="500.0" minWidth="-Infinity" prefWidth="50.0" text="Rank" />
+                        <TableColumn fx:id="musicianColumn" minWidth="-Infinity" prefWidth="250.0" text="Musician" />
+                        <TableColumn fx:id="ratingColumn" maxWidth="500.0" minWidth="-Infinity" prefWidth="50.0" text="Rating" />
+                    </columns>
+                    <columnResizePolicy>
+                         <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
+                    </columnResizePolicy>
+                </TableView>
+            </children>
+        </VBox>       
+    </children>  
+           
+</AnchorPane>

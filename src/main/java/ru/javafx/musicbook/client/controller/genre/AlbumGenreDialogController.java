@@ -19,15 +19,11 @@ import ru.javafx.musicbook.client.entity.Album;
 import ru.javafx.musicbook.client.entity.AlbumGenre;
 import ru.javafx.musicbook.client.entity.Artist;
 import ru.javafx.musicbook.client.entity.Genre;
-import ru.javafx.musicbook.client.entity.Musician;
-import ru.javafx.musicbook.client.entity.MusicianAlbum;
 import ru.javafx.musicbook.client.fxintegrity.FXMLController;
 import ru.javafx.musicbook.client.repository.AlbumGenreRepository;
 import ru.javafx.musicbook.client.repository.AlbumRepository;
 import ru.javafx.musicbook.client.repository.ArtistRepository;
 import ru.javafx.musicbook.client.repository.GenreRepository;
-import ru.javafx.musicbook.client.repository.MusicianAlbumRepository;
-import ru.javafx.musicbook.client.repository.MusicianRepository;
 import ru.javafx.musicbook.client.repository.impl.WrapChangedEntity;
 
 @FXMLController(

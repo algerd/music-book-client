@@ -191,7 +191,6 @@ public class AlbumsController extends PagedTableController<Album> {
         }
         params.addAll(paginatorPaneController.getPaginator().getParameterList());
         String paramStr = params.isEmpty()? "" : String.join("&", params);
-        //logger.info("paramStr :{}", paramStr);
         return paramStr;
     }
     

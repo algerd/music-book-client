@@ -18,7 +18,6 @@ import ru.javafx.musicbook.client.controller.BaseDialogController;
 import ru.javafx.musicbook.client.entity.Album;
 import ru.javafx.musicbook.client.entity.Artist;
 import ru.javafx.musicbook.client.entity.Genre;
-import ru.javafx.musicbook.client.entity.MusicianSong;
 import ru.javafx.musicbook.client.entity.Song;
 import ru.javafx.musicbook.client.entity.SongGenre;
 import ru.javafx.musicbook.client.fxintegrity.FXMLController;

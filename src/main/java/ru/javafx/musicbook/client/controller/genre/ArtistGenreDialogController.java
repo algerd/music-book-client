@@ -12,7 +12,6 @@ import javafx.scene.control.ChoiceBox;
 import javafx.util.StringConverter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
-import org.springframework.hateoas.Link;
 import org.springframework.hateoas.Resource;
 import ru.javafx.musicbook.client.controller.BaseDialogController;
 import ru.javafx.musicbook.client.entity.Artist;

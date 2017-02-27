@@ -38,5 +38,13 @@ public class MusicianInstrumentRepositoryImpl extends CrudRepositoryImpl<Musicia
         parameters.put("instrument", instrument.getId().getHref());
         return getParameterizedResource(parameters, new String[]{relPath, "search", "findByMusicianAndInstrument"});
     }
+    
+    @Override
+    public long countByMusicianAndInstrument(Resource<Musician> musician, Resource<Instrument> instrument) throws URISyntaxException {
+        Map<String, Object> parameters = new HashMap<>();
+        parameters.put("musician", musician.getId().getHref());
+        parameters.put("instrument", instrument.getId().getHref());
+        return countParameterizedQuery(parameters, new String[]{relPath, "search", "countByMusicianAndInstrument"});
+    }
   
 }

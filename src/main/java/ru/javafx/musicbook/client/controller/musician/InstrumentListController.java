@@ -18,6 +18,7 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.hateoas.Link;
 import org.springframework.hateoas.Resource;
 import ru.javafx.musicbook.client.controller.BaseAwareController;
+import ru.javafx.musicbook.client.controller.instrument.InstrumentPaneController;
 import ru.javafx.musicbook.client.entity.Instrument;
 import ru.javafx.musicbook.client.entity.Musician;
 import ru.javafx.musicbook.client.fxintegrity.FXMLController;
@@ -109,7 +110,7 @@ public class InstrumentListController extends BaseAwareController {
             Resource<Instrument> selectedItem = instrumentListView.getSelectionModel().getSelectedItem();
             // если лкм выбрана запись - показать её
             if (selectedItem != null && !selectedItem.getId().getHref().equals(Instrument.DEFAULT_INSTRUMENT)) {
-                //requestPageService.genrePane(genre);
+                requestViewService.show(InstrumentPaneController.class, selectedItem);
             }            
         }
     }

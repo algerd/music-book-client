@@ -63,7 +63,6 @@ public class GenreDialogController extends BaseDialogController<Genre> {
                 } 
             } catch (URISyntaxException ex) {
                 logger.error(ex.getMessage());
-                //ex.printStackTrace();
             }    
             dialogStage.close();
             edit = false;

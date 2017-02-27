@@ -26,6 +26,14 @@ public class MusicianInstrument implements Entity {
     public void setInstrument(String instrument) {
         this.instrument = instrument;
     }
+    
+    @Override
+    public MusicianInstrument clone() {
+        MusicianInstrument musicianInstrument = new MusicianInstrument();
+        musicianInstrument.setMusician(musician);
+        musicianInstrument.setInstrument(instrument);
+        return musicianInstrument;
+    }
 
     @Override
     public int hashCode() {

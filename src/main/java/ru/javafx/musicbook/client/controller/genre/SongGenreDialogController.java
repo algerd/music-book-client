@@ -218,7 +218,8 @@ public class SongGenreDialogController extends BaseDialogController<SongGenre> {
     
     @Override
     protected void add() {     
-        songGenre = (resource == null) ? new SongGenre() : resource.getContent();      
+        songGenre = (resource == null) ? new SongGenre() : resource.getContent();   
+        if (songGenre.getSong() != null) selectSongChoiceBox(songGenre.getSong());
         selectArtistChoiceBox(Artist.DEFAULT_ARTIST);
         selectAlbumChoiceBox(Album.DEFAULT_ALBUM);
         selectGenreChoiceBox(songGenre.getGenre()); 

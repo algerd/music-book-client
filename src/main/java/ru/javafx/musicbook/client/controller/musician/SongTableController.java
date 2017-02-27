@@ -6,6 +6,7 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.ResourceBundle;
+import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
@@ -17,30 +18,33 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.hateoas.Link;
 import org.springframework.hateoas.Resource;
 import ru.javafx.musicbook.client.controller.PagedTableController;
-import ru.javafx.musicbook.client.controller.album.AlbumPaneController;
 import ru.javafx.musicbook.client.controller.paginator.Sort;
-import ru.javafx.musicbook.client.entity.Album;
-import ru.javafx.musicbook.client.entity.MusicianAlbum;
+import ru.javafx.musicbook.client.controller.song.SongPaneController;
+import ru.javafx.musicbook.client.entity.MusicianSong;
+import ru.javafx.musicbook.client.entity.Song;
 import ru.javafx.musicbook.client.fxintegrity.FXMLController;
 import ru.javafx.musicbook.client.repository.AlbumRepository;
 import ru.javafx.musicbook.client.repository.ArtistRepository;
-import ru.javafx.musicbook.client.repository.MusicianAlbumRepository;
 import ru.javafx.musicbook.client.repository.MusicianRepository;
-import static ru.javafx.musicbook.client.service.ContextMenuItemType.ADD_MUSICIAN_ALBUM;
-import static ru.javafx.musicbook.client.service.ContextMenuItemType.DELETE_MUSICIAN_ALBUM;
-import static ru.javafx.musicbook.client.service.ContextMenuItemType.EDIT_MUSICIAN_ALBUM;
+import ru.javafx.musicbook.client.repository.MusicianSongRepository;
+import ru.javafx.musicbook.client.repository.SongRepository;
+import static ru.javafx.musicbook.client.service.ContextMenuItemType.ADD_MUSICIAN_SONG;
+import static ru.javafx.musicbook.client.service.ContextMenuItemType.DELETE_MUSICIAN_SONG;
+import static ru.javafx.musicbook.client.service.ContextMenuItemType.EDIT_MUSICIAN_SONG;
 import ru.javafx.musicbook.client.utils.Helper;
 
-@FXMLController(value = "/fxml/musician/AlbumTable.fxml")
+@FXMLController(value = "/fxml/musician/SongTable.fxml")
 @Scope("prototype")
-public class AlbumTableController extends PagedTableController<Album> {
+public class SongTableController extends PagedTableController<Song> {
     
     protected MusicianPaneController paneController;
     
     @Autowired
     private MusicianRepository musicianRepository;
     @Autowired
-    private MusicianAlbumRepository musicianAlbumRepository;
+    private MusicianSongRepository musicianSongRepository;
+    @Autowired
+    private SongRepository songRepository;
     @Autowired
     private AlbumRepository albumRepository;
     @Autowired
@@ -49,13 +53,15 @@ public class AlbumTableController extends PagedTableController<Album> {
     @FXML
     private Label titleLabel;
     @FXML
-    private TableColumn<Resource<Album>, String> artistColumn;
+    private TableColumn<Resource<Song>, String> artistColumn;
     @FXML
-    private TableColumn<Resource<Album>, String> albumColumn;   
+    private TableColumn<Resource<Song>, String> albumColumn;   
     @FXML
-    private TableColumn<Resource<Album>, Integer> yearColumn;
+    private TableColumn<Resource<Song>, Integer> yearColumn;
     @FXML
-    private TableColumn<Resource<Album>, Integer> ratingColumn;
+    private TableColumn<Resource<Song>, String> songColumn;       
+    @FXML
+    private TableColumn<Resource<Song>, Integer> ratingColumn;
     
     @Override
     public void initialize(URL url, ResourceBundle rb) {            
@@ -63,18 +69,33 @@ public class AlbumTableController extends PagedTableController<Album> {
     
     public void bootstrap(MusicianPaneController paneController) {
         this.paneController = paneController;
-        super.initPagedTableController(albumRepository); 
+        super.initPagedTableController(songRepository); 
         initRepositoryListeners();
     }
     
     @Override
     protected void initPagedTable() { 
-        albumColumn.setCellValueFactory(cellData -> cellData.getValue().getContent().nameProperty());
+        songColumn.setCellValueFactory(cellData -> cellData.getValue().getContent().nameProperty());
         ratingColumn.setCellValueFactory(cellData -> cellData.getValue().getContent().ratingProperty().asObject());              
-        yearColumn.setCellValueFactory(cellData -> cellData.getValue().getContent().yearProperty().asObject()); 
-        artistColumn.setCellValueFactory(cellData -> { 
+        albumColumn.setCellValueFactory(cellData -> {
             try {
-                return artistRepository.getResource(cellData.getValue().getLink("artist").getHref()).getContent().nameProperty();
+                return albumRepository.getResource(cellData.getValue().getLink("album").getHref()).getContent().nameProperty();
+            } catch (URISyntaxException ex) {
+                logger.error(ex.getMessage());
+            }           
+            return new SimpleStringProperty("");
+        });
+        yearColumn.setCellValueFactory(cellData -> {
+            try {
+                return albumRepository.getResource(cellData.getValue().getLink("album").getHref()).getContent().yearProperty().asObject();
+            } catch (URISyntaxException ex) {
+                logger.error(ex.getMessage());
+            }           
+            return new SimpleObjectProperty<>();
+        });
+        artistColumn.setCellValueFactory(cellData -> {
+            try {
+                return artistRepository.getPagedResources("song.id=" + Helper.getId(cellData.getValue())).getContent().iterator().next().getContent().nameProperty();
             } catch (URISyntaxException ex) {
                 logger.error(ex.getMessage());
             }           
@@ -97,13 +118,13 @@ public class AlbumTableController extends PagedTableController<Album> {
     }
     
     private void initRepositoryListeners() {
-        musicianAlbumRepository.clearChangeListeners(this);
+        musicianSongRepository.clearChangeListeners(this);
         musicianRepository.clearChangeListeners(this);
-        albumRepository.clearChangeListeners(this);
+        songRepository.clearChangeListeners(this);
         
-        musicianAlbumRepository.addChangeListener((observable, oldVal, newVal) -> setPageValue(), this);
+        musicianSongRepository.addChangeListener((observable, oldVal, newVal) -> setPageValue(), this);
         musicianRepository.addUpdateListener((observable, oldVal, newVal) -> setPageValue(), this);
-        albumRepository.addUpdateListener((observable, oldVal, newVal) -> setPageValue(), this);
+        songRepository.addUpdateListener((observable, oldVal, newVal) -> setPageValue(), this);
     }
     
     @FXML
@@ -117,19 +138,19 @@ public class AlbumTableController extends PagedTableController<Album> {
             }
             // если лкм выбрана запись - показать её
             if (selectedItem != null) {
-                requestViewService.show(AlbumPaneController.class, selectedItem);
+                requestViewService.show(SongPaneController.class, selectedItem);
             }           
         }
         else if (mouseEvent.getButton() == MouseButton.SECONDARY) { 
-            MusicianAlbum musicianAlbum = new MusicianAlbum();
-            musicianAlbum.setMusician(paneController.getResource().getId().getHref());      
-            contextMenuService.add(ADD_MUSICIAN_ALBUM, new Resource<>(musicianAlbum, new Link("null")));
+            MusicianSong musicianSong = new MusicianSong();
+            musicianSong.setMusician(paneController.getResource().getId().getHref());
+            contextMenuService.add(ADD_MUSICIAN_SONG, new Resource<>(musicianSong, new Link("null")));
             if (selectedItem != null) {
-                Resource<MusicianAlbum> resMusicianAlbum = musicianAlbumRepository.findByMusicianAndAlbum(paneController.getResource(), selectedItem);
-                contextMenuService.add(EDIT_MUSICIAN_ALBUM, resMusicianAlbum);
-                contextMenuService.add(DELETE_MUSICIAN_ALBUM, resMusicianAlbum); 
+                Resource<MusicianSong> resMusicianSong = musicianSongRepository.findByMusicianAndSong(paneController.getResource(), selectedItem);
+                contextMenuService.add(EDIT_MUSICIAN_SONG, resMusicianSong);
+                contextMenuService.add(DELETE_MUSICIAN_SONG, resMusicianSong); 
             }
-            contextMenuService.show(paneController.getView(), mouseEvent);      
+            contextMenuService.show(paneController.getView(), mouseEvent);        
         }
     }
 

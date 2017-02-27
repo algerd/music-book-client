@@ -145,6 +145,7 @@ public class ContextMenuServiceImpl implements ContextMenuService {
         menuMap.put(ADD_GENRE_MUSICIAN, e -> requestViewService.showDialog(MusicianGenreDialogController.class, valueMap.get(ADD_GENRE_MUSICIAN)));
         menuMap.put(EDIT_GENRE_MUSICIAN, e -> requestViewService.showDialog(MusicianGenreDialogController.class, valueMap.get(EDIT_GENRE_MUSICIAN)));
         menuMap.put(DELETE_GENRE_MUSICIAN, e -> musicianGenreRepository.deleteWithAlert(valueMap.get(DELETE_GENRE_MUSICIAN)));
+    
     }
     
     @Override

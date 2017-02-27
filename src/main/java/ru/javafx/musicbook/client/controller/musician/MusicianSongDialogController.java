@@ -217,16 +217,10 @@ public class MusicianSongDialogController extends BaseDialogController<MusicianS
     
     @Override
     protected void add() {     
-        musicianSong = (resource == null) ? new MusicianSong() : resource.getContent();      
-        try {
-            Resource<Song> resSong = songRepository.getResource(musicianSong.getSong());
-            Resource<Album> resAlbum = albumRepository.getResource(resSong.getLink("album").getHref());
-            Resource<Artist> resArtist = artistRepository.getResource(resAlbum.getLink("artist").getHref());
-            selectArtistChoiceBox(resArtist.getId().getHref());
-            selectAlbumChoiceBox(resAlbum.getId().getHref());
-        } catch (URISyntaxException ex) {
-            logger.error(ex.getMessage());
-        }           
+        musicianSong = (resource == null) ? new MusicianSong() : resource.getContent();   
+        if (musicianSong.getSong() != null) selectSongChoiceBox(musicianSong.getSong());
+        selectArtistChoiceBox(Artist.DEFAULT_ARTIST);
+        selectAlbumChoiceBox(Album.DEFAULT_ALBUM);
         selectMusicianChoiceBox(musicianSong.getMusician()); 
     }
     

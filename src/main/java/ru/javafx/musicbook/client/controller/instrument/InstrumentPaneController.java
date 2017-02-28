@@ -81,7 +81,7 @@ public class InstrumentPaneController extends EntityController<Instrument> {
     }
     
     private void deletedInstrument(ObservableValue observable, Object oldVal, Object newVal) {
-        Resource<Genre> oldResource = ((WrapChangedEntity<Resource<Genre>>) oldVal).getOld();
+        Resource<Genre> oldResource = ((WrapChangedEntity<Resource<Genre>>) newVal).getOld();
         if (oldResource.getId().equals(resource.getId())) {
             view.setVisible(false);
         }

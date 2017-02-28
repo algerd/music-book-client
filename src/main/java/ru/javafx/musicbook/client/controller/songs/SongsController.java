@@ -179,8 +179,6 @@ public class SongsController extends PagedTableController<Song> {
                     this.setText(null);
                     if (!empty) {                    
                         try {  
-                            //Resource<Album> album = albumRepository.getResource(item.getLink("album").getHref());
-                            //Artist artist = artistRepository.getResource(album.getLink("artist").getHref()).getContent(); 
                             this.setText(artistRepository.getPagedResources("song.id=" + Helper.getId(item)).getContent().iterator().next().getContent().getName());
                         } catch (URISyntaxException ex) {
                             logger.error(ex.getMessage());

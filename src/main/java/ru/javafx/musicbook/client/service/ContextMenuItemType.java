@@ -64,9 +64,9 @@ public enum ContextMenuItemType {
         
         ADD_INSTRUMENT_MUSICIAN(new MenuItem("Add Instrument To Musician")),
         EDIT_INSTRUMENT_MUSICIAN(new MenuItem("Edit Instrument In Musician")),
-        DELETE_INSTRUMENT_MUSICIAN(new MenuItem("Delete Instrument From Musician"));
+        DELETE_INSTRUMENT_MUSICIAN(new MenuItem("Delete Instrument From Musician")),
                       
-        //SEPARATOR(new SeparatorMenuItem());
+        SEPARATOR(new SeparatorMenuItem());
         
         private final MenuItem item;
         

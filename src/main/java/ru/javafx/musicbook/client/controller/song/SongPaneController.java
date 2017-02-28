@@ -137,7 +137,7 @@ public class SongPaneController extends EntityController<Song> {
     }
     
     private void deletedSong(ObservableValue observable, Object oldVal, Object newVal) {
-        Resource<Song> oldResource = ((WrapChangedEntity<Resource<Song>>) oldVal).getOld();
+        Resource<Song> oldResource = ((WrapChangedEntity<Resource<Song>>) newVal).getOld();
         if (oldResource.getId().equals(resource.getId())) {
             view.setVisible(false);
         }

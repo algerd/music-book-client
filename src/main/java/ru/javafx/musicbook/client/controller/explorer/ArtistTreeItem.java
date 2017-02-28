@@ -2,10 +2,12 @@
 package ru.javafx.musicbook.client.controller.explorer;
 
 import java.net.URISyntaxException;
+import java.util.Comparator;
+import java.util.List;
+import java.util.stream.Collectors;
 import javafx.collections.ObservableList;
 import javafx.scene.control.TreeItem;
 import org.springframework.hateoas.Resource;
-import org.springframework.hateoas.Resources;
 import ru.javafx.musicbook.client.entity.Album;
 import ru.javafx.musicbook.client.entity.Artist;
 import ru.javafx.musicbook.client.entity.Entity;
@@ -59,15 +61,21 @@ public class ArtistTreeItem extends TreeItem<Resource<? extends Entity>> {
         if (getValue() == null) return;
         try {          
             if (getValue().getContent() instanceof Artist) {
-                Resources<Resource<Album>> albums = repositoryService.getAlbumRepository().findByArtist((Resource<Artist>) getValue());
-                //albums.sort(Comparator.comparingInt(AlbumEntity::getYear));
+                List<Resource<Album>> albums = repositoryService.getAlbumRepository().findByArtist((Resource<Artist>) getValue()).getContent()
+                        .parallelStream()
+                        .sorted(Comparator.comparingInt(res -> res.getContent().getYear()))
+                        //.sorted((e1, e2) -> Integer.compare(e1.getContent().getYear(), e2.getContent().getYear()))
+                        .collect(Collectors.toList());                             
                 for (Resource<Album> album : albums) {
                     getChildren().add(new ArtistTreeItem(album, repositoryService));            
                 }
             }
             else if (getValue().getContent() instanceof Album) {
-                Resources<Resource<Song>> songs = repositoryService.getSongRepository().findByAlbum((Resource<Album>) getValue());
-                //songs.sort(Comparator.comparingInt(SongEntity::getTrack));
+                List<Resource<Song>> songs = repositoryService.getSongRepository().findByAlbum((Resource<Album>) getValue()).getContent()
+                        .parallelStream()
+                        .sorted(Comparator.comparingInt(res -> res.getContent().getTrack()))
+                        //.sorted((e1, e2) -> Integer.compare(e1.getContent().getTrack(), e2.getContent().getTrack()))
+                        .collect(Collectors.toList());
                 for (Resource<Song> song : songs) {
                     getChildren().add(new ArtistTreeItem(song, repositoryService));
                 }            

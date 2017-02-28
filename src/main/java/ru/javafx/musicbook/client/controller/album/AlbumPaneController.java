@@ -114,7 +114,7 @@ public class AlbumPaneController extends EntityController<Album> {
     }
        
     private void deletedAlbum(ObservableValue observable, Object oldVal, Object newVal) {
-        Resource<Album> oldResource = ((WrapChangedEntity<Resource<Album>>) oldVal).getOld();
+        Resource<Album> oldResource = ((WrapChangedEntity<Resource<Album>>) newVal).getOld();
         if (oldResource.getId().equals(resource.getId())) {
             view.setVisible(false);
         }

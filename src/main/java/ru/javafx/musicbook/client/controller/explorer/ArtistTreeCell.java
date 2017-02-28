@@ -5,6 +5,7 @@ import javafx.scene.control.TreeCell;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import org.springframework.hateoas.Resource;
+import static ru.javafx.musicbook.client.Params.DIR_IMAGES;
 import ru.javafx.musicbook.client.entity.Album;
 import ru.javafx.musicbook.client.entity.Artist;
 import ru.javafx.musicbook.client.entity.Entity;
@@ -22,11 +23,11 @@ public class ArtistTreeCell extends TreeCell<Resource<? extends Entity>> {
         } else {
             if (item.getContent() instanceof Artist) {
                 textProperty().bind(((Resource<Artist>) item).getContent().nameProperty());
-                //setGraphic(getIcon("folder.jpg"));
+                setGraphic(getIcon("folder.jpg"));
             }
             else if (item.getContent() instanceof Album) {
                 textProperty().bind(((Resource<Album>) item).getContent().nameProperty());
-                //setGraphic(getIcon("file.jpg"));
+                setGraphic(getIcon("file.jpg"));
             }
             else if (item.getContent() instanceof Song) {
                 this.textProperty().bind(((Resource<Song>) item).getContent().nameProperty());
@@ -34,7 +35,7 @@ public class ArtistTreeCell extends TreeCell<Resource<? extends Entity>> {
             }
         }
     }
-    /*
+    
     private ImageView getIcon(String fileName) {
 		ImageView imgView = null;
 		try {
@@ -43,10 +44,8 @@ public class ArtistTreeCell extends TreeCell<Resource<? extends Entity>> {
 			imgView = new ImageView(img);
 		} 
 		catch (Exception e) {
-			//e.printStackTrace();
-            LOG.error("Error: ",  e);
+			e.printStackTrace();
 		}
 		return imgView;
-	}
-    */
+	}    
 }

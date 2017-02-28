@@ -11,4 +11,5 @@ public class Params {
     public static final int MAX_TRACK = 1000;
     public static final int WIDTH_COVER = 300;
     public static final int HEIGTH_COVER = 300;
+    public static final String DIR_IMAGES = "images/";
 }

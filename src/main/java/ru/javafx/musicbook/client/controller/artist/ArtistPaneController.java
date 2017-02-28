@@ -93,7 +93,7 @@ public class ArtistPaneController extends EntityController<Artist> {
     }
     
     private void deletedArtist(ObservableValue observable, Object oldVal, Object newVal) {    
-        Resource<Artist> oldResource = ((WrapChangedEntity<Resource<Artist>>) oldVal).getOld();
+        Resource<Artist> oldResource = ((WrapChangedEntity<Resource<Artist>>) newVal).getOld();
         if (oldResource.getId().equals(resource.getId())) {
             view.setVisible(false);
         }    

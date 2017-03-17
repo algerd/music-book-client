@@ -1,7 +1,6 @@
 
-package ru.javafx.musicbook.client.datacore.repository.impl;
+package ru.javafx.musicbook.client.datacore.impl;
 
-import ru.javafx.musicbook.client.datacore.repository.impl.ChangeRepositoryImpl;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -30,8 +29,8 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.web.client.RestTemplate;
-import ru.javafx.musicbook.client.datacore.entity.Entity;
-import ru.javafx.musicbook.client.datacore.repository.CrudRepository;
+import ru.javafx.musicbook.client.datacore.Entity;
+import ru.javafx.musicbook.client.datacore.CrudRepository;
 
 @SuppressWarnings("unchecked")
 public abstract class CrudRepositoryImpl<T extends Entity> extends ChangeRepositoryImpl<T> implements CrudRepository<T> {

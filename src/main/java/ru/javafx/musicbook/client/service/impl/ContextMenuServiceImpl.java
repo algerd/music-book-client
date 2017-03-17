@@ -33,7 +33,7 @@ import ru.javafx.musicbook.client.service.ContextMenuItemType;
 import ru.javafx.musicbook.client.service.ContextMenuService;
 import ru.javafx.musicbook.client.service.RequestViewService;
 import static ru.javafx.musicbook.client.service.ContextMenuItemType.*;
-import ru.javafx.musicbook.client.datacore.entity.Entity;
+import ru.javafx.musicbook.client.datacore.Entity;
 import ru.javafx.musicbook.client.repository.AlbumGenreRepository;
 import ru.javafx.musicbook.client.repository.AlbumRepository;
 import ru.javafx.musicbook.client.repository.ArtistGenreRepository;

@@ -36,7 +36,7 @@ import ru.javafx.musicbook.client.repository.AlbumGenreRepository;
 import ru.javafx.musicbook.client.repository.AlbumRepository;
 import ru.javafx.musicbook.client.repository.ArtistRepository;
 import ru.javafx.musicbook.client.repository.GenreRepository;
-import ru.javafx.musicbook.client.datacore.repository.impl.WrapChangedEntity;
+import ru.javafx.musicbook.client.datacore.impl.WrapChangedEntity;
 import ru.javafx.musicbook.client.utils.Helper;
 
 @FXMLController(

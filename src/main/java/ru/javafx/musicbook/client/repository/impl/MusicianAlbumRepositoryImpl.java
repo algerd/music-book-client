@@ -1,7 +1,7 @@
 
 package ru.javafx.musicbook.client.repository.impl;
 
-import ru.javafx.musicbook.client.datacore.repository.impl.CrudRepositoryImpl;
+import ru.javafx.musicbook.client.datacore.impl.CrudRepositoryImpl;
 import java.net.URISyntaxException;
 import java.util.HashMap;
 import java.util.Map;

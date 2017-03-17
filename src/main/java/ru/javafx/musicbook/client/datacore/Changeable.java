@@ -1,5 +1,5 @@
 
-package ru.javafx.musicbook.client.datacore.repository;
+package ru.javafx.musicbook.client.datacore;
 
 public interface Changeable<T> {
     

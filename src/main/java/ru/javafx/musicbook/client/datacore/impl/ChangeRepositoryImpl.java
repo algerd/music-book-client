@@ -1,7 +1,6 @@
 
-package ru.javafx.musicbook.client.datacore.repository.impl;
+package ru.javafx.musicbook.client.datacore.impl;
 
-import ru.javafx.musicbook.client.datacore.repository.impl.BaseRepositoryImpl;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -10,28 +9,29 @@ import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.value.ChangeListener;
 import org.springframework.hateoas.Resource;
-import ru.javafx.musicbook.client.datacore.entity.Entity;
-import ru.javafx.musicbook.client.datacore.repository.ChangeRepository;
+import ru.javafx.musicbook.client.datacore.Entity;
+import ru.javafx.musicbook.client.datacore.ChangeRepository;
+import ru.javafx.musicbook.client.datacore.Changeable;
 
 public abstract class ChangeRepositoryImpl<T extends Entity> extends BaseRepositoryImpl<T> implements ChangeRepository<T> {
     
-    protected final ObjectProperty<WrapChangedEntity<Resource<T>>> added = new SimpleObjectProperty<>();
-    protected final ObjectProperty<WrapChangedEntity<Resource<T>>> updated = new SimpleObjectProperty<>();    
-    protected final ObjectProperty<WrapChangedEntity<Resource<T>>> deleted = new SimpleObjectProperty<>(); 
+    protected final ObjectProperty<Changeable<Resource<T>>> added = new SimpleObjectProperty<>();
+    protected final ObjectProperty<Changeable<Resource<T>>> updated = new SimpleObjectProperty<>();    
+    protected final ObjectProperty<Changeable<Resource<T>>> deleted = new SimpleObjectProperty<>(); 
     
-    private final Map<Object, Set<ChangeListener<? super WrapChangedEntity<Resource<T>>>>> insertListeners = new HashMap<>();
-    private final Map<Object, Set<ChangeListener<? super WrapChangedEntity<Resource<T>>>>> updateListeners = new HashMap<>();
-    private final Map<Object, Set<ChangeListener<? super WrapChangedEntity<Resource<T>>>>> deleteListeners = new HashMap<>();
+    private final Map<Object, Set<ChangeListener<? super Changeable<Resource<T>>>>> insertListeners = new HashMap<>();
+    private final Map<Object, Set<ChangeListener<? super Changeable<Resource<T>>>>> updateListeners = new HashMap<>();
+    private final Map<Object, Set<ChangeListener<? super Changeable<Resource<T>>>>> deleteListeners = new HashMap<>();
              
     @Override
-    public void addChangeListener(ChangeListener<? super WrapChangedEntity<Resource<T>>> listener, Object object) {
+    public void addChangeListener(ChangeListener<? super Changeable<Resource<T>>> listener, Object object) {
         addInsertListener(listener, object);
         addUpdateListener(listener, object);
         addDeleteListener(listener, object);   
     }
     
     @Override
-    public void addInsertListener(ChangeListener<? super WrapChangedEntity<Resource<T>>> listener, Object object) {
+    public void addInsertListener(ChangeListener<? super Changeable<Resource<T>>> listener, Object object) {
         if (!insertListeners.keySet().contains(object)) {
             insertListeners.put(object, new HashSet<>());
         }
@@ -40,7 +40,7 @@ public abstract class ChangeRepositoryImpl<T extends Entity> extends BaseReposit
     }
         
     @Override
-    public void addUpdateListener(ChangeListener<? super WrapChangedEntity<Resource<T>>> listener, Object object) {
+    public void addUpdateListener(ChangeListener<? super Changeable<Resource<T>>> listener, Object object) {
         if (!updateListeners.keySet().contains(object)) {
             updateListeners.put(object, new HashSet<>());
         }
@@ -49,7 +49,7 @@ public abstract class ChangeRepositoryImpl<T extends Entity> extends BaseReposit
     } 
              
     @Override
-    public void addDeleteListener(ChangeListener<? super WrapChangedEntity<Resource<T>>> listener, Object object) {
+    public void addDeleteListener(ChangeListener<? super Changeable<Resource<T>>> listener, Object object) {
         if (!deleteListeners.keySet().contains(object)) {
             deleteListeners.put(object, new HashSet<>());
         }
@@ -58,14 +58,14 @@ public abstract class ChangeRepositoryImpl<T extends Entity> extends BaseReposit
     }
     
     @Override
-    public void removeChangeListener(ChangeListener<? super WrapChangedEntity<Resource<T>>> listener) {
+    public void removeChangeListener(ChangeListener<? super Changeable<Resource<T>>> listener) {
         removeInsertListener(listener);
         removeUpdateListener(listener);
         removeDeleteListener(listener);
     }
     
     @Override
-    public void removeInsertListener(ChangeListener<? super WrapChangedEntity<Resource<T>>> listener) {
+    public void removeInsertListener(ChangeListener<? super Changeable<Resource<T>>> listener) {
         insertListeners.keySet().stream().forEach(object -> {
             if (insertListeners.get(object).contains(listener)) {
                 added.removeListener(listener);
@@ -78,7 +78,7 @@ public abstract class ChangeRepositoryImpl<T extends Entity> extends BaseReposit
     }
     
     @Override
-    public void removeUpdateListener(ChangeListener<? super WrapChangedEntity<Resource<T>>> listener) {
+    public void removeUpdateListener(ChangeListener<? super Changeable<Resource<T>>> listener) {
         updateListeners.keySet().stream().forEach(object -> {
             if (updateListeners.get(object).contains(listener)) {
                 updated.removeListener(listener);
@@ -91,7 +91,7 @@ public abstract class ChangeRepositoryImpl<T extends Entity> extends BaseReposit
     }
     
     @Override
-    public void removeDeleteListener(ChangeListener<? super WrapChangedEntity<Resource<T>>> listener) {
+    public void removeDeleteListener(ChangeListener<? super Changeable<Resource<T>>> listener) {
         deleteListeners.keySet().stream().forEach(object -> {
             if (deleteListeners.get(object).contains(listener)) {
                 deleted.removeListener(listener);
@@ -156,12 +156,12 @@ public abstract class ChangeRepositoryImpl<T extends Entity> extends BaseReposit
         }
     }
     
-    public WrapChangedEntity<Resource<T>> getUpdated() {
+    public Changeable<Resource<T>> getUpdated() {
         return updated.get();
     }
    
     @Override
-    public void setUpdated(WrapChangedEntity<Resource<T>> value) {
+    public void setUpdated(Changeable<Resource<T>> value) {
         updated.set(value);
     }
     
@@ -170,12 +170,12 @@ public abstract class ChangeRepositoryImpl<T extends Entity> extends BaseReposit
         return updated;
     }
      
-    public WrapChangedEntity getDeleted() {
+    public Changeable getDeleted() {
         return deleted.get();
     }
    
     @Override
-    public void setDeleted(WrapChangedEntity<Resource<T>> value) {
+    public void setDeleted(Changeable<Resource<T>> value) {
         deleted.set(value);
     }
     
@@ -184,12 +184,12 @@ public abstract class ChangeRepositoryImpl<T extends Entity> extends BaseReposit
         return deleted;
     }
           
-    public WrapChangedEntity getAdded() {
+    public Changeable getAdded() {
         return added.get();
     }
   
     @Override
-    public void setAdded(WrapChangedEntity<Resource<T>> value) {
+    public void setAdded(Changeable<Resource<T>> value) {
         added.set(value);
     }
   

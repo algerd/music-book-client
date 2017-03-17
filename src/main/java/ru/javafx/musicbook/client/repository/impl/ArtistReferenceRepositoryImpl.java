@@ -1,7 +1,7 @@
 
 package ru.javafx.musicbook.client.repository.impl;
 
-import ru.javafx.musicbook.client.datacore.repository.impl.CrudRepositoryImpl;
+import ru.javafx.musicbook.client.datacore.impl.CrudRepositoryImpl;
 import org.springframework.hateoas.Resource;
 import org.springframework.hateoas.Resources;
 import org.springframework.hateoas.mvc.TypeReferences;

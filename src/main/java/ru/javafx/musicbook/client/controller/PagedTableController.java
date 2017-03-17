@@ -12,9 +12,9 @@ import org.springframework.hateoas.PagedResources;
 import org.springframework.hateoas.Resource;
 import ru.javafx.musicbook.client.controller.paginator.PaginatorPaneController;
 import ru.javafx.musicbook.client.controller.paginator.Sort;
-import ru.javafx.musicbook.client.datacore.entity.Entity;
+import ru.javafx.musicbook.client.datacore.Entity;
 import ru.javafx.musicbook.client.fxintegrity.FXMLControllerLoader;
-import ru.javafx.musicbook.client.datacore.repository.CrudRepository;
+import ru.javafx.musicbook.client.datacore.CrudRepository;
 import ru.javafx.musicbook.client.utils.Helper;
 
 public abstract class PagedTableController<T extends Entity> extends BaseAwareController {

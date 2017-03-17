@@ -21,7 +21,7 @@ import ru.javafx.musicbook.client.controller.EntityController;
 import ru.javafx.musicbook.client.entity.Artist;
 import ru.javafx.musicbook.client.fxintegrity.FXMLController;
 import ru.javafx.musicbook.client.repository.ArtistRepository;
-import ru.javafx.musicbook.client.datacore.repository.impl.WrapChangedEntity;
+import ru.javafx.musicbook.client.datacore.impl.WrapChangedEntity;
 import static ru.javafx.musicbook.client.service.ContextMenuItemType.ADD_ARTIST;
 import static ru.javafx.musicbook.client.service.ContextMenuItemType.DELETE_ARTIST;
 import static ru.javafx.musicbook.client.service.ContextMenuItemType.EDIT_ARTIST;

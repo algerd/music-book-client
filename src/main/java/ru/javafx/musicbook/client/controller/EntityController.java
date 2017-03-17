@@ -2,7 +2,7 @@
 package ru.javafx.musicbook.client.controller;
 
 import org.springframework.hateoas.Resource;
-import ru.javafx.musicbook.client.datacore.entity.Entity;
+import ru.javafx.musicbook.client.datacore.Entity;
 
 public abstract class EntityController<T extends Entity> extends BaseAwareController {
     

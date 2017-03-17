@@ -8,7 +8,7 @@ import org.springframework.hateoas.Resource;
 import static ru.javafx.musicbook.client.Params.DIR_IMAGES;
 import ru.javafx.musicbook.client.entity.Album;
 import ru.javafx.musicbook.client.entity.Artist;
-import ru.javafx.musicbook.client.datacore.entity.Entity;
+import ru.javafx.musicbook.client.datacore.Entity;
 import ru.javafx.musicbook.client.entity.Song;
 
 public class ArtistTreeCell extends TreeCell<Resource<? extends Entity>> {

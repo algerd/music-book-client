@@ -1,11 +1,8 @@
 
-package ru.javafx.musicbook.client.datacore.repository.impl;
+package ru.javafx.musicbook.client.datacore.impl;
 
-import ru.javafx.musicbook.client.datacore.repository.Changeable;
+import ru.javafx.musicbook.client.datacore.Changeable;
 
-/**
- * Обёртка объекта, которая содержит новое и старое значение объекта после его редактирования.
- */
 public class WrapChangedEntity<T> implements Changeable<T> {
 
     private final T oldEntity;

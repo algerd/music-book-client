@@ -5,7 +5,7 @@ import javafx.scene.Parent;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.input.MouseEvent;
 import org.springframework.hateoas.Resource;
-import ru.javafx.musicbook.client.datacore.entity.Entity;
+import ru.javafx.musicbook.client.datacore.Entity;
 
 public interface ContextMenuService {
     /**

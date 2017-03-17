@@ -21,7 +21,7 @@ import org.springframework.hateoas.Resources;
 import ru.javafx.musicbook.client.controller.BaseAwareController;
 import ru.javafx.musicbook.client.entity.Album;
 import ru.javafx.musicbook.client.entity.Artist;
-import ru.javafx.musicbook.client.entity.Entity;
+import ru.javafx.musicbook.client.datacore.entity.Entity;
 import ru.javafx.musicbook.client.entity.Genre;
 import ru.javafx.musicbook.client.entity.Musician;
 import ru.javafx.musicbook.client.entity.Song;

@@ -15,7 +15,7 @@ import ru.javafx.musicbook.client.controller.helper.inputImageBox.DialogImageBox
 import ru.javafx.musicbook.client.entity.Instrument;
 import ru.javafx.musicbook.client.fxintegrity.FXMLController;
 import ru.javafx.musicbook.client.repository.InstrumentRepository;
-import ru.javafx.musicbook.client.repository.impl.WrapChangedEntity;
+import ru.javafx.musicbook.client.datacore.repository.impl.WrapChangedEntity;
 import ru.javafx.musicbook.client.utils.Helper;
 
 @FXMLController(

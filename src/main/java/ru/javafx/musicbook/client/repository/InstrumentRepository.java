@@ -1,6 +1,7 @@
 
 package ru.javafx.musicbook.client.repository;
 
+import ru.javafx.musicbook.client.datacore.repository.CrudRepository;
 import java.net.URISyntaxException;
 import org.springframework.hateoas.Resource;
 import org.springframework.hateoas.Resources;

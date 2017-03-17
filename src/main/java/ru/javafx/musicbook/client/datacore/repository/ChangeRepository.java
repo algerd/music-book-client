@@ -1,11 +1,11 @@
 
-package ru.javafx.musicbook.client.repository;
+package ru.javafx.musicbook.client.datacore.repository;
 
-import ru.javafx.musicbook.client.repository.impl.WrapChangedEntity;
+import ru.javafx.musicbook.client.datacore.repository.impl.WrapChangedEntity;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.value.ChangeListener;
 import org.springframework.hateoas.Resource;
-import ru.javafx.musicbook.client.entity.Entity;
+import ru.javafx.musicbook.client.datacore.entity.Entity;
 
 public interface ChangeRepository<T extends Entity> {
     

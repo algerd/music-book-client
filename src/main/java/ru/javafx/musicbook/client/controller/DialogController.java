@@ -2,7 +2,7 @@ package ru.javafx.musicbook.client.controller;
 
 import javafx.stage.Stage;
 import org.springframework.hateoas.Resource;
-import ru.javafx.musicbook.client.entity.Entity;
+import ru.javafx.musicbook.client.datacore.entity.Entity;
 
 public interface DialogController<T extends Entity> {
     

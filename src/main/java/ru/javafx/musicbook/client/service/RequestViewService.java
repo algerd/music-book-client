@@ -15,7 +15,7 @@ import ru.javafx.musicbook.client.controller.EntityController;
 import ru.javafx.musicbook.client.controller.MainController;
 import ru.javafx.musicbook.client.fxintegrity.BaseFxmlController;
 import ru.javafx.musicbook.client.fxintegrity.FXMLControllerLoader;
-import ru.javafx.musicbook.client.entity.Entity;
+import ru.javafx.musicbook.client.datacore.entity.Entity;
 
 @SuppressWarnings("unchecked")
 @Service

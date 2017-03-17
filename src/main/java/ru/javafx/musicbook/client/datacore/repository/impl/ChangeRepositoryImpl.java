@@ -1,6 +1,7 @@
 
-package ru.javafx.musicbook.client.repository.impl;
+package ru.javafx.musicbook.client.datacore.repository.impl;
 
+import ru.javafx.musicbook.client.datacore.repository.impl.BaseRepositoryImpl;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -9,8 +10,8 @@ import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.value.ChangeListener;
 import org.springframework.hateoas.Resource;
-import ru.javafx.musicbook.client.entity.Entity;
-import ru.javafx.musicbook.client.repository.ChangeRepository;
+import ru.javafx.musicbook.client.datacore.entity.Entity;
+import ru.javafx.musicbook.client.datacore.repository.ChangeRepository;
 
 public abstract class ChangeRepositoryImpl<T extends Entity> extends BaseRepositoryImpl<T> implements ChangeRepository<T> {
     

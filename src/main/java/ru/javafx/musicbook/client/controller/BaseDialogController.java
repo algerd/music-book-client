@@ -5,7 +5,7 @@ import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
 import javafx.stage.Stage;
 import org.springframework.hateoas.Resource;
-import ru.javafx.musicbook.client.entity.Entity;
+import ru.javafx.musicbook.client.datacore.entity.Entity;
 
 public abstract class BaseDialogController<T extends Entity> extends BaseAwareController implements DialogController<T> {
     

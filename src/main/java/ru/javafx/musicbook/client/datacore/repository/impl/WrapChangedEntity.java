@@ -1,7 +1,7 @@
 
-package ru.javafx.musicbook.client.repository.impl;
+package ru.javafx.musicbook.client.datacore.repository.impl;
 
-import ru.javafx.musicbook.client.repository.Changeable;
+import ru.javafx.musicbook.client.datacore.repository.Changeable;
 
 /**
  * Обёртка объекта, которая содержит новое и старое значение объекта после его редактирования.

@@ -14,7 +14,7 @@ import ru.javafx.musicbook.client.controller.BaseDialogController;
 import ru.javafx.musicbook.client.entity.ArtistReference;
 import ru.javafx.musicbook.client.fxintegrity.FXMLController;
 import ru.javafx.musicbook.client.repository.ArtistReferenceRepository;
-import ru.javafx.musicbook.client.repository.impl.WrapChangedEntity;
+import ru.javafx.musicbook.client.datacore.repository.impl.WrapChangedEntity;
 import ru.javafx.musicbook.client.utils.Helper;
 
 @FXMLController(

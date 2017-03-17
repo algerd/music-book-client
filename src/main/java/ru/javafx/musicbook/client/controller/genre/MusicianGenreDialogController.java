@@ -22,7 +22,7 @@ import ru.javafx.musicbook.client.fxintegrity.FXMLController;
 import ru.javafx.musicbook.client.repository.GenreRepository;
 import ru.javafx.musicbook.client.repository.MusicianGenreRepository;
 import ru.javafx.musicbook.client.repository.MusicianRepository;
-import ru.javafx.musicbook.client.repository.impl.WrapChangedEntity;
+import ru.javafx.musicbook.client.datacore.repository.impl.WrapChangedEntity;
 
 @FXMLController(
     value = "/fxml/genre/MusicianGenreDialog.fxml",    

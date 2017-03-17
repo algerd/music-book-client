@@ -30,7 +30,7 @@ import ru.javafx.musicbook.client.fxintegrity.FXMLController;
 import ru.javafx.musicbook.client.repository.AlbumRepository;
 import ru.javafx.musicbook.client.repository.ArtistRepository;
 import ru.javafx.musicbook.client.repository.SongRepository;
-import ru.javafx.musicbook.client.repository.impl.WrapChangedEntity;
+import ru.javafx.musicbook.client.datacore.repository.impl.WrapChangedEntity;
 import static ru.javafx.musicbook.client.service.ContextMenuItemType.ADD_SONG;
 import static ru.javafx.musicbook.client.service.ContextMenuItemType.DELETE_SONG;
 import static ru.javafx.musicbook.client.service.ContextMenuItemType.EDIT_SONG;

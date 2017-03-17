@@ -10,7 +10,7 @@ import javafx.scene.control.TreeItem;
 import org.springframework.hateoas.Resource;
 import ru.javafx.musicbook.client.entity.Album;
 import ru.javafx.musicbook.client.entity.Artist;
-import ru.javafx.musicbook.client.entity.Entity;
+import ru.javafx.musicbook.client.datacore.entity.Entity;
 import ru.javafx.musicbook.client.entity.Song;
 import ru.javafx.musicbook.client.service.RepositoryService;
 

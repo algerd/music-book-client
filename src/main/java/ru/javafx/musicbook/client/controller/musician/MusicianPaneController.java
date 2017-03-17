@@ -22,7 +22,7 @@ import ru.javafx.musicbook.client.entity.Genre;
 import ru.javafx.musicbook.client.entity.Musician;
 import ru.javafx.musicbook.client.fxintegrity.FXMLController;
 import ru.javafx.musicbook.client.repository.MusicianRepository;
-import ru.javafx.musicbook.client.repository.impl.WrapChangedEntity;
+import ru.javafx.musicbook.client.datacore.repository.impl.WrapChangedEntity;
 import static ru.javafx.musicbook.client.service.ContextMenuItemType.ADD_MUSICIAN;
 import static ru.javafx.musicbook.client.service.ContextMenuItemType.DELETE_MUSICIAN;
 import static ru.javafx.musicbook.client.service.ContextMenuItemType.EDIT_MUSICIAN;

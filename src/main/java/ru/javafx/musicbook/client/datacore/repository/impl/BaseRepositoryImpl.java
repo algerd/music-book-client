@@ -1,5 +1,5 @@
 
-package ru.javafx.musicbook.client.repository.impl;
+package ru.javafx.musicbook.client.datacore.repository.impl;
 
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
@@ -8,9 +8,9 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import ru.javafx.musicbook.client.SessionManager;
-import ru.javafx.musicbook.client.entity.Entity;
-import ru.javafx.musicbook.client.entity.RelPath;
-import ru.javafx.musicbook.client.repository.BaseRepository;
+import ru.javafx.musicbook.client.datacore.entity.Entity;
+import ru.javafx.musicbook.client.datacore.entity.RelPath;
+import ru.javafx.musicbook.client.datacore.repository.BaseRepository;
 
 @SuppressWarnings("unchecked")
 public abstract class BaseRepositoryImpl<T extends Entity> implements BaseRepository<T> {

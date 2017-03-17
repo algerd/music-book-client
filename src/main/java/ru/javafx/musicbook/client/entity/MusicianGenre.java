@@ -1,6 +1,8 @@
 
 package ru.javafx.musicbook.client.entity;
 
+import ru.javafx.musicbook.client.datacore.entity.RelPath;
+import ru.javafx.musicbook.client.datacore.entity.Entity;
 import java.util.Objects;
 
 @RelPath("musician_genres")

@@ -1,5 +1,5 @@
 
-package ru.javafx.musicbook.client.entity;
+package ru.javafx.musicbook.client.datacore.entity;
 
 import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;

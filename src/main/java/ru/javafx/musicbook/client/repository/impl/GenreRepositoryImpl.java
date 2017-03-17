@@ -1,6 +1,7 @@
 
 package ru.javafx.musicbook.client.repository.impl;
 
+import ru.javafx.musicbook.client.datacore.repository.impl.CrudRepositoryImpl;
 import java.net.URISyntaxException;
 import java.util.HashMap;
 import java.util.Map;
@@ -15,7 +16,7 @@ import ru.javafx.musicbook.client.entity.Artist;
 import ru.javafx.musicbook.client.entity.Genre;
 import ru.javafx.musicbook.client.repository.GenreRepository;
 import org.springframework.core.ParameterizedTypeReference;
-import ru.javafx.musicbook.client.entity.Entity;
+import ru.javafx.musicbook.client.datacore.entity.Entity;
 import ru.javafx.musicbook.client.entity.Musician;
 import ru.javafx.musicbook.client.entity.Song;
 

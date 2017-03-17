@@ -26,7 +26,7 @@ import ru.javafx.musicbook.client.repository.ArtistRepository;
 import ru.javafx.musicbook.client.repository.MusicianRepository;
 import ru.javafx.musicbook.client.repository.MusicianSongRepository;
 import ru.javafx.musicbook.client.repository.SongRepository;
-import ru.javafx.musicbook.client.repository.impl.WrapChangedEntity;
+import ru.javafx.musicbook.client.datacore.repository.impl.WrapChangedEntity;
 
 @FXMLController(
     value = "/fxml/musician/MusicianSongDialog.fxml",    

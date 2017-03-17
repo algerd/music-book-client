@@ -23,7 +23,7 @@ import ru.javafx.musicbook.client.fxintegrity.FXMLController;
 import ru.javafx.musicbook.client.repository.ArtistRepository;
 import ru.javafx.musicbook.client.repository.MusicianGroupRepository;
 import ru.javafx.musicbook.client.repository.MusicianRepository;
-import ru.javafx.musicbook.client.repository.impl.WrapChangedEntity;
+import ru.javafx.musicbook.client.datacore.repository.impl.WrapChangedEntity;
 import ru.javafx.musicbook.client.utils.Helper;
 
 @FXMLController(

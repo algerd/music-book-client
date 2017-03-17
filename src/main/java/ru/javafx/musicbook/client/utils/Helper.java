@@ -23,7 +23,7 @@ import javafx.scene.paint.Color;
 import javafx.util.Callback;
 import javafx.util.StringConverter;
 import org.springframework.hateoas.Resource;
-import ru.javafx.musicbook.client.entity.Entity;
+import ru.javafx.musicbook.client.datacore.entity.Entity;
 
 @SuppressWarnings("unchecked")
 public class Helper {

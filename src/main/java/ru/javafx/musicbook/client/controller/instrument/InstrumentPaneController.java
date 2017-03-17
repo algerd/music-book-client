@@ -21,7 +21,7 @@ import ru.javafx.musicbook.client.entity.Genre;
 import ru.javafx.musicbook.client.entity.Instrument;
 import ru.javafx.musicbook.client.fxintegrity.FXMLController;
 import ru.javafx.musicbook.client.repository.InstrumentRepository;
-import ru.javafx.musicbook.client.repository.impl.WrapChangedEntity;
+import ru.javafx.musicbook.client.datacore.repository.impl.WrapChangedEntity;
 import static ru.javafx.musicbook.client.service.ContextMenuItemType.ADD_INSTRUMENT;
 import static ru.javafx.musicbook.client.service.ContextMenuItemType.DELETE_INSTRUMENT;
 import static ru.javafx.musicbook.client.service.ContextMenuItemType.EDIT_INSTRUMENT;

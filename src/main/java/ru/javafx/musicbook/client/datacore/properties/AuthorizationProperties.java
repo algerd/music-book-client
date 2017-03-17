@@ -1,5 +1,5 @@
 
-package ru.javafx.musicbook.client.properties;
+package ru.javafx.musicbook.client.datacore.properties;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;

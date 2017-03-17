@@ -1,5 +1,5 @@
 
-package ru.javafx.musicbook.client;
+package ru.javafx.musicbook.client.datacore.impl;
 
 import java.io.IOException;
 import java.net.HttpURLConnection;
@@ -11,10 +11,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
 import org.springframework.stereotype.Component;
-import ru.javafx.musicbook.client.properties.AuthorizationProperties;
+import ru.javafx.musicbook.client.datacore.SessionManager;
+import ru.javafx.musicbook.client.datacore.properties.AuthorizationProperties;
 
 @Component
-public class SessionManager {
+public class SessionManagerImpl implements SessionManager {
     
     @Autowired
     private AuthorizationProperties authorizationProperties;
@@ -24,18 +25,17 @@ public class SessionManager {
     private boolean expired = true;
     private long lastAccessedTime;
     
-    public SessionManager() {
+    public SessionManagerImpl() {
     }
     
+    @Override
     public HttpHeaders createSessionHeaders() {
         HttpHeaders headers = new HttpHeaders();
         headers.add(HttpHeaders.COOKIE, getSessionIdCookie());
         return headers;
     }
     
-    /**
-     * @return sessionId 
-     */
+    @Override
     public String getSessionId() {
         if (isExpared()) {
             authorize();
@@ -44,6 +44,7 @@ public class SessionManager {
         return sessionId;
     }
     
+    @Override
     public String getSessionIdCookie() {
         return "JSESSIONID=" + getSessionId();
     }

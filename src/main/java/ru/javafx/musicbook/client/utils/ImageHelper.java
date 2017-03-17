@@ -20,7 +20,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
-import ru.javafx.musicbook.client.SessionManager;
+import ru.javafx.musicbook.client.datacore.impl.SessionManagerImpl;
 
 @Service
 public class ImageHelper {
@@ -28,7 +28,7 @@ public class ImageHelper {
     private final Logger logger = LogManager.getLogger(ImageUtil.class);
     
     @Autowired
-    private SessionManager sessionManager;
+    private SessionManagerImpl sessionManager;
     /*
     public String writeImage2(Image image, String imageFormat) {
         try {

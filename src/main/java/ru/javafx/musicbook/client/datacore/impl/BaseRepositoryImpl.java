@@ -7,10 +7,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import ru.javafx.musicbook.client.SessionManager;
 import ru.javafx.musicbook.client.datacore.Entity;
 import ru.javafx.musicbook.client.datacore.RelPath;
 import ru.javafx.musicbook.client.datacore.BaseRepository;
+import ru.javafx.musicbook.client.datacore.SessionManager;
 
 @SuppressWarnings("unchecked")
 public abstract class BaseRepositoryImpl<T extends Entity> implements BaseRepository<T> {

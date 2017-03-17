@@ -11,7 +11,7 @@ import org.springframework.context.annotation.AnnotationConfigApplicationContext
 public abstract class BaseSpringJavaFxApplication extends Application {
     
     private static Class<? extends BaseFxmlController> mainController;  
-    private final Logger logger = LoggerFactory.getLogger(this.getClass());
+    protected final Logger logger = LoggerFactory.getLogger(getClass());
     protected static AnnotationConfigApplicationContext springContext;
     protected Stage primaryStage;
       

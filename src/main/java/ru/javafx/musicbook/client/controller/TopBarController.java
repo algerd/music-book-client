@@ -4,8 +4,6 @@ import java.net.URL;
 import java.util.ResourceBundle;
 import javafx.fxml.FXML;
 import javafx.scene.layout.AnchorPane;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import ru.javafx.musicbook.client.controller.albums.AlbumsController;
 import ru.javafx.musicbook.client.controller.artists.ArtistsController;
@@ -19,9 +17,7 @@ import ru.javafx.musicbook.client.service.RequestViewService;
 
 @FXMLController
 public class TopBarController extends BaseFxmlController {
-    
-    private final Logger logger = LoggerFactory.getLogger(this.getClass());
-      
+         
     @Autowired
     private MainController parentController;
     

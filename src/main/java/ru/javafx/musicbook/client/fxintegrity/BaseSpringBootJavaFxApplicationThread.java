@@ -19,7 +19,7 @@ public abstract class BaseSpringBootJavaFxApplicationThread extends Application 
     private static String[] args;
     private static Class<? extends BaseFxmlController> mainController;
     
-    private final Logger logger = LoggerFactory.getLogger(this.getClass());
+    protected final Logger logger = LoggerFactory.getLogger(getClass());
     protected ConfigurableApplicationContext springContext;
     protected Stage primaryStage;
     

@@ -10,8 +10,6 @@ import javafx.fxml.FXML;
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.ComboBox;
 import javafx.scene.layout.AnchorPane;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Scope;
 import ru.javafx.musicbook.client.controller.PagedTableController;
 import ru.javafx.musicbook.client.controller.artists.ArtistsController;
@@ -22,9 +20,7 @@ import ru.javafx.musicbook.client.fxintegrity.FXMLController;
 @Scope("prototype")
 public class PaginatorPaneController extends BaseFxmlController {
     
-    private final Logger logger = LoggerFactory.getLogger(this.getClass());
-    private static final int DEFAULT_PAGE_SIZE = 10;
-    
+    private static final int DEFAULT_PAGE_SIZE = 10;   
     private PagedTableController parentController;
     private Paginator paginator;
     private boolean initPageComboBox = false;

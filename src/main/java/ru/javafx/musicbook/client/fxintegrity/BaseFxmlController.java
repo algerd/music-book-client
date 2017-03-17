@@ -10,7 +10,7 @@ import org.slf4j.LoggerFactory;
 
 public abstract class BaseFxmlController implements Initializable {
     
-    private final Logger logger = LoggerFactory.getLogger(this.getClass());
+    protected final Logger logger = LoggerFactory.getLogger(getClass());
     protected Parent view;
     protected StringProperty title = new SimpleStringProperty();
 
